@@ -3,22 +3,22 @@
         {
             "target_name":"aminonative",
             "sources":[
-                "src/sg/fonts/vector.c",
-                "src/sg/fonts/vertex-buffer.c",
-                "src/sg/fonts/vertex-attribute.c",
-                "src/sg/fonts/texture-atlas.c",
-                "src/sg/fonts/texture-font.c",
-                "src/sg/fonts/shader.c",
-                "src/sg/fonts/mat4.c",
+                "src/fonts/vector.c",
+                "src/fonts/vertex-buffer.c",
+                "src/fonts/vertex-attribute.c",
+                "src/fonts/texture-atlas.c",
+                "src/fonts/texture-font.c",
+                "src/fonts/shader.c",
+                "src/fonts/mat4.c",
 
-                "src/sg/base.cc",
-                "src/sg/shaders.cpp",
-                "src/sg/image.cpp",
-                "src/sg/SimpleRenderer.cpp"
+                "src/base.cc",
+                "src/shaders.cpp",
+                "src/image.cpp",
+                "src/SimpleRenderer.cpp"
             ],
             "include_dirs": [
-                "src/sg/",
-                "src/sg/fonts/",
+                "src/",
+                "src/fonts/",
             ],
 
             'conditions': [
@@ -35,7 +35,7 @@
                         '<!@(freetype-config --libs)'
                     ],
                     "sources": [
-                        "src/sg/mac.cpp",
+                        "src/mac.cpp",
                     ],
                     "defines": [
                         "MAC",
@@ -51,7 +51,7 @@
                 }],
                 ['OS=="raspberrypi"', {
                     "sources": [
-                        "src/sg/rpi.cpp",
+                        "src/rpi.cpp",
                     ],
                     "libraries":[
                         "-lpng",
@@ -81,7 +81,7 @@
                         "-ljpeg"
                     ],
                     "sources": [
-                        "src/sg/mac.cpp",
+                        "src/mac.cpp",
                     ],
                     "defines": [
                         "GL_GLEXT_PROTOTYPES",
