@@ -101,15 +101,16 @@ function desktop(cb) {
     //src files
     copyFileTo(src+"amino.js",out);
     copyFileTo(src+"aminoinput.js",out);
-    copyFileTo(src+"superprops.js",out);
-    copyFileTo(src+"superprops-util.js",out);
+    copyFileTo(src+"primitives.js",out);
     copyFileTo("build/Release/aminonative.node",out);
     copyFileTo(src+"widgets.js",out);
     //copyFileTo("src/jscommon/textcontrol.js",out);
     mkdir(out+"/fonts");
-    //copyAllTo("fonts",out+"/fonts");
+    copyAllTo("resources",out+"/fonts");
+    /*
     copyFileTo("resources/SourceSansPro-Regular.ttf",out+"/fonts");
     copyFileTo("resources/fontawesome-webfont.ttf",out+"/fonts");
+    */
     mkdir(out+"/shaders");
     copyAllTo("shaders",out+"/shaders");
 }

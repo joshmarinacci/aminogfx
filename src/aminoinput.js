@@ -1,8 +1,5 @@
-if(typeof exports == 'undefined' || exports.inbrowser==true) {
-    var input = this['aminoinput'] = {};
-} else {
-    var input = exports;
-}
+var input = exports;
+
 
 var keyState = {
     shift:false,
@@ -111,7 +108,7 @@ function mapNativeButton(e) {
     if(input.OS != "RPI") return;
 }
 function mapNativeKey(e) {
-    
+
     if(e.keycode == input.KEY_MAP.LEFT_SHIFT || e.keycode == input.KEY_MAP.RIGHT_SHIFT) {
         if(e.type == "keypress") {
             keyState.shift = true;
@@ -121,7 +118,7 @@ function mapNativeKey(e) {
         }
     }
     if(input.OS != "RPI") return;
-    
+
     //left and right control
     if(e.keycode == 29 || e.keycode == 97) {
         e.control = 1;
@@ -134,14 +131,14 @@ function mapNativeKey(e) {
     if(e.keycode == 125 || e.keycode == 126) {
         e.system = 1;
     }
-    
+
     var nc = RPI_KEYCODE_MAP[e.keycode];
     if(nc) {
         var ch = KEY_TO_CHAR_MAP[nc];
         //console.log("mapping: " + e.keycode + " to " + nc + " which is char '"+ch+"'");
         e.keycode = nc;
     }
-    
+
 }
 
 var prevmouse = {};
@@ -179,8 +176,8 @@ function compressQueue() {
             others.push(e);
         }
     });
-    
-    
+
+
     //move the mouse positions to the beginning of the queue
     if(pos.length >= 2) {
         var first = pos[0];
@@ -192,7 +189,7 @@ function compressQueue() {
             others.unshift(e);
         });
     }
-    
+
     pos.forEach(function(e) {
         others.push(e);
     });
@@ -224,7 +221,7 @@ input.processOneEvent = function(core,e) {
     if(e.type == "keypress" || e.type == "keyrelease" || e.type == "keyrepeat") {
         mapNativeKey(e);
     }
-    
+
     var repeatKey = function() {
         if(repeatEvent) {
             core.fireEventAtTarget(core.keyfocus,repeatEvent);
@@ -329,8 +326,8 @@ input.processOneEvent = function(core,e) {
         });
         return;
     }
-    
-    
+
+
 
 
     /**
@@ -338,14 +335,14 @@ input.processOneEvent = function(core,e) {
     @desc an event fired whenever a key on the keyboard is pushed down. special keys like 'shift' are filtered out.
     */
     if(e.type == "keypress") {
-    
+
         if(repeatTimeout) {
             clearTimeout(repeatTimeout);
             repeatTimeout = null;
             repeatEvent = null;
         }
-        
-            
+
+
         var event = {
             type:"keypress",
         }
@@ -390,7 +387,7 @@ input.processOneEvent = function(core,e) {
             repeatEvent = null;
         }
     }
-    
+
     if(e.type == "mousebutton" && mouseState.pressed) {
         var node = core.findNodeAtXY(mouseState.x,mouseState.y);
         if(node != null) {
@@ -448,5 +445,5 @@ input.processOneEvent = function(core,e) {
         }
         return;
     }
-    
+
 }

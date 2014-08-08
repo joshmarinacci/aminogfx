@@ -1,7 +1,7 @@
 var amino = require('amino.js');
 var sp = require('superprops');
 
-amino.startApp(function(core, stage) {
+amino.start(function(core, stage) {
 
     var root = new sp.Group();
     stage.setRoot(root);

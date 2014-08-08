@@ -1,5 +1,4 @@
 var amino = require('amino.js');
-var ou = require('./superprops-util');
 
 function mirrorAmino(me,mirrorprops) {
     function camelize(s) {
@@ -68,7 +67,7 @@ function contains(x,y) {
 }
 
 function Rect() {
-    ou.makeProps(this,{
+    amino.makeProps(this,{
         id: 'unknown id',
         visible:true,
         x:0,
@@ -97,7 +96,7 @@ function Rect() {
 }
 
 function Text() {
-    ou.makeProps(this,{
+    amino.makeProps(this,{
         id: 'unknown id',
         visible:true,
         x:0,
@@ -135,12 +134,11 @@ function Text() {
         return this.font.getHeight(20, 400, 'normal');
     }
     this.updateFont();
-    //this.prototype = Text.prototype;
 }
 
 
 function ImageView() {
-    ou.makeProps(this,{
+    amino.makeProps(this,{
         id: 'unknown id',
         visible:true,
         x:0,
@@ -195,12 +193,12 @@ function ImageView() {
         textureTop: 'textureTop',
         textureBottom: 'textureBottom',
     });
-    //this.contains = contains;
+    this.contains = contains;
 }
 
 
 function Group() {
-    ou.makeProps(this, {
+    amino.makeProps(this, {
         id: 'unknown id',
         visible:true,
 
@@ -279,7 +277,7 @@ function FindResults() {
 
 function Button() {
     Group.call(this);
-    ou.makeProps(this, {
+    amino.makeProps(this, {
         w:100,
         h:50,
         text:'a button',
@@ -314,7 +312,7 @@ function Button() {
 
 
 function Polygon() {
-    ou.makeProps(this, {
+    amino.makeProps(this, {
         id:'polygon',
         visible:true,
         x:0,
@@ -347,7 +345,7 @@ function Polygon() {
 
 function Circle() {
     Polygon.call(this);
-    ou.makeProps(this, {
+    amino.makeProps(this, {
         radius:50,
         steps:30,
     });
