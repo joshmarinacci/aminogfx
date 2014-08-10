@@ -646,6 +646,7 @@ exports.Group = prims.Group;
 exports.Rect = prims.Rect;
 exports.Text = prims.Text;
 exports.Polygon = prims.Polygon;
+exports.ImageView = prims.ImageView;
 
 
 var remap = {
@@ -675,13 +676,13 @@ function PropAnim(target,name) {
     this.start = function() {
         var self = this;
         setTimeout(function(){
-            self.handle = amino.native.createAnim(
+            self.handle = exports.native.createAnim(
                 target.handle,
                 name,
                 self._from,self._to,self._duration);
-            amino.native.updateAnimProperty(self.handle, 'count', self._loop);
-            amino.native.updateAnimProperty(self.handle, 'lerpprop', 17); //17 is cubic in out
-            amino.getCore().anims.push(self);
+            exports.native.updateAnimProperty(self.handle, 'count', self._loop);
+            exports.native.updateAnimProperty(self.handle, 'lerpprop', 17); //17 is cubic in out
+            exports.getCore().anims.push(self);
         },this._delay);
         return this;
     }
