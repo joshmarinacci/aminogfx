@@ -647,6 +647,7 @@ exports.Rect = prims.Rect;
 exports.Text = prims.Text;
 exports.Polygon = prims.Polygon;
 exports.ImageView = prims.ImageView;
+exports.Circle = prims.Circle;
 
 
 var remap = {
