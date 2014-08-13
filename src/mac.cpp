@@ -99,26 +99,26 @@ Handle<Value> createWindow(const Arguments& args) {
     if(!glfwOpenWindow(width,height, 8, 8, 8, 0, 24, 8, GLFW_WINDOW)) {
         printf("couldn't open a window. quitting\n");
         glfwTerminate();
-        exit(EXIT_FAILURE);        
+        exit(EXIT_FAILURE);
     }
-    
+
     glfwSetWindowSizeCallback(GLFW_WINDOW_SIZE_CALLBACK_FUNCTION);
     glfwSetWindowCloseCallback(GLFW_WINDOW_CLOSE_CALLBACK_FUNCTION);
     glfwSetMousePosCallback(GLFW_MOUSE_POS_CALLBACK_FUNCTION);
     glfwSetMouseButtonCallback(GLFW_MOUSE_BUTTON_CALLBACK_FUNCTION);
     glfwSetKeyCallback(GLFW_KEY_CALLBACK_FUNCTION);
     glfwSetMouseWheelCallback(GLFW_MOUSE_WHEEL_CALLBACK_FUNCTION);
-    
+
     colorShader = new ColorShader();
     textureShader = new TextureShader();
     modelView = new GLfloat[16];
 
     globaltx = new GLfloat[16];
     make_identity_matrix(globaltx);
-    
- 
-    
-    
+
+
+
+
     glViewport(0,0,width, height);
     return scope.Close(Undefined());
 }
@@ -152,9 +152,9 @@ void render() {
     //input updates happen at any time
     double postinput = getTime();
     de.inputtime = postinput-starttime;
-    
+
     //send the validate event
-    
+
     sendValidate();
     double postvalidate = getTime();
     de.validatetime = postvalidate-postinput;
@@ -167,21 +167,21 @@ void render() {
     updates.clear();
     double postupdates = getTime();
     de.updatestime = postupdates-postvalidate;
-    
+
     //apply animations
     for(int j=0; j<anims.size(); j++) {
         anims[j]->update();
     }
     double postanim = getTime();
     de.animationstime = postanim-postupdates;
-    
+
     //set up the viewport
     GLfloat* scaleM = new GLfloat[16];
     make_scale_matrix(1,-1,1,scaleM);
     GLfloat* transM = new GLfloat[16];
     make_trans_matrix(-((float)width)/2,((float)height)/2,0,transM);
     GLfloat* m4 = new GLfloat[16];
-    mul_matrix(m4, transM, scaleM); 
+    mul_matrix(m4, transM, scaleM);
     GLfloat* pixelM = new GLfloat[16];
     loadPixelPerfect(pixelM, width, height, eye, near, far);
     mul_matrix(modelView,pixelM,m4);
@@ -190,7 +190,7 @@ void render() {
     glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
-    
+
     //draw
     AminoNode* root = rects[rootHandle];
 
@@ -203,7 +203,7 @@ void render() {
     double postrender = getTime();
     de.rendertime = postrender-prerender;
     de.frametime = postrender-starttime;
-    
+
     //swap
     glfwSwapBuffers();
     double postswap = getTime();
@@ -214,7 +214,7 @@ void render() {
         for(int i=0; i<FPS_LEN; i++) {
             total += frametimes[i];
         }
-        printf("avg frame len = %f \n",(total/FPS_LEN));
+        //printf("avg frame len = %f \n",(total/FPS_LEN));
         avg_frametime = total/FPS_LEN;
     }
     currentFrame = (currentFrame+1)%FPS_LEN;
@@ -238,7 +238,7 @@ Handle<Value> selfDrive(const Arguments& args) {
 
 Handle<Value> runTest(const Arguments& args) {
     HandleScope scope;
-    
+
     double startTime = getTime();
     int count = 100;
     Local<v8::Object> opts = args[0]->ToObject();
@@ -247,14 +247,14 @@ Handle<Value> runTest(const Arguments& args) {
         ->ToNumber()
         ->NumberValue()
         );
-    
-    
+
+
     bool sync = false;
     sync = opts
         ->Get(String::NewSymbol("sync"))
         ->ToBoolean()
         ->BooleanValue();
-        
+
     printf("rendering %d times, vsync = %d\n",count,sync);
 
     printf("applying updates first\n");
@@ -262,14 +262,14 @@ Handle<Value> runTest(const Arguments& args) {
         updates[j]->apply();
     }
     updates.clear();
-    
+
     printf("setting up the screen\n");
     GLfloat* scaleM = new GLfloat[16];
     make_scale_matrix(1,-1,1,scaleM);
     GLfloat* transM = new GLfloat[16];
     make_trans_matrix(-width/2,height/2,0,transM);
     GLfloat* m4 = new GLfloat[16];
-    mul_matrix(m4, transM, scaleM); 
+    mul_matrix(m4, transM, scaleM);
     GLfloat* pixelM = new GLfloat[16];
     loadPixelPerfect(pixelM, width, height, eye, near, far);
     mul_matrix(modelView,pixelM,m4);
@@ -288,7 +288,7 @@ Handle<Value> runTest(const Arguments& args) {
             glfwSwapBuffers();
         }
     }
-    
+
     double endTime = getTime();
     Local<Object> ret = Object::New();
     ret->Set(String::NewSymbol("count"),Number::New(count));
@@ -326,7 +326,7 @@ void InitAll(Handle<Object> exports, Handle<Object> module) {
     exports->Set(String::NewSymbol("selfDrive"),        FunctionTemplate::New(selfDrive)->GetFunction());
     exports->Set(String::NewSymbol("setEventCallback"), FunctionTemplate::New(setEventCallback)->GetFunction());
     exports->Set(String::NewSymbol("setRoot"),          FunctionTemplate::New(setRoot)->GetFunction());
-    exports->Set(String::NewSymbol("loadPngToTexture"), FunctionTemplate::New(loadPngToTexture)->GetFunction());   
+    exports->Set(String::NewSymbol("loadPngToTexture"), FunctionTemplate::New(loadPngToTexture)->GetFunction());
     exports->Set(String::NewSymbol("loadJpegToTexture"),FunctionTemplate::New(loadJpegToTexture)->GetFunction());
     exports->Set(String::NewSymbol("createNativeFont"), FunctionTemplate::New(createNativeFont)->GetFunction());
     exports->Set(String::NewSymbol("getCharWidth"),     FunctionTemplate::New(getCharWidth)->GetFunction());
@@ -335,4 +335,3 @@ void InitAll(Handle<Object> exports, Handle<Object> module) {
 }
 
 NODE_MODULE(aminonative, InitAll)
-

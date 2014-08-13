@@ -114,6 +114,7 @@ var ou = {
         obj[name].anim = function() {
             return new PropAnim(obj,name);
         }
+        obj[name].pname = name;
         obj[name].bindto = function(prop, fun) {
             var set = this;
             prop.listeners.push(function(v) {
