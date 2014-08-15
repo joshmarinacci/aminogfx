@@ -240,17 +240,46 @@ function Group() {
         }
         return this;
     }
+    this.remove = function(child) {
+        var n = this.children.indexOf(child);
+        if(n >=  0) {
+            this.children.splice(n, 1);
+        }
+        return this;
+    }
+    this.clear = function() {
+        this.children = [];
+        return this;
+    }
     this.isParent = function() { return true; }
 
     this.getVisible = this.visible;
 
+    function treeSearch(root, considerRoot, filter) {
+        var res = [];
+        if(root.isParent && root.isParent()) {
+            for(var i=0; i<root.children.length; i++) {
+                res =res.concat(treeSearch(root.children[i],true, filter));
+            }
+        }
+        if(considerRoot && filter(root)) {
+            return res.concat([root]);
+        }
+        return res;
+    }
+
     this.find = function(pattern) {
         var results = new FindResults();
-        this.children.forEach(function(child) {
-            if(child.constructor.name == pattern) {
-                results.children.push(child);
-            }
-        });
+        if(pattern.indexOf('#') == 0) {
+            var id = pattern.substring(1);
+            results.children = treeSearch(this, false, function(child) {
+                return (child.id().toLowerCase() == id);
+            });
+        } else {
+            results.children = treeSearch(this, false, function(child) {
+                return (child.constructor.name.toLowerCase() == pattern.toLowerCase());
+            });
+        }
         return results;
     }
 }
@@ -272,6 +301,9 @@ function FindResults() {
     makefindprop(this,'y');
     makefindprop(this,'w');
     makefindprop(this,'h');
+    this.length = function() {
+        return this.children.length;
+    }
 }
 
 
