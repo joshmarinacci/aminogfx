@@ -166,7 +166,7 @@ public:
     static const int FORWARD = 1;
     static const int BACKWARD = 2;
     int lerptype;
-    Anim(AminoNode* Target, int Property, float Start, float End, 
+    Anim(AminoNode* Target, int Property, float Start, float End,
             float Duration) {
         id = -1;
         target = Target;
@@ -181,7 +181,7 @@ public:
         lerptype = LERP_LINEAR;
         active = true;
     }
-    
+
     float cubicIn(float t) {
         return pow(t,3);
     }
@@ -192,7 +192,7 @@ public:
         if(t < 0.5) return cubicIn(t*2.0)/2.0 ;
         return 1-cubicIn((1-t)*2)/2;
     }
-        
+
     float lerp(float t) {
         if(lerptype != LERP_LINEAR) {
             float t2 = 0;
@@ -204,7 +204,7 @@ public:
             return start + (end-start)*t;
         }
     }
-    
+
     void toggle() {
         if(autoreverse) {
             if(direction == FORWARD) {
@@ -222,8 +222,8 @@ public:
         if(property == ROTATEX) target->rotatex = value;
         if(property == ROTATEY) target->rotatey = value;
         if(property == ROTATEZ) target->rotatez = value;
-    }        
-    
+    }
+
 void endAnimation() {
      applyValue(end);
      if(!eventCallbackSet) warnAbort("WARNING. Event callback not set");
@@ -264,7 +264,7 @@ void update() {
                 }
             }
         }
-        
+
         if(direction == BACKWARD) {
             t = 1-t;
         }
@@ -316,7 +316,7 @@ public:
     std::vector<float>* geometry;
     int dimension;
     int filled;
-    
+
     PolyNode() {
         r = 0; g = 1; b = 0;
         filled = 0;
@@ -418,7 +418,7 @@ public:
             return;
         }
         AminoNode* target = rects[node];
-        
+
         if(property == TX) target->tx = value;
         if(property == TY) target->ty = value;
         if(property == SCALEX) target->scalex = value;
@@ -427,7 +427,7 @@ public:
         if(property == ROTATEY) target->rotatey = value;
         if(property == ROTATEZ) target->rotatez = value;
         if(property == VISIBLE) target->visible = value;
-        
+
         if(target->type == RECT) {
             Rect* rect = (Rect*)target;
             if(property == R) rect->r = value;
@@ -444,14 +444,14 @@ public:
             if(property == TEXTURETOP_PROP)    rect->top = value;
             if(property == TEXTUREBOTTOM_PROP) rect->bottom = value;
         }
-        
+
         if(target->type == GROUP) {
             Group* group = (Group*)target;
             if(property == W_PROP) group->w = value;
             if(property == H_PROP) group->h = value;
             if(property == CLIPRECT_PROP) group->cliprect = value;
         }
-        
+
         if(target->type == TEXT) {
             TextNode* textnode = (TextNode*)target;
             if(property == R) textnode->r = value;
@@ -464,7 +464,7 @@ public:
             if(property == FONTSIZE_PROP) textnode->fontsize = value;
             if(property == FONTID_PROP) textnode->fontid = value;
         }
-        
+
         if(target->type == POLY) {
             PolyNode* polynode = (PolyNode*)target;
             if(property == R) polynode->r = value;
@@ -510,35 +510,35 @@ inline Handle<Value> createText(const Arguments& args) {
 }
 inline Handle<Value> createGroup(const Arguments& args) {
     HandleScope scope;
-    
+
     Group* node = new Group();
     rects.push_back(node);
     rects.size();
-    
+
     Local<Number> num = Number::New(rects.size()-1);
     return scope.Close(num);
 }
 inline Handle<Value> createGLNode(const Arguments& args) {
     HandleScope scope;
-    
+
     GLNode* node = new GLNode();
     node->callback = Persistent<Function>::New(Handle<Function>::Cast(args[0]));
     rects.push_back(node);
     rects.size();
-    
+
     Local<Number> num = Number::New(rects.size()-1);
     return scope.Close(num);
 }
 
 inline Handle<Value> createAnim(const Arguments& args) {
     HandleScope scope;
-    
+
     int rectHandle   = args[0]->ToNumber()->NumberValue();
     int property     = args[1]->ToNumber()->NumberValue();
     float start      = args[2]->ToNumber()->NumberValue();
     float end        = args[3]->ToNumber()->NumberValue();
     float duration   = args[4]->ToNumber()->NumberValue();
-    
+
     Anim* anim = new Anim(rects[rectHandle],property, start,end,  duration);
     anims.push_back(anim);
     anims.size();
@@ -636,7 +636,7 @@ inline Handle<Value> removeNodeFromGroup(const Arguments& args) {
             n = i;
         }
     }
-    
+
     group->children.erase(group->children.begin()+n);
     return scope.Close(Undefined());
 }
@@ -650,7 +650,7 @@ inline static Handle<Value> setRoot(const Arguments& args) {
 inline static Handle<Value> loadJpegToTexture(const Arguments& args) {
     HandleScope scope;
     v8::String::Utf8Value param1(args[0]->ToString());
-    std::string text = std::string(*param1);    
+    std::string text = std::string(*param1);
     char * file = new char [text.length()+1];
     strcpy (file, text.c_str());
     printf("LoadJpegFromFile %s\n",file);
@@ -665,7 +665,7 @@ inline static Handle<Value> loadJpegToTexture(const Arguments& args) {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     free(image->data);
-    
+
     Local<Object> obj = Object::New();
     obj->Set(String::NewSymbol("texid"), Number::New(texture));
     obj->Set(String::NewSymbol("w"),     Number::New(image->w));
@@ -676,7 +676,7 @@ inline static Handle<Value> loadJpegToTexture(const Arguments& args) {
 inline static Handle<Value> loadPngToTexture(const Arguments& args) {
     HandleScope scope;
     v8::String::Utf8Value param1(args[0]->ToString());
-    std::string text = std::string(*param1);    
+    std::string text = std::string(*param1);
     char * file = new char [text.length()+1];
     strcpy (file, text.c_str());
     printf("LoadPngFromFile %s\n",file);
@@ -685,7 +685,7 @@ inline static Handle<Value> loadPngToTexture(const Arguments& args) {
         printf("error loading\n");
         return scope.Close(Undefined());
     }
-        
+
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -700,7 +700,7 @@ inline static Handle<Value> loadPngToTexture(const Arguments& args) {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     free(image->data);
-    
+
     Local<Object> obj = Object::New();
     obj->Set(String::NewSymbol("texid"), Number::New(texture));
     obj->Set(String::NewSymbol("w"),     Number::New(image->w));
@@ -739,7 +739,7 @@ inline static Handle<Value> getCharWidth(const Arguments& args) {
 
     int fontsize  = args[1]->ToNumber()->NumberValue();
     int fontindex  = args[2]->ToNumber()->NumberValue();
-    
+
     AminoFont * font = fontmap[fontindex];
     texture_font_t *tf = font->fonts[fontsize];
     int w = 0;
@@ -767,11 +767,11 @@ inline static Handle<Value> getCharWidth(const Arguments& args) {
 
 inline static Handle<Value> createNativeFont(const Arguments& args) {
     HandleScope scope;
-    
+
     AminoFont* afont = new AminoFont();
     int id = fontmap.size();
     fontmap[id] = afont;
-    
+
     const char * filename = TO_CHAR(args[0]);
     printf("loading font file %s\n",filename);
 
@@ -780,7 +780,7 @@ inline static Handle<Value> createNativeFont(const Arguments& args) {
     afont->atlas = texture_atlas_new(512,512,1);
     wchar_t *text = L"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     //make a single font
-    
+
     texture_font_t *font;
     //preload some standard font sizes: 10, 12, 15, 20, 30, 40, 80
     int fontsizes[] = {10,12,15,20,30,40,80};
@@ -792,7 +792,7 @@ inline static Handle<Value> createNativeFont(const Arguments& args) {
     afont->shader = shader_load("shaders/v3f-t2f-c4f.vert",
                          "shaders/v3f-t2f-c4f.frag");
     //texture_font_delete(afont->font);
-    
+
     Local<Number> num = Number::New(id);
     return scope.Close(num);
 }
@@ -802,7 +802,7 @@ static void sendValidate() {
     Local<Object> event_obj = Object::New();
     event_obj->Set(String::NewSymbol("type"), String::New("validate"));
     Handle<Value> event_argv[] = {event_obj};
-    NODE_EVENT_CALLBACK->Call(Context::GetCurrent()->Global(), 1, event_argv);    
+    NODE_EVENT_CALLBACK->Call(Context::GetCurrent()->Global(), 1, event_argv);
 }
 
 

@@ -663,6 +663,7 @@ function PropAnim(target,name) {
     this._duration = 1000;
     this._loop = 1;
     this._delay = 0;
+    this._autoreverse = 0;
     if(remap[name]) {
         name = remap[name];
     }
@@ -674,6 +675,7 @@ function PropAnim(target,name) {
     this.delay= function(val) {  this._delay = val;       return this;  }
     this.loop = function(val) {  this._loop = val;        return this;  }
     this.then = function(fun) {  this._then_fun = fun;    return this;  }
+    this.autoreverse = function(val) { this._autoreverse = val; return this;  }
 
     this.start = function() {
         var self = this;
@@ -683,6 +685,7 @@ function PropAnim(target,name) {
                 name,
                 self._from,self._to,self._duration);
             exports.native.updateAnimProperty(self.handle, 'count', self._loop);
+            exports.native.updateAnimProperty(self.handle, 'autoreverse', self._autoreverse);
             exports.native.updateAnimProperty(self.handle, 'lerpprop', 17); //17 is cubic in out
             exports.getCore().anims.push(self);
         },this._delay);

@@ -3,6 +3,7 @@
         {
             "target_name":"aminonative",
             "sources":[
+                "src/base.cc",
                 "src/fonts/vector.c",
                 "src/fonts/vertex-buffer.c",
                 "src/fonts/vertex-attribute.c",
@@ -11,7 +12,6 @@
                 "src/fonts/shader.c",
                 "src/fonts/mat4.c",
 
-                "src/base.cc",
                 "src/shaders.cpp",
                 "src/image.cpp",
                 "src/SimpleRenderer.cpp"
@@ -24,14 +24,18 @@
             'conditions': [
                 ['OS=="mac"', {
                     "include_dirs": [
-                        " <!@(freetype-config --cflags)"
+                        " <!@(freetype-config --cflags)",
+                        " <!@(pkg-config --cflags libglfw)",
+                        "/usr/local/Cellar/jpeg/8d/include/",
+                        " <!@(pkg-config --cflags libpng)"
                     ],
                     "libraries": [
-                        "-lglfw",
-                        "-ljpeg",
+                        " <!@(pkg-config --libs libglfw)",
+                        "-L/usr/local/Cellar/jpeg/8d/lib",
                         "-lpng",
                         '-framework OpenGL',
                         '-framework OpenCL',
+                        '-framework IOKit',
                         '<!@(freetype-config --libs)'
                     ],
                     "sources": [
@@ -86,7 +90,7 @@
                     "defines": [
                         "GL_GLEXT_PROTOTYPES",
                         "LINUX"
-		    ],
+                    ],
                     "include_dirs": [
                         "/usr/include/freetype2",
                         '<!@(freetype-config --cflags)'

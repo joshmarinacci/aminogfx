@@ -44,7 +44,6 @@ function mirrorAmino(me,mirrorprops) {
                 return;
             }
 
-            //console.log("update property",obj.handle,native,newval);
             amino.native.updateProperty(obj.handle, native,newval);
         });
         obj['get'+camelize(native)] = function() {
@@ -91,6 +90,7 @@ function Rect() {
         sy:'scaley',
         fill:'fill',
         id:'id',
+        opacity:'opacity',
     });
     this.contains = contains;
 }
@@ -120,6 +120,7 @@ function Text() {
         sy:'scaley',
         fill:'fill',
         text:'text',
+        fontSize:'fontSize',
         id:'id',
     });
     this.font = amino.getCore().defaultFont;
