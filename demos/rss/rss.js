@@ -2,26 +2,61 @@ var amino = require('amino.js');
 var FeedParser = require('feedparser');
 var http = require('http');
 
-parseFeed('http://leoville.tv/podcasts/sn.xml',function(titles) {
+var sw = 1280;
+var sh = 720;
+
+parseFeed('http://www.npr.org/rss/rss.php?id=1001',function(titles) {
     var titles = new CircularBuffer(titles);
     amino.start(function(core, stage) {
         var root = new amino.Group();
-        stage.setSize(1000,500);
+        stage.setSize(sw,sh);
         stage.setRoot(root);
 
-        var text = new amino.Text().x(50).y(200).fill("#ffffff");
-        text.text(titles.next());
-        root.add(text);
+
+        var bg = new amino.Group();
+        root.add(bg);
+
+        var textgroup = new amino.Group();
+        root.add(textgroup);
+
+        var line1 = new amino.Text().x(50).y(200).fill("#ffffff").text('foo').fontSize(80);
+        var line2 = new amino.Text().x(50).y(300).fill("#ffffff").text('bar').fontSize(80);
+        textgroup.add(line1,line2);
 
         function rotateOut() {
-            root.ry.anim().from(0).to(140).dur(1000).then(rotateIn).start();
+            textgroup.ry.anim().delay(5000).from(0).to(140).dur(2000).then(rotateIn).start();
         }
         function rotateIn() {
-            text.text(titles.next());
-            root.ry.anim().from(220).to(360).dur(1000).then(rotateOut).start();
+            setHeadlines(titles.next(),line1,line2);
+            textgroup.ry.anim().from(220).to(360).dur(2000).then(rotateOut).start();
+        }
+        function setHeadlines(headline,t1,t2) {
+            var max = 34;
+            if(headline.length > max) {
+                t1.text(headline.substring(0,max));
+                t2.text(headline.substring(max));
+            } else {
+                t1.text(headline);
+                t2.text('');
+            }
         }
 
-        rotateOut();
+        rotateIn();
+
+
+        //three rects that fill the screen: red, green, blue.  50% translucent
+        var rect1 = new amino.Rect().w(sw).h(sh).opacity(0.5).fill("#ff0000");
+        var rect2 = new amino.Rect().w(sw).h(sh).opacity(0.5).fill("#00ff00");
+        var rect3 = new amino.Rect().w(sw).h(sh).opacity(0.5).fill("#0000ff");
+        bg.add(rect1,rect2,rect3);
+
+        //animate the back two rects
+        rect1.x(-1000);
+        rect2.x(-1000);
+        rect1.x.anim().from(-1000).to(1000).dur(5000)
+            .loop(-1).autoreverse(1).start();
+        rect2.x.anim().from(-1000).to(1000).dur(3000)
+            .loop(-1).autoreverse(1).delay(5000).start();
 
     });
 });
