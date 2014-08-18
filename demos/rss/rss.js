@@ -54,9 +54,9 @@ parseFeed('http://www.npr.org/rss/rss.php?id=1001',function(titles) {
         rect1.x(-1000);
         rect2.x(-1000);
         rect1.x.anim().from(-1000).to(1000).dur(5000)
-            .loop(-1).autoreverse(1).start();
+            .loop(-1).autoreverse(true).start();
         rect2.x.anim().from(-1000).to(1000).dur(3000)
-            .loop(-1).autoreverse(1).delay(5000).start();
+            .loop(-1).autoreverse(true).delay(5000).start();
 
     });
 });

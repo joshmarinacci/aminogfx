@@ -142,12 +142,24 @@ function JSFont(desc) {
     }
     process.chdir(dir);
 
+
     this.getNative = function(size, weight, style) {
         if(this.weights[weight] != undefined) {
             return this.weights[weight];
         }
         console.log("ERROR. COULDN'T find the native for " + size + " " + weight + " " + style);
         return this.weights[400];
+    }
+
+    /** @func calcStringWidth(string, size)  returns the width of the specified string rendered at the specified size */
+    this.calcStringWidth = function(str, size, weight, style) {
+        return exports.sgtest.getCharWidth(str,size,this.getNative(size,weight,style));
+    }
+    this.getHeight = function(size, weight, style) {
+        if(size == undefined) {
+            throw new Error("SIZE IS UNDEFINED");
+        }
+        return exports.sgtest.getFontHeight(size, this.getNative(size, weight, style));
     }
 }
 
@@ -675,7 +687,7 @@ function PropAnim(target,name) {
     this.delay= function(val) {  this._delay = val;       return this;  }
     this.loop = function(val) {  this._loop = val;        return this;  }
     this.then = function(fun) {  this._then_fun = fun;    return this;  }
-    this.autoreverse = function(val) { this._autoreverse = val; return this;  }
+    this.autoreverse = function(val) { this._autoreverse = val?1:0; return this;  }
 
     this.start = function() {
         var self = this;

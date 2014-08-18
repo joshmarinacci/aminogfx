@@ -27,7 +27,6 @@ function mirrorAmino(me,mirrorprops) {
         obj[old].watch(function(newval,oldval){
             if(native == 'fill') {
                 var color = ParseRGBString(newval);
-                //console.log('converting',color);
                 amino.native.updateProperty(obj.handle,'r',color.r);
                 amino.native.updateProperty(obj.handle,'g',color.g);
                 amino.native.updateProperty(obj.handle,'b',color.b);
@@ -125,14 +124,14 @@ function Text() {
     });
     this.font = amino.getCore().defaultFont;
     this.updateFont = function() {
-        var id = this.font.getNative(20, 400, 'normal');
+        var id = this.font.getNative(this.fontSize(), this.fontWeight(), 'normal');
         amino.native.updateProperty(this.handle, 'fontId', id);
     }
     this.calcWidth = function() {
-        return this.font.calcStringWidth(this.text(), 20, 400, 'normal');
+        return this.font.calcStringWidth(this.text(), this.fontSize(), this.fontWeight(), 'normal');
     }
     this.calcHeight = function() {
-        return this.font.getHeight(20, 400, 'normal');
+        return this.font.getHeight(this.fontSize(), this.fontWeight(), 'normal');
     }
     this.updateFont();
 }
