@@ -248,6 +248,9 @@ function Group() {
         return this;
     }
     this.clear = function() {
+        for(var i=0; i<this.children.length; i++) {
+            amino.native.removeNodeFromGroup(this.children[i].handle,this.handle);
+        }
         this.children = [];
         return this;
     }
