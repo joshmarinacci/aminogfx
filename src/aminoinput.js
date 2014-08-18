@@ -370,11 +370,12 @@ input.processOneEvent = function(core,e) {
         }
         if(core.keyfocus) {
             event.target = core.keyfocus;
-            repeatTimeout = setTimeout(repeatKey,300)
-            repeatEvent = event;
-            //console.log("firing",event,"at",core.keyfocus);
-            core.fireEventAtTarget(core.keyfocus,event);
+        } else {
+            event.target = core;
         }
+        repeatTimeout = setTimeout(repeatKey,300)
+        repeatEvent = event;
+        core.fireEventAtTarget(event.target,event);
     }
     /**
     @class keyrelease
