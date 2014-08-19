@@ -122,10 +122,11 @@ function Text() {
         fontSize:'fontSize',
         id:'id',
     });
-    this.font = amino.getCore().defaultFont;
     this.updateFont = function() {
-        var id = this.font.getNative(this.fontSize(), this.fontWeight(), 'normal');
-        amino.native.updateProperty(this.handle, 'fontId', id);
+        if(this.font) {
+            var id = this.font.getNative(this.fontSize(), this.fontWeight(), 'normal');
+            amino.native.updateProperty(this.handle, 'fontId', id);
+        }
     }
     this.calcWidth = function() {
         return this.font.calcStringWidth(this.text(), this.fontSize(), this.fontWeight(), 'normal');
@@ -133,7 +134,10 @@ function Text() {
     this.calcHeight = function() {
         return this.font.getHeight(this.fontSize(), this.fontWeight(), 'normal');
     }
-    this.updateFont();
+    if(amino.getCore()) {
+        this.font = amino.getCore().defaultFont;
+        this.updateFont();
+    }
 }
 
 
