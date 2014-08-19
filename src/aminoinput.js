@@ -224,7 +224,7 @@ input.processOneEvent = function(core,e) {
 
     var repeatKey = function() {
         if(repeatEvent) {
-            core.fireEventAtTarget(core.keyfocus,repeatEvent);
+            core.fireEventAtTarget(repeatEvent.target,repeatEvent);
             repeatTimeout = setTimeout(repeatKey, 20);
         }
     }
