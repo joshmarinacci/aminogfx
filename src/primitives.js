@@ -122,10 +122,12 @@ function Text() {
         fontSize:'fontSize',
         id:'id',
     });
+    var self = this;
     this.updateFont = function() {
-        if(this.font) {
-            var id = this.font.getNative(this.fontSize(), this.fontWeight(), 'normal');
-            amino.native.updateProperty(this.handle, 'fontId', id);
+        self.font = amino.native.getFont(self.fontName());
+        if(self.font) {
+            var id = self.font.getNative(self.fontSize(), self.fontWeight(), 'normal');
+            amino.native.updateProperty(self.handle, 'fontId', id);
         }
     }
     this.calcWidth = function() {
@@ -138,6 +140,9 @@ function Text() {
         this.font = amino.getCore().defaultFont;
         this.updateFont();
     }
+    this.fontName.watch(this.updateFont);
+    this.fontWeight.watch(this.updateFont);
+    this.fontSize.watch(this.updateFont);
 }
 
 

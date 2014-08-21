@@ -1,4 +1,5 @@
 exports.sgtest = require('./aminonative.node');
+var fs = require('fs');
 var input = require('aminoinput');
 var prims = require('./primitives');
 
@@ -26,6 +27,7 @@ d("OS is " + OS)
 var fontmap = {};
 var defaultFonts = {
     'source': {
+        name:'source',
         weights: {
             200: {
                 normal: "SourceSansPro-ExtraLight.ttf",
@@ -55,6 +57,7 @@ var defaultFonts = {
         }
     },
     'awesome': {
+        name:'awesome',
         weights: {
             400: {
                 normal: "fontawesome-webfont.ttf",
@@ -62,20 +65,11 @@ var defaultFonts = {
         }
     },
 }
-var validFontSizes = {10:10,15:15,20:20,30:30,40:40,80:80};
-
-function validateFontSize(fs) {
-    if(validFontSizes[fs] == undefined) {
-        console.log("WARNING.  invalid font size: " + fs);
-        return 15;
-    }
-    return fs;
-}
 
 var propertyCount = 0;
 
-exports.registerFont = function(name, font) {
-    fontmap[name] = new JSFont(font);
+exports.registerFont = function(args) {
+    fontmap[args.name] = new JSFont(args);
 }
 
 
@@ -130,15 +124,23 @@ exports.makeProps = ou.makeProps;
 exports.makeProp = ou.makeProp;
 
 function JSFont(desc) {
+    this.name = desc.name;
     var reg = desc.weights[400];
     this.desc = desc;
     this.weights = {};
 
     var dir = process.cwd();
     process.chdir(__dirname); // chdir such that fonts (and internal shaders) may be found
-    var aminodir = process.cwd();
+    var aminodir = __dirname+'/fonts/';
+    if(desc.path) {
+        aminodir = desc.path;
+    }
     for(var weight in desc.weights) {
-        this.weights[weight] = exports.native.createNativeFont(aminodir+"/fonts/"+desc.weights[weight].normal);
+        var filepath = aminodir+desc.weights[weight].normal;
+        if(!fs.existsSync(filepath)) {
+            console.log("WARNING. File not found",filepath);
+        }
+        this.weights[weight] = exports.native.createNativeFont(filepath);
     }
     process.chdir(dir);
 
@@ -165,7 +167,6 @@ function JSFont(desc) {
 
 exports.native = {
     createNativeFont: function(path) {
-        //console.log('creating native font ' + path);
         return exports.sgtest.createNativeFont(path);
     },
     init: function(core) {

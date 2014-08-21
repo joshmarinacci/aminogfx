@@ -457,12 +457,10 @@ public:
             if(property == R) textnode->r = value;
             if(property == G) textnode->g = value;
             if(property == B) textnode->b = value;
-            if(property == TEXT_PROP) {
-                textnode->text = text;
-                textnode->refreshText();
-            }
+            if(property == TEXT_PROP) textnode->text = text;
             if(property == FONTSIZE_PROP) textnode->fontsize = value;
             if(property == FONTID_PROP) textnode->fontid = value;
+            textnode->refreshText();
         }
 
         if(target->type == POLY) {
@@ -724,6 +722,7 @@ typedef struct {
     float r, g, b, a; // color
 } vertex_t;
 
+
 inline static Handle<Value> getFontHeight(const Arguments& args) {
     HandleScope scope;
     int fontsize   = args[0]->ToNumber()->NumberValue();
@@ -764,7 +763,6 @@ inline static Handle<Value> getCharWidth(const Arguments& args) {
     return scope.Close(num);
 }
 
-
 inline static Handle<Value> createNativeFont(const Arguments& args) {
     HandleScope scope;
 
@@ -772,27 +770,13 @@ inline static Handle<Value> createNativeFont(const Arguments& args) {
     int id = fontmap.size();
     fontmap[id] = afont;
 
-    const char * filename = TO_CHAR(args[0]);
-    printf("loading font file %s\n",filename);
+    afont->filename = TO_CHAR(args[0]);
+    printf("loading font file %s\n",afont->filename);
 
 
-    size_t i;
     afont->atlas = texture_atlas_new(512,512,1);
-    wchar_t *text = L"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    //make a single font
-
-    texture_font_t *font;
-    //preload some standard font sizes: 10, 12, 15, 20, 30, 40, 80
-    int fontsizes[] = {10,12,15,20,30,40,80};
-    for(int n = 0; n<7; n++) {
-        int fsize = fontsizes[n];
-        afont->fonts[fsize] = texture_font_new(afont->atlas, filename, fsize);
-    }
-    printf("compiling the freetype gl shader\n");
     afont->shader = shader_load("shaders/v3f-t2f-c4f.vert",
                          "shaders/v3f-t2f-c4f.frag");
-    //texture_font_delete(afont->font);
-
     Local<Number> num = Number::New(id);
     return scope.Close(num);
 }

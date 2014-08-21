@@ -12,7 +12,7 @@
 static double getTime(void) {
     timeval time;
     gettimeofday(&time, NULL);
-    double millis = (time.tv_sec * 1000.0) + (time.tv_usec / 1000.0);    
+    double millis = (time.tv_sec * 1000.0) + (time.tv_usec / 1000.0);
     return millis;
 }
 
@@ -39,7 +39,7 @@ static double getTime(void) {
 static double getTime(void) {
     timeval time;
     gettimeofday(&time, NULL);
-    double millis = (time.tv_sec * 1000.0) + (time.tv_usec / 1000.0);    
+    double millis = (time.tv_sec * 1000.0) + (time.tv_usec / 1000.0);
     return millis;
 }
 #endif
@@ -63,6 +63,7 @@ public:
     int id;
     texture_atlas_t *atlas;
     std::map<int,texture_font_t*> fonts;
+    const char* filename;
     GLuint shader;
     GLint texuni;
     GLint mvpuni;
