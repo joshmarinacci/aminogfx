@@ -3,6 +3,7 @@ var input = exports;
 
 var keyState = {
     shift:false,
+    control:false,
 };
 
 
@@ -24,7 +25,10 @@ input.KEY_MAP = {
     ENTER:         294,
     //mac
     LEFT_SHIFT:    287,
-    RIGHT_SHIFT:    288,
+    RIGHT_SHIFT:   288,
+    LEFT_CONTROL:  289,
+    LEFT_META:     323,
+    RIGHT_META:    324,
 }
 
 var KEY_TO_CHAR_MAP = {};
@@ -108,7 +112,6 @@ function mapNativeButton(e) {
     if(input.OS != "RPI") return;
 }
 function mapNativeKey(e) {
-
     if(e.keycode == input.KEY_MAP.LEFT_SHIFT || e.keycode == input.KEY_MAP.RIGHT_SHIFT) {
         if(e.type == "keypress") {
             keyState.shift = true;
@@ -117,6 +120,24 @@ function mapNativeKey(e) {
             keyState.shift = false;
         }
     }
+    if(e.keycode == input.KEY_MAP.LEFT_CONTROL) {
+        if(e.type == 'keypress') {
+            keyState.control = true;
+        }
+        if(e.type == "keyrelease") {
+            keyState.control = false;
+        }
+    }
+    if(e.keycode == input.KEY_MAP.LEFT_META) {
+        if(e.type == 'keypress') {
+            keyState.system = true;
+        }
+        if(e.type == "keyrelease") {
+            keyState.system = false;
+        }
+    }
+
+
     if(input.OS != "RPI") return;
 
     //left and right control
@@ -348,9 +369,9 @@ input.processOneEvent = function(core,e) {
         }
         event.keycode = e.keycode;
         event.shift   = keyState.shift;
-        event.system  = (e.system == 1);
+        event.system  = keyState.system;//(e.system == 1);
         event.alt     = (e.alt == 1);
-        event.control = (e.control == 1);
+        event.control = keyState.control; //(e.control == 1);
         event.printable = false;
         event.printableChar = 0;
         if(KEY_TO_CHAR_MAP[e.keycode]) {
