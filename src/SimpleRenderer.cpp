@@ -11,23 +11,23 @@ void SimpleRenderer::startRender(AminoNode* root) {
 //    printf("shader count = %d\n",c->shadercount);
 //    printf("shader dupe count = %d\n",c->shaderDupCount);
 //    printf("texture dupe count = %d\n",c->texDupCount);
-    
+
 }
 void SimpleRenderer::render(GLContext* c, AminoNode* root) {
     if(root == NULL) {
         printf("WARNING. NULL NODE!\n");
         return;
     }
-    
-    
+
+
     //skip non-visible nodes
     if(root->visible != 1) return;
-    
+
     c->save();
     c->translate(root->tx,root->ty);
     c->scale(root->scalex,root->scaley);
     c->rotate(root->rotatex,root->rotatey,root->rotatez);
-    
+
     switch(root->type) {
     case GROUP:
         this->drawGroup(c,(Group*)root);
@@ -45,17 +45,17 @@ void SimpleRenderer::render(GLContext* c, AminoNode* root) {
         this->drawGLNode(c, (GLNode*)root);
         break;
     }
-    
-    
+
+
     c->restore();
-}        
+}
 
 void colorShaderApply(GLContext *ctx, ColorShader* shader, GLfloat modelView[16], GLfloat verts[][2], GLfloat colors[][3], GLfloat opacity) {
     ctx->useProgram(shader->prog);
     glUniformMatrix4fv(shader->u_matrix, 1, GL_FALSE, modelView);
     glUniformMatrix4fv(shader->u_trans,  1, GL_FALSE, ctx->globaltx);
     glUniform1f(shader->u_opacity, opacity);
-    
+
     if(opacity != 1.0) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -65,9 +65,9 @@ void colorShaderApply(GLContext *ctx, ColorShader* shader, GLfloat modelView[16]
     glVertexAttribPointer(shader->attr_color, 3, GL_FLOAT, GL_FALSE, 0, colors);
     glEnableVertexAttribArray(shader->attr_pos);
     glEnableVertexAttribArray(shader->attr_color);
-    
+
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    
+
     glDisableVertexAttribArray(shader->attr_pos);
     glDisableVertexAttribArray(shader->attr_color);
 }
@@ -80,11 +80,11 @@ void textureShaderApply(GLContext *ctx, TextureShader* shader, GLfloat modelView
     ctx->useProgram(shader->prog);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
     glUniformMatrix4fv(shader->u_matrix, 1, GL_FALSE, modelView);
     glUniformMatrix4fv(shader->u_trans,  1, GL_FALSE, ctx->globaltx);
     glUniform1i(shader->attr_tex, 0);
-    
+
 
     glVertexAttribPointer(shader->attr_texcoords, 2, GL_FLOAT, GL_FALSE, 0, texcoords);
     glEnableVertexAttribArray(shader->attr_texcoords);
@@ -92,11 +92,11 @@ void textureShaderApply(GLContext *ctx, TextureShader* shader, GLfloat modelView
     glVertexAttribPointer(shader->attr_pos,   2, GL_FLOAT, GL_FALSE, 0, verts);
     glEnableVertexAttribArray(shader->attr_pos);
     glActiveTexture(GL_TEXTURE0);
-    
+
     ctx->bindTexture(texid );
     //glBindTexture(GL_TEXTURE_2D, texid);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    
+
     glDisableVertexAttribArray(shader->attr_pos);
     glDisableVertexAttribArray(shader->attr_texcoords);
     glDisable(GL_BLEND);
@@ -108,7 +108,7 @@ void SimpleRenderer::drawGroup(GLContext* c, Group* group) {
         glDepthMask(GL_FALSE);
         glEnable(GL_STENCIL_TEST);
         //clear the buffers
-        
+
         //setup the stencil
         glStencilFunc(GL_ALWAYS, 0x1, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -116,7 +116,7 @@ void SimpleRenderer::drawGroup(GLContext* c, Group* group) {
         glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
         glDepthMask( GL_FALSE );
         glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+
         //draw the stencil
         float x = 0;
         float y = 0;
@@ -129,7 +129,7 @@ void SimpleRenderer::drawGroup(GLContext* c, Group* group) {
         verts[1][1] = y;
         verts[2][0] = x2;
         verts[2][1] = y2;
-        
+
         verts[3][0] = x2;
         verts[3][1] = y2;
         verts[4][0] = x;
@@ -143,15 +143,15 @@ void SimpleRenderer::drawGroup(GLContext* c, Group* group) {
             }
         }
         colorShaderApply(c,colorShader, modelView, verts, colors, 1.0);
-    
+
         //set function to draw pixels where the buffer is equal to 1
         glStencilFunc(GL_EQUAL, 0x1, 0xFF);
         glStencilMask(0x00);
         //turn color buffer drawing back on
         glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-        
+
     }
-    for(int i=0; i<group->children.size(); i++) {
+    for(std::size_t i=0; i<group->children.size(); i++) {
         this->render(c,group->children[i]);
     }
     if(group->cliprect == 1) {
@@ -178,12 +178,12 @@ void SimpleRenderer::drawPoly(GLContext* ctx, PolyNode* poly) {
         colors[i][1] = poly->g;
         colors[i][2] = poly->b;
     }
-    
+
     ctx->useProgram(colorShader->prog);
     glUniformMatrix4fv(colorShader->u_matrix, 1, GL_FALSE, modelView);
     glUniformMatrix4fv(colorShader->u_trans,  1, GL_FALSE, ctx->globaltx);
     glUniform1f(colorShader->u_opacity, poly->opacity);
-    
+
     if(poly->opacity != 1.0) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -198,13 +198,13 @@ void SimpleRenderer::drawPoly(GLContext* ctx, PolyNode* poly) {
     glVertexAttribPointer(colorShader->attr_color, 3, GL_FLOAT, GL_FALSE, 0, colors);
     glEnableVertexAttribArray(colorShader->attr_pos);
     glEnableVertexAttribArray(colorShader->attr_color);
-    
+
     if(poly->filled == 1) {
         glDrawArrays(GL_TRIANGLE_FAN, 0, len/dim);
     } else {
         glDrawArrays(GL_LINE_LOOP, 0, len/dim);
     }
-    
+
     glDisableVertexAttribArray(colorShader->attr_pos);
     glDisableVertexAttribArray(colorShader->attr_color);
 }
@@ -214,7 +214,7 @@ void SimpleRenderer::drawRect(GLContext* c, Rect* rect) {
     float y =  rect->y;
     float x2 = rect->x+rect->w;
     float y2 = rect->y+rect->h;
-        
+
     GLfloat verts[6][2];
     verts[0][0] = x;
     verts[0][1] = y;
@@ -222,16 +222,16 @@ void SimpleRenderer::drawRect(GLContext* c, Rect* rect) {
     verts[1][1] = y;
     verts[2][0] = x2;
     verts[2][1] = y2;
-    
+
     verts[3][0] = x2;
     verts[3][1] = y2;
     verts[4][0] = x;
     verts[4][1] = y2;
     verts[5][0] = x;
     verts[5][1] = y;
-        
+
     GLfloat colors[6][3];
-    
+
     for(int i=0; i<6; i++) {
         for(int j=0; j<3; j++) {
             colors[i][j] = 0.5;
@@ -240,7 +240,7 @@ void SimpleRenderer::drawRect(GLContext* c, Rect* rect) {
             if(j==2) colors[i][j] = rect->b;
         }
     }
-        
+
     if(rect->texid != INVALID) {
         GLfloat texcoords[6][2];
         float tx  = rect->left;
@@ -250,7 +250,7 @@ void SimpleRenderer::drawRect(GLContext* c, Rect* rect) {
         texcoords[0][0] = tx;    texcoords[0][1] = ty;
         texcoords[1][0] = tx2;   texcoords[1][1] = ty;
         texcoords[2][0] = tx2;   texcoords[2][1] = ty2;
-        
+
         texcoords[3][0] = tx2;   texcoords[3][1] = ty2;
         texcoords[4][0] = tx;    texcoords[4][1] = ty2;
         texcoords[5][0] = tx;    texcoords[5][1] = ty;
@@ -267,8 +267,8 @@ void SimpleRenderer::drawText(GLContext* c, TextNode* text) {
     if(fontmap.size() < 1) return;
     if(text->fontid == INVALID) return;
     AminoFont* font = fontmap[text->fontid];
-    
-    
+
+
     c->save();
     //flip the y axis
     c->scale(1,-1);
@@ -348,7 +348,7 @@ Handle<Value> node_glBufferData(const Arguments& args) {
   int type   = args[0]->ToNumber()->NumberValue();
   Handle<Array> array = Handle<Array>::Cast(args[1]);
   float* verts = new float[array->Length()];
-  for(int i=0; i<array->Length(); i++) {
+  for(std::size_t i=0; i<array->Length(); i++) {
       verts[i] = array->Get(i)->ToNumber()->NumberValue();
   }
   int kind = args[2]->ToNumber()->NumberValue();
@@ -423,7 +423,7 @@ Handle<Value> node_glTexParameteri(const Arguments& args) {
     int type     = args[0]->ToNumber()->NumberValue();
     int param    = args[1]->ToNumber()->NumberValue();
     int value    = args[2]->ToNumber()->NumberValue();
-    glTexParameteri(type, param, value);            
+    glTexParameteri(type, param, value);
     return scope.Close(Undefined());
 }
 
@@ -434,7 +434,7 @@ Handle<Value> node_glFramebufferTexture2D(const Arguments& args) {
     int type2    = args[2]->ToNumber()->NumberValue();
     int value    = args[3]->ToNumber()->NumberValue();
     int other    = args[4]->ToNumber()->NumberValue();
-    glFramebufferTexture2D(type, attach, type2, value, other);            
+    glFramebufferTexture2D(type, attach, type2, value, other);
     return scope.Close(Undefined());
 }
 
@@ -447,7 +447,7 @@ Handle<Value> node_glReadPixels(const Arguments& args) {
     int h     = args[3]->ToNumber()->NumberValue();
     int format= args[4]->ToNumber()->NumberValue();
     int type  = args[5]->ToNumber()->NumberValue();
-    
+
     int length = w*h*3;
     char* data = (char*)malloc(length);
     glReadPixels(x,y,w,h, format, type, data);
@@ -491,7 +491,7 @@ Handle<Value> node_glGetShaderiv(const Arguments& args) {
   int flag   = args[1]->ToNumber()->NumberValue();
   GLint status;
   glGetShaderiv(shader,flag,&status);
-  return scope.Close(Number::New(status));  
+  return scope.Close(Number::New(status));
 }
 Handle<Value> node_glGetProgramiv(const Arguments& args) {
   HandleScope scope;
@@ -499,7 +499,7 @@ Handle<Value> node_glGetProgramiv(const Arguments& args) {
   int flag   = args[1]->ToNumber()->NumberValue();
   GLint status;
   glGetProgramiv(prog,flag,&status);
-  return scope.Close(Number::New(status));  
+  return scope.Close(Number::New(status));
 }
 Handle<Value> node_glGetShaderInfoLog(const Arguments& args) {
   HandleScope scope;
@@ -689,7 +689,7 @@ void SimpleRenderer::drawGLNode(GLContext* ctx, GLNode* glnode) {
     event_obj->Set(String::NewSymbol("GL_TRIANGLE_FAN"), Number::New(GL_TRIANGLE_FAN));
     event_obj->Set(String::NewSymbol("GL_TRIANGLE_STRIP"), Number::New(GL_TRIANGLE_STRIP));
     event_obj->Set(String::NewSymbol("GL_TRIANGLES"), Number::New(GL_TRIANGLES));
-    
+
     event_obj->Set(String::NewSymbol("GL_NO_ERROR"), Number::New(GL_NO_ERROR));
     event_obj->Set(String::NewSymbol("GL_INVALID_ENUM"), Number::New(GL_INVALID_ENUM));
     event_obj->Set(String::NewSymbol("GL_INVALID_VALUE"), Number::New(GL_INVALID_VALUE));
@@ -741,7 +741,7 @@ void SimpleRenderer::drawGLNode(GLContext* ctx, GLNode* glnode) {
     event_obj->Set(String::NewSymbol("GL_ONE"), Number::New(GL_ONE));
     event_obj->Set(String::NewSymbol("GL_ZERO"), Number::New(GL_ZERO));
     event_obj->Set(String::NewSymbol("glDrawArrays"), FunctionTemplate::New(node_glDrawArrays)->GetFunction());
-    
+
     event_obj->Set(String::NewSymbol("glGenFramebuffers"), FunctionTemplate::New(node_glGenFramebuffers)->GetFunction());
     event_obj->Set(String::NewSymbol("glBindFramebuffer"), FunctionTemplate::New(node_glBindFramebuffer)->GetFunction());
     event_obj->Set(String::NewSymbol("glCheckFramebufferStatus"), FunctionTemplate::New(node_glCheckFramebufferStatus)->GetFunction());
@@ -756,10 +756,9 @@ void SimpleRenderer::drawGLNode(GLContext* ctx, GLNode* glnode) {
 
     event_obj->Set(String::NewSymbol("setModelView"), FunctionTemplate::New(node_setModelView)->GetFunction());
     event_obj->Set(String::NewSymbol("setGlobalTransform"), FunctionTemplate::New(node_setGlobalTransform)->GetFunction());
-    
+
     Handle<Value> event_argv[] = {event_obj};
     glnode->callback->Call(Context::GetCurrent()->Global(),1,event_argv);
-    
-    
-}
 
+
+}

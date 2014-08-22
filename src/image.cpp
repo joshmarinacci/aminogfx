@@ -71,7 +71,7 @@ Image * pngfile_to_bytes(char* file_name) {
     int bit_depth;
     int color_type;
     int interlace_type;
-    int i;
+    png_uint_32 i;
 
     FILE *fp = fopen(file_name, "rb");
     if (!fp) {

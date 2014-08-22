@@ -568,7 +568,7 @@ static std::wstring GetWString(v8::Handle<v8::String> str) {
 static std::vector<float>* GetFloatArray(v8::Handle<v8::Array> obj) {
     Handle<Array>  oarray = Handle<Array>::Cast(obj);
     std::vector<float>* carray = new std::vector<float>();
-    for(int i=0; i<oarray->Length(); i++) {
+    for(std::size_t i=0; i<oarray->Length(); i++) {
         carray->push_back((float)(oarray->Get(i)->ToNumber()->NumberValue()));
     }
     return carray;
@@ -629,7 +629,7 @@ inline Handle<Value> removeNodeFromGroup(const Arguments& args) {
     Group* group = (Group*)rects[groupHandle];
     AminoNode* node = rects[rectHandle];
     int n = -1;
-    for(int i=0; i<group->children.size(); i++) {
+    for(std::size_t i=0; i<group->children.size(); i++) {
         if(group->children[i] == node) {
             n = i;
         }
@@ -744,7 +744,7 @@ inline static Handle<Value> getCharWidth(const Arguments& args) {
 
     std::map<int,texture_font_t*>::iterator it = font->fonts.find(fontsize);
     if(it == font->fonts.end()) {
-        printf("Font is missing glyphs for size %d",fontsize);
+        printf("Font is missing glyphs for size %d\n",fontsize);
         printf("loading size %d for font %s\n",fontsize,font->filename);
         font->fonts[fontsize] = texture_font_new(font->atlas, font->filename, fontsize);
     }
@@ -754,7 +754,7 @@ inline static Handle<Value> getCharWidth(const Arguments& args) {
 
     int w = 0;
     //length seems to include the null string
-    for(int i=0; i<wstr.length(); i++) {
+    for(std::size_t i=0; i<wstr.length(); i++) {
         wchar_t ch  = wstr.c_str()[i];
         //skip null terminators
         if(ch == '\0') continue;

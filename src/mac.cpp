@@ -159,9 +159,9 @@ void render() {
     double postvalidate = getTime();
     de.validatetime = postvalidate-postinput;
 
-    int updatecount = updates.size();
+    //std::size_t updatecount = updates.size();
     //apply processed updates
-    for(int j=0; j<updates.size(); j++) {
+    for(std::size_t j=0; j<updates.size(); j++) {
         updates[j]->apply();
     }
     updates.clear();
@@ -169,7 +169,7 @@ void render() {
     de.updatestime = postupdates-postvalidate;
 
     //apply animations
-    for(int j=0; j<anims.size(); j++) {
+    for(std::size_t j=0; j<anims.size(); j++) {
         anims[j]->update();
     }
     double postanim = getTime();
@@ -258,7 +258,7 @@ Handle<Value> runTest(const Arguments& args) {
     printf("rendering %d times, vsync = %d\n",count,sync);
 
     printf("applying updates first\n");
-    for(int j=0; j<updates.size(); j++) {
+    for(std::size_t j=0; j<updates.size(); j++) {
         updates[j]->apply();
     }
     updates.clear();
