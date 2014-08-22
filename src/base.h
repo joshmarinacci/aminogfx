@@ -740,7 +740,18 @@ inline static Handle<Value> getCharWidth(const Arguments& args) {
     int fontindex  = args[2]->ToNumber()->NumberValue();
 
     AminoFont * font = fontmap[fontindex];
+    assert(font);
+
+    std::map<int,texture_font_t*>::iterator it = font->fonts.find(fontsize);
+    if(it == font->fonts.end()) {
+        printf("Font is missing glyphs for size %d",fontsize);
+        printf("loading size %d for font %s\n",fontsize,font->filename);
+        font->fonts[fontsize] = texture_font_new(font->atlas, font->filename, fontsize);
+    }
+
     texture_font_t *tf = font->fonts[fontsize];
+    assert( tf );
+
     int w = 0;
     //length seems to include the null string
     for(int i=0; i<wstr.length(); i++) {
