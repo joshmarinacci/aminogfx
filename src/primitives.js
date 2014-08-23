@@ -42,28 +42,21 @@ function setfilled(val, prop, obj) {
     amino.native.updateProperty(obj.handle,'filled', val?1:0);
 }
 
+var setters = [];
+['tx','ty','w','h','scalex','scaley','id',
+    'opacity','text','fontSize',
+    'rotateX','rotateY','rotateZ']
+.forEach(function(name) {
+    setters[name] = function(val,prop,obj) {
+        amino.native.updateProperty(obj.handle,name,val);
+    }
+});
+setters['fill'] = setfill;
+setters['visible'] = setvisible;
+setters['filled'] = setfilled;
 
 function mirrorProp(obj,old,native) {
-    if(native == 'fill') {
-        obj[old].prop.watch(setfill);
-        return;
-    }
-    if(native == 'visible') {
-        obj[old].prop.watch(setvisible);
-        return;
-    }
-    if(native == 'filled') {
-        obj[old].prop.watch(setfilled);
-        return;
-    }
-    obj[old].prop.watch(function(val,prop,obj){
-        amino.native.updateProperty(obj.handle, native,val);
-    });
-    /*
-    obj['get'+camelize(native)] = function() {
-        return obj[old]();
-    }
-    */
+    obj[old].prop.watch(setters[native]);
 }
 
 function contains(x,y) {
@@ -106,7 +99,6 @@ function Rect() {
 }
 
 function Text() {
-
     amino.makeProps(this,{
         id: 'unknown id',
         visible:true,
