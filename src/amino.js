@@ -72,7 +72,27 @@ exports.registerFont = function(args) {
     fontmap[args.name] = new JSFont(args);
 }
 
+exports.SETCOUNT = 0;
 
+var PropProto = {
+    get: function(v) {
+        return this.value;
+    },
+    set: function(v,obj) {
+        exports.SETCOUNT++;
+        this.value = v;
+        for(var i=0; i<this.listeners.length; i++) {
+            this.listeners[i](this.value,this,obj);
+        }
+        return obj;
+    },
+    watch: function(fun) {
+        this.listeners.push(function(v,v2,v3) {
+            fun(v,v2,v3);
+        });
+        return this;
+    },
+}
 var ou = {
     makeProps: function(obj,props) {
         for(var name in props) {
@@ -80,48 +100,25 @@ var ou = {
         }
     },
     makeProp:function (obj,name,val) {
+        var prop = Object.create(PropProto);
+        prop.value = val;
+        prop.listeners = [];
         obj[name] = function(v) {
             if(v != undefined) {
-                return obj[name].set(v);
+                return prop.set(v,obj);
             } else {
-                return obj[name].get();
+                return prop.get();
             }
         }
-        obj[name].listeners = [];
-        obj[name].value = val;
-        obj[name].set = function(v) {
-            this.value = v;
-            for(var i=0; i<this.listeners.length; i++) {
-                this.listeners[i](this.value,this,obj);
-            }
-            return obj;
-        }
-        obj[name].get = function(v) {
-            return this.value;
-        }
-        obj[name].watch = function(fun) {
-            this.listeners.push(function(v,v2,v3) {
-                fun(v,v2,v3);
-            });
-            return this;
-        }
-        obj[name].anim = function() {
-            return new PropAnim(obj,name);
-        }
-        obj[name].pname = name;
-        obj[name].bindto = function(prop, fun) {
-            var set = this;
-            prop.listeners.push(function(v) {
-                if(fun) set(fun(v));
-                    else set(v);
-            });
-            return this;
-        }
+        obj[name].prop = prop;
     }
 }
 
 exports.makeProps = ou.makeProps;
 exports.makeProp = ou.makeProp;
+
+exports.GETCHARWIDTHCOUNT=0;
+exports.GETCHARHEIGHTCOUNT=0;
 
 function JSFont(desc) {
     this.name = desc.name;
@@ -155,9 +152,11 @@ function JSFont(desc) {
 
     /** @func calcStringWidth(string, size)  returns the width of the specified string rendered at the specified size */
     this.calcStringWidth = function(str, size, weight, style) {
+        exports.GETCHARWIDTHCOUNT++;
         return exports.sgtest.getCharWidth(str,size,this.getNative(size,weight,style));
     }
     this.getHeight = function(size, weight, style) {
+        exports.GETCHARHEIGHTCOUNT++;
         if(size == undefined) {
             throw new Error("SIZE IS UNDEFINED");
         }
@@ -501,12 +500,12 @@ function Core() {
         //console.log(tab +
         //    (root.getId?root.getId():"-") + " " + root.getTx() + " " + root.getTy() + " "
         //    + (root.getW?root.getW():"-") + " x " + (root.getH?root.getH():"-"));
-        if(!root.getVisible()) return null;
+        if(!root.visible()) return null;
 
-        var tx = x-root.getTx();
-        var ty = y-root.getTy();
-        tx = tx/root.getScalex();
-        ty = ty/root.getScaley();
+        var tx = x-root.x();
+        var ty = y-root.y();
+        tx = tx/root.sx();
+        ty = ty/root.sy();
         //console.log(tab + "   xy="+tx+","+ty);
         if(root.children) {
             //console.log(tab+"children = ",root.children.length);

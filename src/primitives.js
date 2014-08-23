@@ -1,58 +1,69 @@
 var amino = require('amino.js');
+/*
+function camelize(s) {
+	return s.substring(0,1).toUpperCase() + s.substring(1);
+}
+*/
+function ParseRGBString(Fill) {
+    if(typeof Fill == "string") {
+        //strip off any leading #
+        if(Fill.substring(0,1) == "#") {
+            Fill = Fill.substring(1);
+        }
+        //pull out the components
+        var r = parseInt(Fill.substring(0,2),16);
+        var g = parseInt(Fill.substring(2,4),16);
+        var b = parseInt(Fill.substring(4,6),16);
+        return {
+            r:r/255,
+            g:g/255,
+            b:b/255
+        };
+    }
+    return Fill;
+}
 
 function mirrorAmino(me,mirrorprops) {
-    function camelize(s) {
-    	return s.substring(0,1).toUpperCase() + s.substring(1);
-    }
-    function ParseRGBString(Fill) {
-        if(typeof Fill == "string") {
-            //strip off any leading #
-            if(Fill.substring(0,1) == "#") {
-                Fill = Fill.substring(1);
-            }
-            //pull out the components
-            var r = parseInt(Fill.substring(0,2),16);
-            var g = parseInt(Fill.substring(2,4),16);
-            var b = parseInt(Fill.substring(4,6),16);
-            return {
-                r:r/255,
-                g:g/255,
-                b:b/255
-            };
-        }
-        return Fill;
-    }
-
-    function mirrorProp(obj,old,native) {
-        obj[old].watch(function(newval,oldval){
-            if(native == 'fill') {
-                var color = ParseRGBString(newval);
-                amino.native.updateProperty(obj.handle,'r',color.r);
-                amino.native.updateProperty(obj.handle,'g',color.g);
-                amino.native.updateProperty(obj.handle,'b',color.b);
-                return;
-            }
-            if(native == 'visible') {
-                //console.log("doing visible prop");
-                amino.native.updateProperty(obj.handle,native, newval?1:0);
-                return;
-            }
-            if(native == 'filled') {
-                //console.log("doing visible prop");
-                amino.native.updateProperty(obj.handle,native, newval?1:0);
-                return;
-            }
-
-            amino.native.updateProperty(obj.handle, native,newval);
-        });
-        obj['get'+camelize(native)] = function() {
-            return obj[old]();
-        }
-    }
-
     for(var name in mirrorprops) {
         mirrorProp(me,name,mirrorprops[name]);
     }
+}
+
+function setfill(val, prop, obj) {
+    var color = ParseRGBString(val);
+    amino.native.updateProperty(obj.handle,'r',color.r);
+    amino.native.updateProperty(obj.handle,'g',color.g);
+    amino.native.updateProperty(obj.handle,'b',color.b);
+}
+function setvisible(val, prop, obj) {
+    amino.native.updateProperty(obj.handle,'visible', val?1:0);
+}
+function setfilled(val, prop, obj) {
+    amino.native.updateProperty(obj.handle,'filled', val?1:0);
+}
+
+
+function mirrorProp(obj,old,native) {
+    if(native == 'fill') {
+        obj[old].prop.watch(setfill);
+        return;
+    }
+    if(native == 'visible') {
+        obj[old].prop.watch(setvisible);
+        return;
+    }
+    if(native == 'filled') {
+        obj[old].prop.watch(setfilled);
+        return;
+    }
+    obj[old].prop.watch(function(val,prop,obj){
+        amino.native.updateProperty(obj.handle, native,val);
+    });
+    /*
+    obj['get'+camelize(native)] = function() {
+        return obj[old]();
+    }
+    */
 }
 
 function contains(x,y) {
@@ -95,6 +106,7 @@ function Rect() {
 }
 
 function Text() {
+
     amino.makeProps(this,{
         id: 'unknown id',
         visible:true,
@@ -123,6 +135,7 @@ function Text() {
         id:'id',
     });
     var self = this;
+
     this.updateFont = function() {
         self.font = amino.native.getFont(self.fontName());
         if(self.font) {
@@ -140,9 +153,9 @@ function Text() {
         this.font = amino.getCore().defaultFont;
         this.updateFont();
     }
-    this.fontName.watch(this.updateFont);
-    this.fontWeight.watch(this.updateFont);
-    this.fontSize.watch(this.updateFont);
+    this.fontName.prop.watch(this.updateFont);
+    this.fontWeight.prop.watch(this.updateFont);
+    this.fontSize.prop.watch(this.updateFont);
 }
 
 
@@ -207,6 +220,7 @@ function ImageView() {
 
 
 function Group() {
+
     amino.makeProps(this, {
         id: 'unknown id',
         visible:true,
@@ -221,6 +235,7 @@ function Group() {
 
     });
 
+
     this.handle = amino.native.createGroup();
     mirrorAmino(this, {
         x:'tx',
@@ -234,10 +249,12 @@ function Group() {
         id:'id',
     });
 
+
     this.children = [];
     this.addSingle = function(node) {
         if(node == undefined) throw new Error("can't add a null child to a group");
         if(node.handle == undefined) throw new Error("the child doesn't have a handle");
+        if(this.handle == undefined) throw new Error("not in the scene yet");
         this.children.push(node);
         node.parent = this;
         amino.native.addNodeToGroup(node.handle,this.handle);
