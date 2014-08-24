@@ -498,7 +498,7 @@ function Core() {
     this.findNodeAtXY_helper = function(root,x,y,tab) {
         if(!root) return null;
         //console.log(tab +
-        //    (root.getId?root.getId():"-") + " " + root.getTx() + " " + root.getTy() + " "
+        //    (root.getId?root.getId():"-") + " " + root.x() + " " + root.y() + " "
         //    + (root.getW?root.getW():"-") + " x " + (root.getH?root.getH():"-"));
         if(!root.visible()) return null;
 
@@ -528,14 +528,14 @@ function Core() {
         if(node.parent) {
             var trans = calcGlobalToLocalTransform(node.parent);
             if(node.getScalex() != 1) {
-                trans.x / node.getScalex();
-                trans.y / node.getScaley();
+                trans.x / node.sx();
+                trans.y / node.sy();
             }
-            trans.x -= node.getTx();
-            trans.y -= node.getTy();
+            trans.x -= node.x();
+            trans.y -= node.y();
             return trans;
         }
-        return {x:-node.getTx(),y:-node.getTy()};
+        return {x:-node.x(),y:-node.y()};
     }
     this.globalToLocal = function(pt, node) {
         return this.globalToLocal_helper(pt,node);
@@ -546,14 +546,14 @@ function Core() {
     		pt =  this.globalToLocal_helper(pt,node.parent);
     	}
         return {
-            x: (pt.x - node.getTx())/node.getScalex(),
-            y: (pt.y - node.getTy())/node.getScaley(),
+            x: (pt.x - node.x())/node.sx(),
+            y: (pt.y - node.y())/node.sy(),
         }
     }
     this.localToGlobal = function(pt, node) {
         pt = {
-            x: pt.x + node.getTx(),
-            y: pt.y + node.getTy(),
+            x: pt.x + node.x(),
+            y: pt.y + node.y(),
         };
         if(node.parent) {
             return this.localToGlobal(pt,node.parent);
