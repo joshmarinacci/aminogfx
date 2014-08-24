@@ -74,25 +74,6 @@ exports.registerFont = function(args) {
 
 exports.SETCOUNT = 0;
 
-var PropProto = {
-    get: function(v) {
-        return this.value;
-    },
-    set: function(v,obj) {
-        exports.SETCOUNT++;
-        this.value = v;
-        for(var i=0; i<this.listeners.length; i++) {
-            this.listeners[i](this.value,this,obj);
-        }
-        return obj;
-    },
-    watch: function(fun) {
-        this.listeners.push(function(v,v2,v3) {
-            fun(v,v2,v3);
-        });
-        return this;
-    },
-}
 var ou = {
     makeProps: function(obj,props) {
         for(var name in props) {
@@ -100,17 +81,35 @@ var ou = {
         }
     },
     makeProp:function (obj,name,val) {
-        var prop = Object.create(PropProto);
-        prop.value = val;
-        prop.listeners = [];
-        obj[name] = function(v) {
+        var prop = function(v) {
             if(v != undefined) {
                 return prop.set(v,obj);
             } else {
                 return prop.get();
             }
-        }
-        obj[name].prop = prop;
+        };
+
+        prop.value = val;
+        prop.listeners = [];
+        prop.watch = function(fun) {
+            this.listeners.push(function(v,v2,v3) {
+                fun(v,v2,v3);
+            });
+            return this;
+        };
+        prop.get = function(v) {
+            return this.value;
+        };
+        prop.set = function(v,obj) {
+            exports.SETCOUNT++;
+            this.value = v;
+            for(var i=0; i<this.listeners.length; i++) {
+                this.listeners[i](this.value,this,obj);
+            }
+            return obj;
+        };
+
+        obj[name] = prop;
     }
 }
 

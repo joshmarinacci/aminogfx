@@ -56,7 +56,7 @@ setters['visible'] = setvisible;
 setters['filled'] = setfilled;
 
 function mirrorProp(obj,old,native) {
-    obj[old].prop.watch(setters[native]);
+    obj[old].watch(setters[native]);
 }
 
 function contains(x,y) {
@@ -145,9 +145,9 @@ function Text() {
         this.font = amino.getCore().defaultFont;
         this.updateFont();
     }
-    this.fontName.prop.watch(this.updateFont);
-    this.fontWeight.prop.watch(this.updateFont);
-    this.fontSize.prop.watch(this.updateFont);
+    this.fontName.watch(this.updateFont);
+    this.fontWeight.watch(this.updateFont);
+    this.fontSize.watch(this.updateFont);
 }
 
 
