@@ -32,7 +32,7 @@ function Task(fn, dep, name) {
         if(this.did) {
             if(cb) cb();
             return;
-        }
+    }
         if(dep.length > 0) {
             p("["+this.name+"]" + " doing deps: " + dep);
             var self = this;
@@ -120,12 +120,13 @@ function canvas(cb) {
     mkdir(out);
     console.log("copying files to " + out);
 
-    var src = "src/sg/";
+    var src = "src/";
     //src files
     copyFileTo(src+"amino.js",out);
     copyFileTo(src+"aminoinput.js",out);
+    copyFileTo(src+"primitives.js",out);
     copyFileTo(src+"canvasamino.js",out);
-    copyFileTo(src+"widgets.js",out);
+    copyFileTo(src+"index.html",out);
     //copyFileTo("src/jscommon/textcontrol.js",out);
 }
 function androidnative(cb) {

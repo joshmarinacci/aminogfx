@@ -105,8 +105,8 @@ amino.start(function(core, stage) {
     D.y.bindto(adsr.s,minus(10));
 
     core.on('press', D, function(e) {
-        adsr.d(e.target.getTx());
-        adsr.s(e.target.getTy());
+        adsr.d(e.target.x());
+        adsr.s(e.target.y());
     })
     core.on('drag', D, function(e) {
         adsr.d(adsr.d()+e.dx);
@@ -119,8 +119,8 @@ amino.start(function(core, stage) {
     R.y.bindto(adsr.s,minus(10));
     R.x.bindto(adsr.r,minus(10));
     core.on('press', R, function(e) {
-        adsr.s(e.target.getTy());
-        adsr.r(e.target.getTx());
+        adsr.s(e.target.y());
+        adsr.r(e.target.x());
     });
     core.on('drag', R, function(e) {
         adsr.s(adsr.s()+e.dy);

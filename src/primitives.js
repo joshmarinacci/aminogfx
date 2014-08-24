@@ -1,9 +1,29 @@
-var amino = require('amino.js');
-/*
-function camelize(s) {
-	return s.substring(0,1).toUpperCase() + s.substring(1);
+"use strict";
+(function() {
+var moduleroot = this;
+console.log("inside of input");
+var has_require = typeof require !== 'undefined'
+if(has_require) {
+    var prims = exports
+    var amino = require('amino.js');
+} else {
+    this['prims'] = {};
+    prims = this['prims'];
+    var amino = this['amino'];
 }
-*/
+
+console.log("prims = ",prims);
+
+function getAmino() {
+    console.log("calling get amino");
+    if(has_require) {
+        return amino;
+    } else {
+        amino = moduleroot['amino'];
+        return amino;
+    }
+}
+
 function ParseRGBString(Fill) {
     if(typeof Fill == "string") {
         //strip off any leading #
@@ -45,7 +65,7 @@ function setfilled(val, prop, obj) {
 var setters = [];
 ['tx','ty','w','h','scalex','scaley','id',
     'opacity','text','fontSize',
-    'rotateX','rotateY','rotateZ']
+    'rotateX','rotateY','rotateZ','geometry']
 .forEach(function(name) {
     setters[name] = function(val,prop,obj) {
         amino.native.updateProperty(obj.handle,name,val);
@@ -69,7 +89,7 @@ function contains(x,y) {
 }
 
 function Rect() {
-    amino.makeProps(this,{
+    getAmino().makeProps(this,{
         id: 'unknown id',
         visible:true,
         x:0,
@@ -99,6 +119,7 @@ function Rect() {
 }
 
 function Text() {
+    var amino = getAmino();
     amino.makeProps(this,{
         id: 'unknown id',
         visible:true,
@@ -417,11 +438,13 @@ function Circle() {
 }
 
 
-exports.Group = Group;
-exports.Rect = Rect;
-exports.Text = Text;
-exports.Button = Button;
-exports.mirrorAmino = mirrorAmino;
-exports.Polygon = Polygon;
-exports.Circle = Circle;
-exports.ImageView = ImageView;
+prims.Group = Group;
+prims.Rect = Rect;
+prims.Text = Text;
+prims.Button = Button;
+prims.mirrorAmino = mirrorAmino;
+prims.Polygon = Polygon;
+prims.Circle = Circle;
+prims.ImageView = ImageView;
+
+}).call(this);

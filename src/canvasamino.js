@@ -1,10 +1,9 @@
 console.log("inside the canvas amino");
-console.log("exported amino = ", this['mymodule']);
+
 
 var amino = this['amino'];
 var input = this['aminoinput'];
-amino.sgtest = {
-}
+amino.sgtest = {}
 var fontmap = {};
 var dprint_text = "";
 function dprint(str) {
@@ -12,7 +11,7 @@ function dprint(str) {
 }
 amino.native = {
     list:[],
-    
+
     createDefaultFont: function(path) {
         //console.log('creating native font ' + path);
         return new CanvasFont(this.domctx);
@@ -30,6 +29,9 @@ amino.native = {
         this.domcanvas.width = this.domcanvas.clientWidth;
         this.domcanvas.height = this.domcanvas.clientHeight;
     },
+    getFont: function(name) {
+        return fontmap[name];
+    },
     createRect: function() {
         var rect = {
             "kind":"CanvasRect",
@@ -40,6 +42,7 @@ amino.native = {
             r:0.5,
             g:0.5,
             b:0.5,
+            visible:1,
             draw: function(g) {
                 if(this.visible != 1) return;
                 g.save();
@@ -58,6 +61,7 @@ amino.native = {
                 g.restore();
             },
         }
+        console.log('created a rect');
         this.list.push(rect);
         return rect;
     },
@@ -71,6 +75,7 @@ amino.native = {
             r:0.5,
             g:0.5,
             b:0.5,
+            visible:1,
             geometry:[0,0,0,  100,0,0,  100,100,0],
             dimension: -1,
             draw: function(g) {
@@ -113,18 +118,19 @@ amino.native = {
             ty:0,
             scalex:1,
             scaley:1,
+            visible:1,
             draw: function(g) {
                 if(this.visible != 1) return;
                 g.save();
                 g.translate(this.tx,this.ty);
                 g.scale(this.scalex,this.scaley);
-                
+
                 if(this.cliprect == 1) {
                     g.beginPath();
                     g.rect(0,0,this.w,this.h);
                     g.clip();
                 }
-                
+
                 for(var i=0; i<this.children.length; i++) {
                     this.children[i].draw(g);
                 }
@@ -140,6 +146,7 @@ amino.native = {
             text:"foo",
             tx:0,
             ty:0,
+            visible:1,
             draw: function(g) {
                 if(this.visible != 1) return;
                 g.fillStyle = "rgb("+this.r*255+","+this.g*255+","+this.b*255+")";
@@ -174,7 +181,7 @@ amino.native = {
         var n = h2.children.indexOf(h1);
         h2.children.splice(n,1);
     },
-    
+
     loadPngToTexture:  function(path,cb) {
         var img = new Image();
         img.onload = function() {
@@ -185,7 +192,7 @@ amino.native = {
         }
         img.src = path;
     },
-    
+
     loadJpegToTexture: function(path,cb) {
         var img = new Image();
         img.onload = function() {
@@ -196,7 +203,7 @@ amino.native = {
         }
         img.src = path;
     },
-    
+
     updateProperty: function(handle, key, value) {
         handle[key] = value;
     },
@@ -241,7 +248,7 @@ amino.native = {
         });
     },
     sendValidate: function() {
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
             type: "validate"
         });
     }
@@ -262,13 +269,13 @@ function CanvasPropAnim(target,prop,start,end,duration) {
     this.autoreverse = false;
     this.afterCallbacks = [];
     this.beforeCallbacks = [];
-    
+
     this.active = true;
     this.applyValue = function(val) {
         var setter = this.target["set"+camelize(this.prop)];
         if(setter) setter.call(this.target,val);
     }
-    
+
     this.init = function(core) {
         this.startTime = Date.now();
     }
@@ -300,7 +307,7 @@ function CanvasPropAnim(target,prop,start,end,duration) {
         this.afterCallbacks.push(cb);
         return this;
     }
-    
+
     this.before = function(cb) {
         this.beforeCallbacks.push(cb);
         return this;
@@ -426,18 +433,18 @@ amino.setupEventHandlers = function() {
             width:dom.width,
             height:dom.height,
         });
-    });    
+    });
     attachEvent(dom,'mousedown',function(e){
         e.preventDefault();
         var pt = toXY(e);
         input.processEvent(Core._core,{
-            type:"mouseposition", 
+            type:"mouseposition",
             x:pt.x,
             y:pt.y,
         });
         input.processEvent(Core._core,{
-            type:"mousebutton", 
-            button:0, 
+            type:"mousebutton",
+            button:0,
             state:1,
         });
     });
@@ -460,12 +467,12 @@ amino.setupEventHandlers = function() {
             y:pt.y,
         });
         input.processEvent(Core._core,{
-            type:"mousebutton", 
-            button:0, 
+            type:"mousebutton",
+            button:0,
             state:0
         });
     });
-    
+
     attachEvent(window, 'touchstart', function(e) {
         var pt = toXY(e.touches[0]);
         //dprint("touchstart: " + pt.x + " " + pt.y);
@@ -476,12 +483,12 @@ amino.setupEventHandlers = function() {
             y:pt.y,
         });
         input.processEvent(Core._core,{
-            type:"mousebutton", 
+            type:"mousebutton",
             button:0,
             state:1,
         });
     });
-    
+
     attachEvent(dom,'touchmove',function(e){
         var pt = toXY(e.touches[0]);
         //dprint("touchmove: " + pt.x + " " + pt.y);
@@ -492,7 +499,7 @@ amino.setupEventHandlers = function() {
             y:pt.y,
         });
     });
-    
+
     attachEvent(dom,'touchend',function(e){
         var pt = toXY(e.changedTouches[0]);
         //dprint("touchend: " + pt.x + " " + pt.y);
@@ -503,18 +510,18 @@ amino.setupEventHandlers = function() {
             x:pt.x,
             y:pt.y,
         });
-        input.processEvent(Core._core,{
-            type:"mousebutton", 
-            button:0, 
+        input.processEvent(amino.getCore(),{
+            type:"mousebutton",
+            button:0,
             state:0
         });
     });
-    
+
     var keyRemap = {
         190:46, // period
         188:44, // comma
     };
-    
+
     attachEvent(window,'keydown',function(e){
         if(e.metaKey) return;
         e.preventDefault();
@@ -545,9 +552,9 @@ amino.setupEventHandlers = function() {
         });
     } else {
         console.log("motion not supported");
-    } 
+    }
     */
-    
+
 }
 
 
@@ -563,10 +570,10 @@ amino.setCanvas = function(id) {
 amino.startApp = function(cb) {
     if(!cb) throw new Error("CB parameter missing to start app");
     amino.setupEventHandlers();
+    var Core = amino.Core;
     Core._core = new Core();
     Core._core.init();
     var stage = Core._core.createStage(600,600);
     cb(Core._core,stage);
     Core._core.start();
 }
-

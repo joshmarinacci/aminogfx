@@ -1,10 +1,28 @@
-exports.sgtest = require('./aminonative.node');
-var fs = require('fs');
-var input = require('aminoinput');
-var prims = require('./primitives');
+"use strict";
+(function() {
+    var root = this;
+    console.log("root = ",root);
+var has_require = typeof require !== 'undefined'
+
+console.log("heres", has_require);
+if(has_require) {
+    console.log('in node');
+    var amino = exports;
+    exports.sgtest = require('./aminonative.node');
+    var fs = require('fs');
+    var input = require('aminoinput');
+    var prims = require('./primitives');
+} else {
+    console.log('in the browser');
+    var input = this['aminoinput'];
+    var prims = this['prims'];
+    this['amino'] = {};
+    var amino = this['amino'];
+}
+
 
 var OS = "BROWSER";
-if((typeof process) != 'undefined') {
+if((typeof process) !== 'undefined') {
     OS = "KLAATU";
     if(process.arch == 'arm') {
         OS = "RPI";
@@ -68,56 +86,66 @@ var defaultFonts = {
 
 var propertyCount = 0;
 
-exports.registerFont = function(args) {
+amino.registerFont = function(args) {
     fontmap[args.name] = new JSFont(args);
 }
 
-exports.SETCOUNT = 0;
+amino.SETCOUNT = 0;
 
-var ou = {
-    makeProps: function(obj,props) {
+amino.makeProps = function(obj,props) {
         for(var name in props) {
-            this.makeProp(obj,name,props[name]);
+            amino.makeProp(obj,name,props[name]);
         }
-    },
-    makeProp:function (obj,name,val) {
-        var prop = function(v) {
-            if(v != undefined) {
-                return prop.set(v,obj);
-            } else {
-                return prop.get();
-            }
-        };
+}
+amino.makeProp =function (obj,name,val) {
+    var prop = function(v) {
+        if(v != undefined) {
+            return prop.set(v,obj);
+        } else {
+            return prop.get();
+        }
+    };
 
-        prop.value = val;
-        prop.listeners = [];
-        prop.watch = function(fun) {
-            this.listeners.push(function(v,v2,v3) {
-                fun(v,v2,v3);
-            });
-            return this;
-        };
-        prop.get = function(v) {
-            return this.value;
-        };
-        prop.set = function(v,obj) {
-            exports.SETCOUNT++;
-            this.value = v;
-            for(var i=0; i<this.listeners.length; i++) {
-                this.listeners[i](this.value,this,obj);
-            }
-            return obj;
-        };
+    prop.value = val;
+    prop.listeners = [];
+    prop.watch = function(fun) {
+        if(fun === undefined) {
+            new Error().printStackTrace();
+        }
+        this.listeners.push(function(v,v2,v3) {
+            fun(v,v2,v3);
+        });
+        return this;
+    };
+    prop.get = function(v) {
+        return this.value;
+    };
+    prop.set = function(v,obj) {
+        amino.SETCOUNT++;
+        this.value = v;
+        for(var i=0; i<this.listeners.length; i++) {
+            this.listeners[i](this.value,this,obj);
+        }
+        return obj;
+    };
+    prop.anim = function() {
+        return new PropAnim(obj,name);
+    };
+    prop.bindto = function(prop, fun) {
+        var set = this;
+        prop.listeners.push(function(v) {
+            if(fun) set(fun(v));
+                else set(v);
+        });
+        return this;
+    };
 
-        obj[name] = prop;
-    }
+    obj[name] = prop;
 }
 
-exports.makeProps = ou.makeProps;
-exports.makeProp = ou.makeProp;
 
-exports.GETCHARWIDTHCOUNT=0;
-exports.GETCHARHEIGHTCOUNT=0;
+amino.GETCHARWIDTHCOUNT=0;
+amino.GETCHARHEIGHTCOUNT=0;
 
 function JSFont(desc) {
     this.name = desc.name;
@@ -136,7 +164,7 @@ function JSFont(desc) {
         if(!fs.existsSync(filepath)) {
             console.log("WARNING. File not found",filepath);
         }
-        this.weights[weight] = exports.native.createNativeFont(filepath);
+        this.weights[weight] = amino.native.createNativeFont(filepath);
     }
     process.chdir(dir);
 
@@ -151,91 +179,91 @@ function JSFont(desc) {
 
     /** @func calcStringWidth(string, size)  returns the width of the specified string rendered at the specified size */
     this.calcStringWidth = function(str, size, weight, style) {
-        exports.GETCHARWIDTHCOUNT++;
-        return exports.sgtest.getCharWidth(str,size,this.getNative(size,weight,style));
+        amino.GETCHARWIDTHCOUNT++;
+        return amino.sgtest.getCharWidth(str,size,this.getNative(size,weight,style));
     }
     this.getHeight = function(size, weight, style) {
-        exports.GETCHARHEIGHTCOUNT++;
+        amino.GETCHARHEIGHTCOUNT++;
         if(size == undefined) {
             throw new Error("SIZE IS UNDEFINED");
         }
-        return exports.sgtest.getFontHeight(size, this.getNative(size, weight, style));
+        return amino.sgtest.getFontHeight(size, this.getNative(size, weight, style));
     }
 }
 
-exports.native = {
+amino.native = {
     createNativeFont: function(path) {
-        return exports.sgtest.createNativeFont(path);
+        return amino.sgtest.createNativeFont(path);
     },
     init: function(core) {
         console.log("doing native init. dpi scale = " + Core.DPIScale);
-        exports.sgtest.init();
+        amino.sgtest.init();
     },
     createWindow: function(core,w,h) {
-        exports.sgtest.createWindow(w* Core.DPIScale,h*Core.DPIScale);
+        amino.sgtest.createWindow(w* Core.DPIScale,h*Core.DPIScale);
         fontmap['source']  = new JSFont(defaultFonts['source']);
         fontmap['awesome'] = new JSFont(defaultFonts['awesome']);
         core.defaultFont = fontmap['source'];
-        this.rootWrapper = exports.native.createGroup();
-        exports.native.updateProperty(this.rootWrapper, "scalex", Core.DPIScale);
-        exports.native.updateProperty(this.rootWrapper, "scaley", Core.DPIScale);
-        exports.sgtest.setRoot(this.rootWrapper);
+        this.rootWrapper = amino.native.createGroup();
+        amino.native.updateProperty(this.rootWrapper, "scalex", Core.DPIScale);
+        amino.native.updateProperty(this.rootWrapper, "scaley", Core.DPIScale);
+        amino.sgtest.setRoot(this.rootWrapper);
     },
     getFont: function(name) {
         return fontmap[name];
     },
     updateProperty: function(handle, name, value) {
         propertyCount++;
-        exports.sgtest.updateProperty(handle, propsHash[name], value);
+        amino.sgtest.updateProperty(handle, propsHash[name], value);
     },
     setRoot: function(handle) {
-        exports.sgtest.addNodeToGroup(handle,this.rootWrapper);
+        amino.sgtest.addNodeToGroup(handle,this.rootWrapper);
     },
     tick: function() {
-        exports.sgtest.tick();
+        amino.sgtest.tick();
     },
     setImmediate: function(loop) {
         setImmediate(loop);
     },
     setEventCallback: function(cb) {
-        exports.sgtest.setEventCallback(cb);
+        amino.sgtest.setEventCallback(cb);
     },
-    createRect: function()  {          return exports.sgtest.createRect();    },
-    createGroup: function() {          return exports.sgtest.createGroup();   },
-    createPoly: function()  {          return exports.sgtest.createPoly();    },
-    createGLNode: function(cb)  {        return exports.sgtest.createGLNode(cb);  },
+    createRect: function()  {          return amino.sgtest.createRect();    },
+    createGroup: function() {          return amino.sgtest.createGroup();   },
+    createPoly: function()  {          return amino.sgtest.createPoly();    },
+    createGLNode: function(cb)  {        return amino.sgtest.createGLNode(cb);  },
     addNodeToGroup: function(h1,h2) {
-        exports.sgtest.addNodeToGroup(h1,h2);
+        amino.sgtest.addNodeToGroup(h1,h2);
     },
     removeNodeFromGroup: function(h1, h2) {
-        exports.sgtest.removeNodeFromGroup(h1, h2);
+        amino.sgtest.removeNodeFromGroup(h1, h2);
     },
     loadPngToTexture: function(imagefile,cb) {
-        var img = exports.sgtest.loadPngToTexture(imagefile);
+        var img = amino.sgtest.loadPngToTexture(imagefile);
         cb(img);
     },
     loadJpegToTexture: function(imagefile, cb) {
-        var img = exports.sgtest.loadJpegToTexture(imagefile);
+        var img = amino.sgtest.loadJpegToTexture(imagefile);
         cb(img);
     },
     createText: function() {
-        return exports.sgtest.createText();
+        return amino.sgtest.createText();
     },
     setWindowSize: function(w,h) {
-        exports.sgtest.setWindowSize(w*Core.DPIScale,h*Core.DPIScale);
+        amino.sgtest.setWindowSize(w*Core.DPIScale,h*Core.DPIScale);
     },
     getWindowSize: function(w,h) {
-        var size = exports.sgtest.getWindowSize(w,h);
+        var size = amino.sgtest.getWindowSize(w,h);
         return {
             w: size.w/Core.DPIScale,
             h: size.h/Core.DPIScale,
         };
     },
     createAnim: function(handle,prop,start,end,dur,count,rev) {
-        return exports.sgtest.createAnim(handle,propsHash[prop],start,end,dur,count,rev);
+        return amino.sgtest.createAnim(handle,propsHash[prop],start,end,dur,count,rev);
     },
     updateAnimProperty: function(handle, prop, type) {
-        exports.sgtest.updateAnimProperty(handle, propsHash[prop], type);
+        amino.sgtest.updateAnimProperty(handle, propsHash[prop], type);
     },
 
     createPropAnim: function(node,prop,start,end,dur) {
@@ -243,7 +271,7 @@ exports.native = {
     },
 
     runTest: function(opts) {
-        return exports.sgtest.runTest(opts);
+        return amino.sgtest.runTest(opts);
     },
 
 }
@@ -258,9 +286,9 @@ if (typeof String.prototype.endsWith !== 'function') {
 }
 
 
-exports.dirtylist = [];
+amino.dirtylist = [];
 function validateScene() {
-    exports.dirtylist.forEach(function(node) {
+    amino.dirtylist.forEach(function(node) {
         if(node.dirty == true) {
             if(node.validate) {
                 node.validate();
@@ -268,7 +296,7 @@ function validateScene() {
             node.dirty = false;
         }
     });
-    exports.dirtylist = [];
+    amino.dirtylist = [];
 }
 input.validateScene = validateScene;
 
@@ -338,15 +366,15 @@ function SGStage(core) {
 	this.core = core;
 	/** @func setSize(w,h) set the width and height of the stage. Has no effect on mobile. */
 	this.setSize = function(width,height) {
-	    exports.native.setWindowSize(width,height);
+	    amino.native.setWindowSize(width,height);
 	}
 	/** @func getW returns the width of this stage. */
 	this.getW = function() {
-	    return exports.native.getWindowSize().w;
+	    return amino.native.getWindowSize().w;
 	}
 	/** @func getH returns the height of this stage. */
 	this.getH = function() {
-	    return exports.native.getWindowSize().h;
+	    return amino.native.getWindowSize().h;
 	}
 	/** @func on(name,node,cb) sets a callback for events matching the specified name on the
 	specified node. Use null for the node to match global events. */
@@ -400,7 +428,7 @@ function Core() {
     alternate direction on every other time. Only applies if the animatione will play more than one time.
     */
     this.createPropAnim = function(node, prop, start, end, dur) {
-        var anim = exports.native.createPropAnim(node,prop,start,end,dur);
+        var anim = amino.native.createPropAnim(node,prop,start,end,dur);
         anim.init(this);
         this.anims.push(anim);
         return anim;
@@ -420,8 +448,8 @@ function Core() {
 
     var self = this;
     this.init = function() {
-        exports.native.init(this);
-        exports.native.setEventCallback(function(e) {
+        amino.native.init(this);
+        amino.native.setEventCallback(function(e) {
             debug.eventCount++;
             e.time = new Date().getTime();
             if(e.x) e.x = e.x/Core.DPIScale;
@@ -438,7 +466,7 @@ function Core() {
     this.start = function() {
         var core = this;
         //send a final window size event to make sure everything is lined up correctly
-        var size = exports.native.getWindowSize();
+        var size = amino.native.getWindowSize();
         this.stage.width = size.w;
         this.stage.height = size.h;
         input.processEvent(this,{
@@ -453,7 +481,7 @@ function Core() {
         var self = this;
         function immediateLoop() {
             try {
-                exports.native.tick(core);
+                amino.native.tick(core);
                 if(settimer) {
                     console.timeEnd('start');
                     settimer = false;
@@ -468,24 +496,24 @@ function Core() {
                 console.log("EXCEPTION. QUITTING!");
                 return;
             }
-            exports.native.setImmediate(immediateLoop);
+            amino.native.setImmediate(immediateLoop);
         }
         setTimeout(immediateLoop,1);
     }
 
     /** @func createStage(w,h)  creates a new stage. Only applies on desktop. */
     this.createStage = function(w,h) {
-        exports.native.createWindow(this,w,h);
+        amino.native.createWindow(this,w,h);
         this.stage = new SGStage(this);
         return this.stage;
     }
 
     this.getFont = function(name) {
-        return exports.native.getFont(name);
+        return amino.native.getFont(name);
     }
 
     this.setRoot = function(node) {
-        exports.native.setRoot(node.handle);
+        amino.native.setRoot(node.handle);
         this.root = node;
     }
     this.findNodeAtXY = function(x,y) {
@@ -616,12 +644,12 @@ function Core() {
 
     this.runTest = function(opts) {
         console.log("running the test with options",opts);
-        return exports.native.runTest(opts);
+        return amino.native.runTest(opts);
     }
 }
 
 var settimer = false;
-exports.startTime = function() {
+amino.startTime = function() {
     console.time('start');
     settimer = true;
 }
@@ -635,32 +663,32 @@ function start(cb) {
     Core._core.start();
 }
 
-exports.getCore = function() {
+amino.getCore = function() {
     return Core._core;
 }
-exports.start = start;
+amino.start = start;
 
-exports.startTest = function(cb) {
+amino.startTest = function(cb) {
     Core._core = new Core();
     Core._core.init();
     var stage = Core._core.createStage(600,600);
-    var root = new exports.ProtoGroup();
+    var root = new amino.ProtoGroup();
     stage.setRoot(root);
     cb(Core._core, root);
 }
 
-exports.setHiDPIScale = function(scale) {
+amino.setHiDPIScale = function(scale) {
     Core.DPIScale = scale;
 }
 
 
-exports.Group = prims.Group;
-exports.Rect = prims.Rect;
-exports.Text = prims.Text;
-exports.Polygon = prims.Polygon;
-exports.ImageView = prims.ImageView;
-exports.Circle = prims.Circle;
-
+amino.Group = prims.Group;
+amino.Rect = prims.Rect;
+amino.Text = prims.Text;
+amino.Polygon = prims.Polygon;
+amino.ImageView = prims.ImageView;
+amino.Circle = prims.Circle;
+amino.Core = Core;
 
 var remap = {
     'x':'tx',
@@ -691,14 +719,14 @@ function PropAnim(target,name) {
     this.start = function() {
         var self = this;
         setTimeout(function(){
-            self.handle = exports.native.createAnim(
+            self.handle = amino.native.createAnim(
                 target.handle,
                 name,
                 self._from,self._to,self._duration);
-            exports.native.updateAnimProperty(self.handle, 'count', self._loop);
-            exports.native.updateAnimProperty(self.handle, 'autoreverse', self._autoreverse);
-            exports.native.updateAnimProperty(self.handle, 'lerpprop', 17); //17 is cubic in out
-            exports.getCore().anims.push(self);
+            amino.native.updateAnimProperty(self.handle, 'count', self._loop);
+            amino.native.updateAnimProperty(self.handle, 'autoreverse', self._autoreverse);
+            amino.native.updateAnimProperty(self.handle, 'lerpprop', 17); //17 is cubic in out
+            amino.getCore().anims.push(self);
         },this._delay);
         return this;
     }
@@ -711,3 +739,4 @@ function PropAnim(target,name) {
 
 
 }
+}).call(this);

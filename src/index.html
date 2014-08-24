@@ -1,0 +1,28 @@
+<html>
+
+<body>
+    <h3>this is a test of amino</h3>
+    <canvas id='canvas' width='400' height='200'></canvas>
+    <script src='aminoinput.js'></script>
+    <script src='primitives.js'></script>
+    <script src='amino.js'></script>
+    <script src='canvasamino.js'></script>
+
+    <style type='text/css'>
+    canvas { border: 1px solid red; }
+    </style>
+    <script>
+
+    var amino = this['amino'];
+    amino.setCanvas('canvas');
+    amino.startApp(function(core,stage) {
+        var rect = new amino.Rect().w(100).h(50).fill("#ff0000");
+        var group = new amino.Group();
+        group.add(rect);
+        var text = new amino.Text().text('foo').y(30);
+        group.add(text);
+        stage.setRoot(group);
+    });
+    </script>
+</body>
+</html>
