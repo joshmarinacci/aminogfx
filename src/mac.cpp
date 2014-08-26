@@ -331,6 +331,8 @@ void InitAll(Handle<Object> exports, Handle<Object> module) {
     exports->Set(String::NewSymbol("createNativeFont"), FunctionTemplate::New(createNativeFont)->GetFunction());
     exports->Set(String::NewSymbol("getCharWidth"),     FunctionTemplate::New(getCharWidth)->GetFunction());
     exports->Set(String::NewSymbol("getFontHeight"),    FunctionTemplate::New(getFontHeight)->GetFunction());
+    exports->Set(String::NewSymbol("getFontAscender"),    FunctionTemplate::New(getFontAscender)->GetFunction());
+    exports->Set(String::NewSymbol("getFontDescender"),    FunctionTemplate::New(getFontDescender)->GetFunction());
     exports->Set(String::NewSymbol("runTest"),          FunctionTemplate::New(runTest)->GetFunction());
 }
 

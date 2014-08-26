@@ -729,7 +729,25 @@ inline static Handle<Value> getFontHeight(const Arguments& args) {
     int fontindex  = args[1]->ToNumber()->NumberValue();
     AminoFont * font = fontmap[fontindex];
     texture_font_t *tf = font->fonts[fontsize];
-    Local<Number> num = Number::New(tf->ascender+tf->descender);
+    Local<Number> num = Number::New(tf->ascender-tf->descender);
+    return scope.Close(num);
+}
+inline static Handle<Value> getFontAscender(const Arguments& args) {
+    HandleScope scope;
+    int fontsize   = args[0]->ToNumber()->NumberValue();
+    int fontindex  = args[1]->ToNumber()->NumberValue();
+    AminoFont * font = fontmap[fontindex];
+    texture_font_t *tf = font->fonts[fontsize];
+    Local<Number> num = Number::New(tf->ascender);
+    return scope.Close(num);
+}
+inline static Handle<Value> getFontDescender(const Arguments& args) {
+    HandleScope scope;
+    int fontsize   = args[0]->ToNumber()->NumberValue();
+    int fontindex  = args[1]->ToNumber()->NumberValue();
+    AminoFont * font = fontmap[fontindex];
+    texture_font_t *tf = font->fonts[fontsize];
+    Local<Number> num = Number::New(tf->descender);
     return scope.Close(num);
 }
 inline static Handle<Value> getCharWidth(const Arguments& args) {
@@ -752,7 +770,7 @@ inline static Handle<Value> getCharWidth(const Arguments& args) {
     texture_font_t *tf = font->fonts[fontsize];
     assert( tf );
 
-    int w = 0;
+    float w = 0;
     //length seems to include the null string
     for(std::size_t i=0; i<wstr.length(); i++) {
         wchar_t ch  = wstr.c_str()[i];
@@ -762,13 +780,7 @@ inline static Handle<Value> getCharWidth(const Arguments& args) {
         if(glyph == 0) {
             printf("WARNING. Got empty glyph from texture_font_get_glyph");
         }
-        //use width for the last, since we don't want all the way to the
-        //char beyond that
-        if(i == wstr.length()-1) {
-            w += glyph->width;
-        } else {
-            w += glyph->advance_x;
-        }
+        w += glyph->advance_x;
     }
     Local<Number> num = Number::New(w);
     return scope.Close(num);

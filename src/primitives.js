@@ -15,7 +15,6 @@ if(has_require) {
 console.log("prims = ",prims);
 
 function getAmino() {
-    console.log("calling get amino");
     if(has_require) {
         return amino;
     } else {
@@ -446,5 +445,6 @@ prims.mirrorAmino = mirrorAmino;
 prims.Polygon = Polygon;
 prims.Circle = Circle;
 prims.ImageView = ImageView;
+prims.ParseRGBString = ParseRGBString;
 
 }).call(this);

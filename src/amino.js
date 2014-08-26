@@ -189,6 +189,15 @@ function JSFont(desc) {
         }
         return amino.sgtest.getFontHeight(size, this.getNative(size, weight, style));
     }
+    this.getHeightMetrics = function(size, weight, style) {
+        if(size == undefined) {
+            throw new Error("SIZE IS UNDEFINED");
+        }
+        return {
+            ascender: amino.sgtest.getFontAscender(size, this.getNative(size, weight, style)),
+            descender: amino.sgtest.getFontDescender(size, this.getNative(size, weight, style)),
+        };
+    }
 }
 
 amino.native = {
