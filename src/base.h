@@ -737,6 +737,12 @@ inline static Handle<Value> getFontAscender(const Arguments& args) {
     int fontsize   = args[0]->ToNumber()->NumberValue();
     int fontindex  = args[1]->ToNumber()->NumberValue();
     AminoFont * font = fontmap[fontindex];
+    std::map<int,texture_font_t*>::iterator it = font->fonts.find(fontsize);
+    if(it == font->fonts.end()) {
+        printf("Font is missing glyphs for size %d\n",fontsize);
+        printf("loading size %d for font %s\n",fontsize,font->filename);
+        font->fonts[fontsize] = texture_font_new(font->atlas, font->filename, fontsize);
+    }
     texture_font_t *tf = font->fonts[fontsize];
     Local<Number> num = Number::New(tf->ascender);
     return scope.Close(num);
@@ -746,6 +752,12 @@ inline static Handle<Value> getFontDescender(const Arguments& args) {
     int fontsize   = args[0]->ToNumber()->NumberValue();
     int fontindex  = args[1]->ToNumber()->NumberValue();
     AminoFont * font = fontmap[fontindex];
+    std::map<int,texture_font_t*>::iterator it = font->fonts.find(fontsize);
+    if(it == font->fonts.end()) {
+        printf("Font is missing glyphs for size %d\n",fontsize);
+        printf("loading size %d for font %s\n",fontsize,font->filename);
+        font->fonts[fontsize] = texture_font_new(font->atlas, font->filename, fontsize);
+    }
     texture_font_t *tf = font->fonts[fontsize];
     Local<Number> num = Number::New(tf->descender);
     return scope.Close(num);
