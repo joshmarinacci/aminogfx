@@ -1,7 +1,13 @@
 var amino = require('amino.js');
+var data = require('./countries.js');
+var onecolor = require('onecolor');
+
+var fs = require('fs');
+var cities = JSON.parse(fs.readFileSync(__dirname+'/cities.json').toString());
 
 var w = 1280;//1920;
 var h = 768;//1080;
+var radius = w/6;
 
 amino.start(function(core, stage) {
 
@@ -15,9 +21,7 @@ amino.start(function(core, stage) {
     var group = new amino.Group();
     root.add(group);
 
-    var cos = Math.cos;
-    var sin = Math.sin;
-    var PI = Math.PI;
+    buildGlobe(group);
 
 
     //lower left bar charts
@@ -174,6 +178,82 @@ function makeHeader(root) {
         )
 }
 
+function buildGlobe(group) {
+
+    var cos = Math.cos;
+    var sin = Math.sin;
+    var PI = Math.PI;
+
+    function latlon2xyz(lat,lon, rad) {
+        var el = lat/180.0*PI;
+        var az = lon/180.0*PI;
+        var x = rad * cos(el) * sin(az);
+        var y = rad * cos(el) * cos(az);
+        var z = rad * sin(el);
+        return [x,y,z];
+    }
+
+    function addCountry(nz) {
+        //make the geometry
+        for(var i=0; i<nz.borders.length; i++) {
+            var border = nz.borders[i];
+            var points = [];
+            var poly = new amino.Polygon();
+            for(var j=0; j<border.length; j++) {
+                var point = border[j];
+                var pts = latlon2xyz(point.lat,point.lng,radius);
+                points.push(pts[0]);
+                points.push(pts[1]);
+                points.push(pts[2]);
+            }
+            poly.fill("#80ff80");
+            poly.geometry(points);
+            poly.dimension(3);
+            group.add(poly);
+        }
+    }
+
+    for(var i=0; i<data.countries.length; i++) {
+        addCountry(data.countries[i]);
+    }
+
+    // NOTE: on Raspberry pi we can't just make a line.
+    // A polygon needs at least two segments.
+    function addLine(lat,lon,el, color) {
+        var poly = new amino.Polygon();
+        var pt1 = latlon2xyz(lat,lon,radius);
+        var pt2 = latlon2xyz(lat,lon,radius+el);
+        var pt3 = latlon2xyz(lat,lon,radius);
+        var points = pt1.concat(pt2).concat(pt3);
+
+        poly.fill(color);
+        poly.geometry(points);
+        poly.dimension(3);
+        group.add(poly);
+    }
+
+    //add a line at portland
+    cities.features.forEach(function(city) {
+        var color = '#ff00ff';
+        var hue = city.properties.city.length / 20;
+        addLine(city.geometry.coordinates[1],
+                city.geometry.coordinates[0],
+                100*hue,
+                onecolor('red').hue(hue).hex());
+    });
+
+
+    // center
+    group.x(w/2).y(h/2);
+    //turn earth upright
+    group.rx(90);
+    group.ry(0);
+    group.rz(0);
+
+    // spin it forever
+    //core.createPropAnim(group,"rotateZ",0,-360,60*1000).setCount(-1);
+
+}
 
 function createBar1(w,h,count,color) {
     var gr = new amino.Group();
