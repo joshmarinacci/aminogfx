@@ -703,6 +703,7 @@ var remap = {
     'x':'tx',
     'rx':'rotateX',
     'ry':'rotateY',
+    'rz':'rotateZ',
 };
 
 function PropAnim(target,name) {
