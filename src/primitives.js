@@ -64,7 +64,7 @@ function setfilled(val, prop, obj) {
 var setters = [];
 ['tx','ty','w','h','scalex','scaley','id',
     'opacity','text','fontSize',
-    'rotateX','rotateY','rotateZ','geometry']
+    'rotateX','rotateY','rotateZ','geometry','dimension']
 .forEach(function(name) {
     setters[name] = function(val,prop,obj) {
         amino.native.updateProperty(obj.handle,name,val);
@@ -410,6 +410,7 @@ function Polygon() {
         id:'id',
         filled:'filled',
         geometry:'geometry',
+        dimension:'dimension',
     });
     this.contains = function() { return false };
     return this;

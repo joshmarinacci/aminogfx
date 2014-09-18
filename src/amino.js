@@ -110,6 +110,7 @@ amino.makeProp =function (obj,name,val) {
     prop.listeners = [];
     prop.watch = function(fun) {
         if(fun === undefined) {
+            console.log("function undefined for property ", name, " on object ", obj, "with value",val);
             new Error().printStackTrace();
         }
         this.listeners.push(function(v,v2,v3) {
@@ -701,6 +702,7 @@ amino.Core = Core;
 
 var remap = {
     'x':'tx',
+    'y':'ty',
     'rx':'rotateX',
     'ry':'rotateY',
     'rz':'rotateZ',
