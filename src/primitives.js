@@ -1,26 +1,7 @@
-"use strict";
-(function() {
-var moduleroot = this;
-console.log("inside of input");
-var has_require = typeof require !== 'undefined'
-if(has_require) {
-    var prims = exports
-    var amino = require('amino.js');
-} else {
-    this['prims'] = {};
-    prims = this['prims'];
-    var amino = this['amino'];
-}
-
-console.log("prims = ",prims);
+var amino = require('./amino');
 
 function getAmino() {
-    if(has_require) {
-        return amino;
-    } else {
-        amino = moduleroot['amino'];
-        return amino;
-    }
+    return amino;
 }
 
 function ParseRGBString(Fill) {
@@ -64,7 +45,7 @@ function setfilled(val, prop, obj) {
 var setters = [];
 ['tx','ty','w','h','scalex','scaley','id',
     'opacity','text','fontSize',
-    'rotateX','rotateY','rotateZ','geometry']
+    'rotateX','rotateY','rotateZ','geometry','dimension']
 .forEach(function(name) {
     setters[name] = function(val,prop,obj) {
         amino.native.updateProperty(obj.handle,name,val);
@@ -410,8 +391,10 @@ function Polygon() {
         id:'id',
         filled:'filled',
         geometry:'geometry',
+        dimension:'dimension',
     });
     this.contains = function() { return false };
+    this.dimension(2);
     return this;
 }
 
@@ -437,14 +420,12 @@ function Circle() {
 }
 
 
-prims.Group = Group;
-prims.Rect = Rect;
-prims.Text = Text;
-prims.Button = Button;
-prims.mirrorAmino = mirrorAmino;
-prims.Polygon = Polygon;
-prims.Circle = Circle;
-prims.ImageView = ImageView;
-prims.ParseRGBString = ParseRGBString;
-
-}).call(this);
+exports.Group = Group;
+exports.Rect = Rect;
+exports.Text = Text;
+exports.Button = Button;
+exports.mirrorAmino = mirrorAmino;
+exports.Polygon = Polygon;
+exports.Circle = Circle;
+exports.ImageView = ImageView;
+exports.ParseRGBString = ParseRGBString;

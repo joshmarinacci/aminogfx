@@ -1,25 +1,11 @@
-"use strict";
-(function() {
-    var root = this;
-    console.log("root = ",root);
-var has_require = typeof require !== 'undefined'
+var amino = exports;
+var sgtest = require('./aminonative.node');
+console.log('sgtest = ', sgtest);
+amino.sgtest = sgtest;
 
-console.log("heres", has_require);
-if(has_require) {
-    console.log('in node');
-    var amino = exports;
-    exports.sgtest = require('./aminonative.node');
-    var fs = require('fs');
-    var input = require('aminoinput');
-    var prims = require('./primitives');
-} else {
-    console.log('in the browser');
-    var input = this['aminoinput'];
-    var prims = this['prims'];
-    this['amino'] = {};
-    var amino = this['amino'];
-}
-
+var fs = require('fs');
+var input = require('./aminoinput');
+var prims = require('./primitives');
 
 var OS = "BROWSER";
 if((typeof process) !== 'undefined') {
@@ -423,6 +409,22 @@ function SGStage(core) {
 }
 
 
+amino.startEventLoop = function() {
+    console.log("starting the event loop");
+    function immediateLoop() {
+        try {
+            amino.native.tick(amino.getCore());
+        } catch (ex) {
+            console.log(ex);
+            console.log(ex.stack);
+            console.log("EXCEPTION. QUITTING!");
+            return;
+        }
+        amino.native.setImmediate(immediateLoop);
+    }
+    setTimeout(immediateLoop,1);
+}
+
 /**
 @class Core
 @desc The core of Amino. Only one will exist at runtime. Always access through the callback
@@ -488,6 +490,7 @@ function Core() {
         }
 
         var self = this;
+        /*
         function immediateLoop() {
             try {
                 amino.native.tick(core);
@@ -506,8 +509,11 @@ function Core() {
                 return;
             }
             amino.native.setImmediate(immediateLoop);
-        }
-        setTimeout(immediateLoop,1);
+        }*/
+
+        amino.startEventLoop();
+        //setTimeout(immediateLoop,1);
+
     }
 
     /** @func createStage(w,h)  creates a new stage. Only applies on desktop. */
@@ -675,6 +681,7 @@ function start(cb) {
 amino.getCore = function() {
     return Core._core;
 }
+amino.Core = Core;
 amino.start = start;
 
 amino.startTest = function(cb) {
@@ -748,4 +755,3 @@ function PropAnim(target,name) {
 
 
 }
-}).call(this);

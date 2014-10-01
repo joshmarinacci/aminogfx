@@ -1,17 +1,5 @@
-"use strict";
-(function() {
 
-console.log("inside of input");
-var has_require = typeof require !== 'undefined'
-if(has_require) {
-    var input = exports
-} else {
-    this['aminoinput'] = {};
-    input = this['aminoinput'];
-}
-
-console.log("input = ",input);
-
+var input = exports;
 var keyState = {
     shift:false,
     control:false,
@@ -480,5 +468,3 @@ input.processOneEvent = function(core,e) {
     }
 
 }
-
-}).call(this);

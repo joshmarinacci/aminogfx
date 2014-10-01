@@ -1,13 +1,19 @@
 console.log("inside the canvas amino");
 
-
-var amino = this['amino'];
-var input = this['aminoinput'];
-amino.sgtest = {}
+var amino = require('./amino');
+var input = require('./aminoinput');
+amino.sgtest = {};
 var fontmap = {};
 var dprint_text = "";
 function dprint(str) {
     dprint_text = str;
+}
+amino.startEventLoop = function() {
+    function lp() {
+        amino.native.tick(amino.getCore());
+        requestAnimationFrame(lp);
+    }
+    requestAnimationFrame(lp);
 }
 amino.native = {
     list:[],
@@ -79,6 +85,7 @@ amino.native = {
             geometry:[0,0,0,  100,0,0,  100,100,0],
             dimension: -1,
             draw: function(g) {
+                if(this.dimension < 2) throw new Error("Polygon with invalid dimension!",this.dimension);
                 if(this.visible != 1) return;
                 g.save();
                 if(this.opacity != 1.0) {
@@ -220,12 +227,10 @@ amino.native = {
         g.fillRect(0,0,w,h);
         this.root.draw(g);
         //draw debug overlay
-        /*
         g.fillStyle = "white";
         g.fillRect(0,0,200,30);
         g.fillStyle = "black";
         g.fillText(dprint_text,30,10);
-        */
     },
     setImmediate: function(loop) {
         requestAnimationFrame(loop);
@@ -390,8 +395,7 @@ function attachEvent(node,name,func) {
     }
 };
 
-function getOffset( elem )
-{
+function getOffset( elem ) {
     var offset = {x:0,y:0};
     do {
       if ( !isNaN( elem.offsetLeft ) )
@@ -428,7 +432,7 @@ amino.setupEventHandlers = function() {
     attachEvent(window,'resize',function(e) {
         dom.width = dom.clientWidth;
         dom.height = dom.clientHeight;
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
             type:"windowsize",
             width:dom.width,
             height:dom.height,
@@ -437,12 +441,12 @@ amino.setupEventHandlers = function() {
     attachEvent(dom,'mousedown',function(e){
         e.preventDefault();
         var pt = toXY(e);
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
             type:"mouseposition",
             x:pt.x,
             y:pt.y,
         });
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
             type:"mousebutton",
             button:0,
             state:1,
@@ -451,7 +455,7 @@ amino.setupEventHandlers = function() {
     attachEvent(dom,'mousemove',function(e){
         var pt = toXY(e);
         e.preventDefault();
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
             type:"mouseposition",
             x:pt.x,
             y:pt.y,
@@ -460,13 +464,13 @@ amino.setupEventHandlers = function() {
     attachEvent(dom,'mouseup',function(e){
         var pt = toXY(e);
         e.preventDefault();
-        mouseState.pressed = false;
-        input.processEvent(Core._core,{
+        //mouseState.pressed = false;
+        input.processEvent(amino.getCore(),{
             type:"mouseposition",
             x:pt.x,
             y:pt.y,
         });
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
             type:"mousebutton",
             button:0,
             state:0
@@ -477,7 +481,7 @@ amino.setupEventHandlers = function() {
         var pt = toXY(e.touches[0]);
         //dprint("touchstart: " + pt.x + " " + pt.y);
         e.preventDefault();
-        input.processEvent(Core._core, {
+        input.processEvent(amino.getCore(), {
             type: "mouseposition",
             x:pt.x,
             y:pt.y,
@@ -529,7 +533,7 @@ amino.setupEventHandlers = function() {
         if(keyRemap[key]) {
             key = keyRemap[key];
         }
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
                 type:"keypress",
                 keycode: key,
                 shift:   e.shiftKey?1:0,
@@ -539,7 +543,7 @@ amino.setupEventHandlers = function() {
     });
     attachEvent(window,'keyup',function(e){
         e.preventDefault();
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
                 type:"keyrelease",
                 keycode: e.keyCode,
         });
@@ -567,7 +571,7 @@ amino.setCanvas = function(id) {
     if(amino.native.domctx == null) throw new Error("couldn't get a 2d context");
 };
 
-amino.startApp = function(cb) {
+amino.start = function(cb) {
     if(!cb) throw new Error("CB parameter missing to start app");
     amino.setupEventHandlers();
     var Core = amino.Core;
