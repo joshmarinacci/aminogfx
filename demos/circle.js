@@ -1,4 +1,4 @@
-var amino = require('amino.js');
+var amino = require('aminogfx');
 
 amino.start(function(core, stage) {
     var root = new amino.Group();

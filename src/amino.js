@@ -1,7 +1,5 @@
 var amino = exports;
-var sgtest = require('./aminonative.node');
-console.log('sgtest = ', sgtest);
-amino.sgtest = sgtest;
+
 
 var fs = require('fs');
 var input = require('./aminoinput');
@@ -141,8 +139,9 @@ function JSFont(desc) {
     this.weights = {};
 
     var dir = process.cwd();
-    process.chdir(__dirname); // chdir such that fonts (and internal shaders) may be found
-    var aminodir = __dirname+'/fonts/';
+    console.log("changing dir to ");
+    process.chdir(__dirname+'/..'); // chdir such that fonts (and internal shaders) may be found
+    var aminodir = __dirname+'/../resources/';
     if(desc.path) {
         aminodir = desc.path;
     }
@@ -150,6 +149,7 @@ function JSFont(desc) {
         var filepath = aminodir+desc.weights[weight].normal;
         if(!fs.existsSync(filepath)) {
             console.log("WARNING. File not found",filepath);
+            throw new Error();
         }
         this.weights[weight] = amino.native.createNativeFont(filepath);
     }

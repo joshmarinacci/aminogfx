@@ -1,9 +1,39 @@
 {
-  "name": "Amino",
-  "version": "0.0.1",
-  "dependencies": {
-    "wrench": "*",
-    "moment": "~2.2.1",
-    "png": "^3.0.3"
-  }
+    "name": "aminogfx",
+    "version": "0.0.3",
+    "description":"Scenegraph lib for OpenGL ES 2.0 and HTML Canvas",
+    "author": {
+        "name":"Josh Marinacci",
+        "email":"joshua@marinacci.org",
+        "url":"http://joshondesign.com/"
+    },
+
+
+    "binary": {
+        "module_name": "aminonative",
+        "module_path": "./build/binding/",
+        "host": "https://joshondesign.com/p/apps/aminogfx/builds/"
+    },
+
+    "main": "./main.js",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/joshmarinacci/aminogfx.git"
+    },
+    "dependencies": {
+        "node-pre-gyp": "0.5.x",
+        "wrench": "*",
+        "moment": "~2.2.1",
+        "png": "^3.0.3"
+    },
+    "bundledDependencies":["node-pre-gyp"],
+    "devDependencies": {
+        "aws-sdk": "~2.0.0-rc.15"
+    },
+    "engines": {
+        "node": ">= 0.10.0"
+    },
+    "scripts": {
+        "install": "node-pre-gyp install --fallback-to-build"
+    }
 }
