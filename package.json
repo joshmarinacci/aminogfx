@@ -1,6 +1,6 @@
 {
     "name": "aminogfx",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description":"Scenegraph lib for OpenGL ES 2.0 and HTML Canvas",
     "author": {
         "name":"Josh Marinacci",
