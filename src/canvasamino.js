@@ -67,7 +67,6 @@ amino.native = {
                 g.restore();
             },
         }
-        console.log('created a rect');
         this.list.push(rect);
         return rect;
     },
@@ -381,6 +380,17 @@ function CanvasFont(g,name) {
         g.font = size+"px sans-serif";
         return this.g.measureText('M').width;
     };
+    this.getHeightMetrics = function(size, weight, style) {
+        if(size == undefined) {
+            throw new Error("SIZE IS UNDEFINED");
+        }
+        return {
+            ascender: size,
+            descender: -size/5,
+            //ascender: amino.sgtest.getFontAscender(size, this.getNative(size, weight, style)),
+            //descender: amino.sgtest.getFontDescender(size, this.getNative(size, weight, style)),
+        };
+    }
     this.getNative = function(size,weight,style) {
         return this.name;
     };
