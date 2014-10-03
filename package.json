@@ -35,5 +35,7 @@
     },
     "scripts": {
         "install": "node-pre-gyp install --fallback-to-build"
-    }
+    },
+    "browser": "./browser_main.js"
+
 }

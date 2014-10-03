@@ -3,10 +3,7 @@ rm -rf build/canvas/bundle.js
 browserify \
     -d \
     --verbose \
-    -r ./src/canvasamino.js:canvasamino \
-    -r ./src/amino.js:amino \
-    -r ./src/primitives.js:primitives \
-    -r ./src/aminoinput.js:aminoinput \
+    -r ./browser_main.js:aminogfx \
     -i './aminonative.node' \
     -u './aminonative.node' \
     --ignore-missing \

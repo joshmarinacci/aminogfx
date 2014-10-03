@@ -519,7 +519,7 @@ amino.setupEventHandlers = function() {
         //dprint("touchend: " + pt.x + " " + pt.y);
         e.preventDefault();
         mouseState.pressed = false;
-        input.processEvent(Core._core,{
+        input.processEvent(amino.getCore(),{
             type:"mouseposition",
             x:pt.x,
             y:pt.y,

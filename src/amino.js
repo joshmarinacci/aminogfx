@@ -4,6 +4,9 @@ var amino = exports;
 var fs = require('fs');
 var input = require('./aminoinput');
 var prims = require('./primitives');
+exports.input = input;
+exports.primitives = prims;
+
 
 var OS = "BROWSER";
 if((typeof process) !== 'undefined') {
