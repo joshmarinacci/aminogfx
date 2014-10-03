@@ -31,6 +31,7 @@ input.KEY_MAP = {
 }
 
 var KEY_TO_CHAR_MAP = {};
+input.KEY_TO_CHAR_MAP = KEY_TO_CHAR_MAP;
 //lower symbols
 for(var i=32; i<=64; i++) {
     KEY_TO_CHAR_MAP[i]= String.fromCharCode(i);
