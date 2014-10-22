@@ -275,6 +275,14 @@ function Group() {
     }
     this.isParent = function() { return true; }
 
+    this.raiseToTop = function(node) {
+        if(node == undefined) throw new Error("can't move a null child");
+        //if(node.handle == undefined) throw new Error("the child doesn't have a handle");
+        this.remove(node);
+        this.addSingle(node);
+        return this;
+    };
+
     this.getVisible = this.visible;
 
     function treeSearch(root, considerRoot, filter) {
