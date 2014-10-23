@@ -262,6 +262,7 @@ function Group() {
     this.remove = function(child) {
         var n = this.children.indexOf(child);
         if(n >=  0) {
+            amino.native.removeNodeFromGroup(this.children[n].handle,this.handle);
             this.children.splice(n, 1);
         }
         return this;
