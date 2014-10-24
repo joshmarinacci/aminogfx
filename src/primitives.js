@@ -45,7 +45,7 @@ function setfilled(val, prop, obj) {
 var setters = [];
 ['tx','ty','w','h','scalex','scaley','id',
     'opacity','text','fontSize',
-    'rotateX','rotateY','rotateZ','geometry','dimension']
+    'rotateX','rotateY','rotateZ','geometry','dimension','cliprect']
 .forEach(function(name) {
     setters[name] = function(val,prop,obj) {
         amino.native.updateProperty(obj.handle,name,val);
@@ -225,9 +225,10 @@ function Group() {
         rx:0,
         ry:0,
         rz:0,
-
+        w:100,
+        h:100,
+        cliprect:0,
     });
-
 
     this.handle = amino.native.createGroup();
     mirrorAmino(this, {
@@ -240,6 +241,9 @@ function Group() {
         rz:'rotateZ',
         visible:'visible',
         id:'id',
+        w:'w',
+        h:'h',
+        cliprect:'cliprect',
     });
 
 
