@@ -553,6 +553,13 @@ function Core() {
         tx = tx/root.sx();
         ty = ty/root.sy();
         //console.log(tab + "   xy="+tx+","+ty);
+        if(root.cliprect && root.cliprect() == 1) {
+            if(tx < 0) return false;
+            if(tx > root.w()) return false;
+            if(ty < 0) return false;
+            if(ty > root.h()) return false;
+        }
+
         if(root.children) {
             //console.log(tab+"children = ",root.children.length);
             for(var i=root.children.length-1; i>=0; i--) {
