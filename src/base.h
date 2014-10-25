@@ -3,6 +3,9 @@
 
 #include "gfx.h"
 #include <node.h>
+#include <node_buffer.h>
+using namespace node;
+
 #include <uv.h>
 #include "shaders.h"
 #include "mathutils.h"
@@ -706,6 +709,28 @@ inline static Handle<Value> loadPngToTexture(const Arguments& args) {
     return scope.Close(obj);
 }
 
+inline static Handle<Value> loadBufferToTexture(const Arguments& args) {
+    HandleScope scope;
+    int texid   = args[0]->ToNumber()->NumberValue();
+    int w   = args[1]->ToNumber()->NumberValue();
+    int h   = args[2]->ToNumber()->NumberValue();
+    Local<Object> bufferObj = args[3]->ToObject();
+    char* bufferData = Buffer::Data(bufferObj);
+    size_t bufferLength = Buffer::Length(bufferObj);
+
+    assert(w*h*4 == bufferLength);
+
+    printf("need to create a new texture\n");
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bufferData);
+    Local<Object> obj = Object::New();
+    obj->Set(String::NewSymbol("texid"), Number::New(texture));
+    obj->Set(String::NewSymbol("w"),     Number::New(w));
+    obj->Set(String::NewSymbol("h"),     Number::New(h));
+    return scope.Close(obj);
+}
 /*static float* toFloatArray(Local<Object> obj, char* name) {
     Handle<Array>  oarray = Handle<Array>::Cast(obj->Get(String::New(name)));
     float* carray = new float[oarray->Length()];

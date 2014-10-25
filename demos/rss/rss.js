@@ -1,4 +1,4 @@
-var amino = require('amino.js');
+var amino = require('../../main.js');
 var FeedParser = require('feedparser');
 var http = require('http');
 

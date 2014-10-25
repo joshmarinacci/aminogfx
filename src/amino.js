@@ -97,7 +97,7 @@ amino.makeProp =function (obj,name,val) {
     prop.listeners = [];
     prop.watch = function(fun) {
         if(fun === undefined) {
-            console.log("function undefined for property ", name, " on object ", obj, "with value",val);
+            console.log("function undefined for property ", name, " on object ", "with value",val);
             new Error().printStackTrace();
         }
         this.listeners.push(function(v,v2,v3) {
@@ -243,6 +243,10 @@ amino.native = {
     },
     loadJpegToTexture: function(imagefile, cb) {
         var img = amino.sgtest.loadJpegToTexture(imagefile);
+        cb(img);
+    },
+    loadBufferToTexture: function(texid, w, h, buf, cb) {
+        var img = amino.sgtest.loadBufferToTexture(texid, w,h, buf)
         cb(img);
     },
     createText: function() {

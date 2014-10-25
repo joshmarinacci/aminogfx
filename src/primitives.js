@@ -45,7 +45,9 @@ function setfilled(val, prop, obj) {
 var setters = [];
 ['tx','ty','w','h','scalex','scaley','id',
     'opacity','text','fontSize',
-    'rotateX','rotateY','rotateZ','geometry','dimension','cliprect']
+    'rotateX','rotateY','rotateZ','geometry','dimension','cliprect',
+    'textureLeft','textureRight','textureTop','textureBottom',
+    ]
 .forEach(function(name) {
     setters[name] = function(val,prop,obj) {
         amino.native.updateProperty(obj.handle,name,val);
@@ -442,3 +444,67 @@ exports.Polygon = Polygon;
 exports.Circle = Circle;
 exports.ImageView = ImageView;
 exports.ParseRGBString = ParseRGBString;
+
+
+exports.PixelView = function() {
+    amino.makeProps(this,{
+        id: 'unknown id',
+        visible:true,
+        x:0,
+        y:0,
+        sx:1,
+        sy:1,
+        w:100,
+        h:100,
+        opacity: 1.0,
+        fill:'#ffffff',
+        src:null,
+        textureLeft: 0,
+        textureRight: 1,
+        textureTop:  0,
+        textureBottom: 1,
+        image:null,
+    });
+    var self = this;
+
+    var buf = new Buffer(100*100*4);
+    for(var i=0; i<buf.length; i++) {
+        buf[i] = 250;
+    }
+    //when the image is loaded, update the texture id and dimensions
+    var img = amino.native.loadBufferToTexture(-1,100,100, buf, function(image) {
+        console.log("got back with", image);
+        self.image(image);
+        self.w(image.w);
+        self.h(image.h);
+        console.log("using",self.image().texid);
+        amino.native.updateProperty(self.handle, 'texid', self.image().texid);
+    });
+
+/*
+    this.image.watch(function(image) {
+        self.w(image.w);
+        self.h(image.h);
+        amino.native.updateProperty(self.handle, 'texid', self.image().texid);
+    });
+    */
+
+
+    this.handle = amino.native.createRect();
+    mirrorAmino(this,{
+        x:'tx',
+        y:'ty',
+        w:'w',
+        h:'h',
+        visible:'visible',
+        sx:'scalex',
+        sy:'scaley',
+        fill:'fill',
+        id:'id',
+        textureLeft:'textureLeft',
+        textureRight: 'textureRight',
+        textureTop: 'textureTop',
+        textureBottom: 'textureBottom',
+    });
+    this.contains = contains;
+}
