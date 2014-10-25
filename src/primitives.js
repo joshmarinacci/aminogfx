@@ -458,37 +458,32 @@ exports.PixelView = function() {
         h:100,
         opacity: 1.0,
         fill:'#ffffff',
-        src:null,
         textureLeft: 0,
         textureRight: 1,
         textureTop:  0,
         textureBottom: 1,
-        image:null,
+        //image:null,
     });
     var self = this;
 
     var buf = new Buffer(100*100*4);
-    for(var i=0; i<buf.length; i++) {
-        buf[i] = 250;
+    var c1 = [0,0,0];
+    var c2 = [255,255,255];
+    for(var x=0; x<100; x++) {
+        for(var y=0; y<100; y++) {
+            var i = (x+y*100)*4;
+            var c;
+            if(x%3 == 0) {
+                c = c1;
+            } else {
+                c = c2;
+            }
+            buf[i+0] = c[0];
+            buf[i+1] = c[1];
+            buf[i+2] = c[2];
+            buf[i+3] = 255;
+        }
     }
-    //when the image is loaded, update the texture id and dimensions
-    var img = amino.native.loadBufferToTexture(-1,100,100, buf, function(image) {
-        console.log("got back with", image);
-        self.image(image);
-        self.w(image.w);
-        self.h(image.h);
-        console.log("using",self.image().texid);
-        amino.native.updateProperty(self.handle, 'texid', self.image().texid);
-    });
-
-/*
-    this.image.watch(function(image) {
-        self.w(image.w);
-        self.h(image.h);
-        amino.native.updateProperty(self.handle, 'texid', self.image().texid);
-    });
-    */
-
 
     this.handle = amino.native.createRect();
     mirrorAmino(this,{
@@ -505,6 +500,11 @@ exports.PixelView = function() {
         textureRight: 'textureRight',
         textureTop: 'textureTop',
         textureBottom: 'textureBottom',
+    });
+
+    //when the image is loaded, update the texture id and dimensions
+    var img = amino.native.loadBufferToTexture(-1,100,100, buf, function(image) {
+        amino.native.updateProperty(self.handle, 'texid', image.texid);
     });
     this.contains = contains;
 }

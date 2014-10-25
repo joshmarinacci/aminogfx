@@ -212,7 +212,8 @@ amino.native = {
         return fontmap[name];
     },
     updateProperty: function(handle, name, value) {
-        propertyCount++;
+        if(handle == undefined) throw new Error("Can't set a property on an undefined handle!!");
+        //console.log('setting', name, propsHash[name], value, typeof value);
         amino.sgtest.updateProperty(handle, propsHash[name], value);
     },
     setRoot: function(handle) {
