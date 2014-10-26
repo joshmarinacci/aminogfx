@@ -1,7 +1,7 @@
-var amino = require('amino.js');
+var amino = require('../../main.js');
 var fs = require('fs');
-var Group = require('amino').Group;
-var ImageView = require('amino').ImageView;
+var Group = amino.Group;
+var ImageView = amino.ImageView;
 
 
 if(process.argv.length < 3) {

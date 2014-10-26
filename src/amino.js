@@ -97,7 +97,7 @@ amino.makeProp =function (obj,name,val) {
     prop.listeners = [];
     prop.watch = function(fun) {
         if(fun === undefined) {
-            console.log("function undefined for property ", name, " on object ", obj, "with value",val);
+            console.log("function undefined for property ", name, " on object ", "with value",val);
             new Error().printStackTrace();
         }
         this.listeners.push(function(v,v2,v3) {
@@ -212,7 +212,8 @@ amino.native = {
         return fontmap[name];
     },
     updateProperty: function(handle, name, value) {
-        propertyCount++;
+        if(handle == undefined) throw new Error("Can't set a property on an undefined handle!!");
+        //console.log('setting', name, propsHash[name], value, typeof value);
         amino.sgtest.updateProperty(handle, propsHash[name], value);
     },
     setRoot: function(handle) {
@@ -243,6 +244,10 @@ amino.native = {
     },
     loadJpegToTexture: function(imagefile, cb) {
         var img = amino.sgtest.loadJpegToTexture(imagefile);
+        cb(img);
+    },
+    loadBufferToTexture: function(texid, w, h, buf, cb) {
+        var img = amino.sgtest.loadBufferToTexture(texid, w,h, buf)
         cb(img);
     },
     createText: function() {

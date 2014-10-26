@@ -45,7 +45,9 @@ function setfilled(val, prop, obj) {
 var setters = [];
 ['tx','ty','w','h','scalex','scaley','id',
     'opacity','text','fontSize',
-    'rotateX','rotateY','rotateZ','geometry','dimension','cliprect']
+    'rotateX','rotateY','rotateZ','geometry','dimension','cliprect',
+    'textureLeft','textureRight','textureTop','textureBottom',
+    ]
 .forEach(function(name) {
     setters[name] = function(val,prop,obj) {
         amino.native.updateProperty(obj.handle,name,val);
@@ -442,3 +444,67 @@ exports.Polygon = Polygon;
 exports.Circle = Circle;
 exports.ImageView = ImageView;
 exports.ParseRGBString = ParseRGBString;
+
+
+exports.PixelView = function() {
+    amino.makeProps(this,{
+        id: 'unknown id',
+        visible:true,
+        x:0,
+        y:0,
+        sx:1,
+        sy:1,
+        w:100,
+        h:100,
+        opacity: 1.0,
+        fill:'#ffffff',
+        textureLeft: 0,
+        textureRight: 1,
+        textureTop:  0,
+        textureBottom: 1,
+        //image:null,
+    });
+    var self = this;
+
+    var buf = new Buffer(100*100*4);
+    var c1 = [0,0,0];
+    var c2 = [255,255,255];
+    for(var x=0; x<100; x++) {
+        for(var y=0; y<100; y++) {
+            var i = (x+y*100)*4;
+            var c;
+            if(x%3 == 0) {
+                c = c1;
+            } else {
+                c = c2;
+            }
+            buf[i+0] = c[0];
+            buf[i+1] = c[1];
+            buf[i+2] = c[2];
+            buf[i+3] = 255;
+        }
+    }
+
+    this.handle = amino.native.createRect();
+    mirrorAmino(this,{
+        x:'tx',
+        y:'ty',
+        w:'w',
+        h:'h',
+        visible:'visible',
+        sx:'scalex',
+        sy:'scaley',
+        fill:'fill',
+        id:'id',
+        textureLeft:'textureLeft',
+        textureRight: 'textureRight',
+        textureTop: 'textureTop',
+        textureBottom: 'textureBottom',
+    });
+
+    //when the image is loaded, update the texture id and dimensions
+    var img = amino.native.loadBufferToTexture(-1,100,100, buf, function(image) {
+        amino.native.updateProperty(self.handle, 'texid', image.texid);
+    });
+    this.contains = contains;
+}
