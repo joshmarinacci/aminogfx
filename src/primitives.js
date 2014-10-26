@@ -186,15 +186,15 @@ function ImageView() {
         console.log("ERROR! Invalid image",src);
     })
 
+
+
+    this.handle = amino.native.createRect();
     //when the image is loaded, update the texture id and dimensions
     this.image.watch(function(image) {
         self.w(image.w);
         self.h(image.h);
         amino.native.updateProperty(self.handle, 'texid', self.image().texid);
     });
-
-
-    this.handle = amino.native.createRect();
     mirrorAmino(this,{
         x:'tx',
         y:'ty',
@@ -456,6 +456,8 @@ exports.PixelView = function() {
         sy:1,
         w:100,
         h:100,
+        pw:100,
+        ph:100,
         opacity: 1.0,
         fill:'#ffffff',
         textureLeft: 0,
@@ -466,24 +468,6 @@ exports.PixelView = function() {
     });
     var self = this;
 
-    var buf = new Buffer(100*100*4);
-    var c1 = [0,0,0];
-    var c2 = [255,255,255];
-    for(var x=0; x<100; x++) {
-        for(var y=0; y<100; y++) {
-            var i = (x+y*100)*4;
-            var c;
-            if(x%3 == 0) {
-                c = c1;
-            } else {
-                c = c2;
-            }
-            buf[i+0] = c[0];
-            buf[i+1] = c[1];
-            buf[i+2] = c[2];
-            buf[i+3] = 255;
-        }
-    }
 
     this.handle = amino.native.createRect();
     mirrorAmino(this,{
@@ -502,9 +486,47 @@ exports.PixelView = function() {
         textureBottom: 'textureBottom',
     });
 
-    //when the image is loaded, update the texture id and dimensions
-    var img = amino.native.loadBufferToTexture(-1,100,100, buf, function(image) {
-        amino.native.updateProperty(self.handle, 'texid', image.texid);
-    });
     this.contains = contains;
+    function rebuildBuffer() {
+        var w = self.pw();
+        var h = self.ph();
+        self.buf = new Buffer(w*h*4);
+        var c1 = [0,0,0];
+        var c2 = [255,255,255];
+        for(var x=0; x<w; x++) {
+            for(var y=0; y<h; y++) {
+                var i = (x+y*w)*4;
+                var c;
+                if(x%3 == 0) {
+                    c = c1;
+                } else {
+                    c = c2;
+                }
+                self.buf[i+0] = c[0];
+                self.buf[i+1] = c[1];
+                self.buf[i+2] = c[2];
+                self.buf[i+3] = 255;
+            }
+        }
+        self.updateTexture();
+    }
+    this.updateTexture = function() {
+        //when the image is loaded, update the texture id and dimensions
+        var img = amino.native.loadBufferToTexture(-1,self.pw(),self.ph(), self.buf, function(image) {
+            amino.native.updateProperty(self.handle, 'texid', image.texid);
+        });
+    }
+    this.setPixel = function(x,y,r,g,b,a) {
+        var w = self.pw();
+        var i = (x+y*w)*4;
+        self.buf[i+0] = r;
+        self.buf[i+1] = g;
+        self.buf[i+2] = b;
+        self.buf[i+3] = a;
+    }
+
+    this.pw.watch(rebuildBuffer);
+    this.ph.watch(rebuildBuffer);
+
+    rebuildBuffer();
 }
