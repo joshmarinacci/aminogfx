@@ -1,4 +1,4 @@
-var amino = require('amino.js');
+var amino = require('../../main.js');
 var data = require('./countries.js');
 var onecolor = require('onecolor');
 
@@ -10,6 +10,10 @@ var h = 768;//1080;
 var radius = w/6;
 
 amino.start(function(core, stage) {
+    if(stage.getW() > 100) {
+	    w = stage.getW();
+	    h = stage.getH();
+    }
 
     setupFont();
 

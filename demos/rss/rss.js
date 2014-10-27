@@ -8,6 +8,11 @@ var sh = 720;
 parseFeed('http://www.npr.org/rss/rss.php?id=1001',function(titles) {
     var titles = new CircularBuffer(titles);
     amino.start(function(core, stage) {
+	    console.log("stage = ", stage.getW(),stage.getH());
+	    if(stage.getW() > 100) {
+		    sw = stage.getW();
+		    sh = stage.getH();
+	    }
         var root = new amino.Group();
         stage.setSize(sw,sh);
         stage.setRoot(root);
