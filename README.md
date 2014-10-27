@@ -146,17 +146,26 @@ group.find(‘.pet’).w(50).h(50).fill(‘#0000ff’);
 
 To run Amino, check out the source, build for your platform, then run one of the demos.
 
+First, you'll need to have libpng and libjpeg installed for your platform. On Raspberry Pi do this:
+
+```
+sudo apt-get install libjpeg8-dev
+sudo apt-get install libpng-dev
+```
+
+Eventually we'll get rid of these dependencies.
+
 ```
 git clone git@github.com:joshmarinacci/aminogfx.git
 cd aminogfx
-node-gyp clean configure --OS=raspberrypi build
 npm install
-node build desktop
-export NODE_PATH=build/desktop
-node tests/examples/simple.js
 ```
 
-Note that the `-OS` flag is required on Raspberry Pi. You can leave it off for other platforms.
+Now it should work. Try this
+
+```
+node demos/circle.js
+```
 
 
 ## Using 3D
