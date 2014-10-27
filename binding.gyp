@@ -53,50 +53,59 @@
                         "KLAATU"
                     ]
                 }],
-                ['OS=="raspberrypi"', {
-                    "sources": [
-                        "src/rpi.cpp",
-                    ],
-                    "libraries":[
-                        "-lpng",
-                        "-ljpeg",
-                        "-L/opt/vc/lib/ -lbcm_host",
-                        "-lGLESv2",
-                        "-lEGL",
-                        '<!@(freetype-config --libs)',
-                    ],
-                    "defines": [
-                        "RPI"
-                    ],
-                    "include_dirs": [
-                        "/opt/vc/include/",
-                        "/usr/include/freetype2",
-                        "/opt/vc/include/interface/vcos/pthreads",
-                        "/opt/vc/include/interface/vmcs_host/linux",
-                        '<!@(freetype-config --cflags)'
-                    ],
-                }],
 
                 ['OS=="linux"', {
-                    "libraries":[
-                        '<!@(freetype-config --libs)',
-                        "-lglfw",
-                        "-lpng",
-                        "-ljpeg"
-                    ],
-                    "sources": [
-                        "src/mac.cpp",
-                    ],
-                    "defines": [
-                        "GL_GLEXT_PROTOTYPES",
-                        "LINUX"
-                    ],
-                    "include_dirs": [
-                        "/usr/include/freetype2",
-                        '<!@(freetype-config --cflags)'
-                    ],
+					"conditions" : [
+	                    ["target_arch=='arm'", {
+		                    "sources": [
+		                        "src/rpi.cpp"
+		                    ],
+		                    "libraries":[
+		                        "-lpng",
+		                        "-ljpeg",
+		                        "-L/opt/vc/lib/ -lbcm_host",
+		                        "-lGLESv2",
+		                        "-lEGL",
+		                        '<!@(freetype-config --libs)',
+		                    ],
+		                    "defines": [
+		                        "RPI"
+		                    ],
+		                    "include_dirs": [
+		                        "/opt/vc/include/",
+		                        "/usr/include/freetype2",
+		                        "/opt/vc/include/interface/vcos/pthreads",
+		                        "/opt/vc/include/interface/vmcs_host/linux",
+		                        '<!@(freetype-config --cflags)'
+		                    ]
+		                }],
+		                
+		                ["target_arch!='arm'", {
+		                    "sources": [
+		                        "src/mac.cpp"
+		                    ],
+		                    "libraries":[
+		                        '<!@(freetype-config --libs)',
+		                        "-lglfw",
+		                        "-lpng",
+		                        "-ljpeg"
+		                    ],
+		                    "defines": [
+		                        "GL_GLEXT_PROTOTYPES",
+		                        "LINUX"
+		                    ],
+		                    "include_dirs": [
+		                        "/usr/include/freetype2",
+		                        "<!@(freetype-config --cflags)"
+		                    ]
+
+		                }]
+		            ]
+
                 }]
+                
             ]
+                
 
         },
   {
