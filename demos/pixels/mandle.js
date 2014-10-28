@@ -24,7 +24,6 @@ amino.start(function(core, stage) {
     var pv = new amino.PixelView().pw(500).w(500).ph(500).h(500);
     root.add(pv);
     stage.setRoot(root);
-    stage.setSize(500,500);
 
     function generateMandlebrot() {
         var w = pv.pw();
@@ -33,28 +32,24 @@ amino.start(function(core, stage) {
             var y = m.iy;
             for(var x=0; x<m.row.length; x++) {
                 var c = lookupColor(m.row[x]);
-                //var x = m.ix;
                 pv.setPixel(x,y,c[0],c[1],c[2],255);
             }
             pv.updateTexture();
         }
         var workman = Workman;
         workman.init(__dirname+'/mandle_child.js',handleRow);
+        var scale = 0.01;
         for(var y=0; y<h; y++) {
-            //var px = (x-w/2)*0.1;
-            var py = (y-h/2)*0.01;
+            var py = (y-h/2)*scale;
             var msg = {
-                //x:px,
-                x0:(-w/2)*0.01,
-                x1:(+w/2)*0.01,
+                x0:(-w/2)*scale,
+                x1:(+w/2)*scale,
                 y:py,
-                //ix:x,
                 iw: w,
                 iy:y,
-                iter:100000,
+                iter:100,
             };
             workman.sendWork(msg);
-                //chs[y%chs.length].send(msg);
         }
     }
 

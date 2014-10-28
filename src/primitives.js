@@ -510,9 +510,11 @@ exports.PixelView = function() {
         }
         self.updateTexture();
     }
+    var texid = -1;
     this.updateTexture = function() {
         //when the image is loaded, update the texture id and dimensions
-        var img = amino.native.loadBufferToTexture(-1,self.pw(),self.ph(), self.buf, function(image) {
+        var img = amino.native.loadBufferToTexture(texid,self.pw(),self.ph(), self.buf, function(image) {
+	        texid = image.texid;
             amino.native.updateProperty(self.handle, 'texid', image.texid);
         });
     }

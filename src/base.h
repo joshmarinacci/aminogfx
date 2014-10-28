@@ -721,7 +721,11 @@ inline static Handle<Value> loadBufferToTexture(const Arguments& args) {
     assert(w*h*4 == bufferLength);
 
     GLuint texture;
-    glGenTextures(1, &texture);
+    if(texid >= 0) {
+	    texture = texid;
+    } else {
+	    glGenTextures(1, &texture);
+    }
     glBindTexture(GL_TEXTURE_2D, texture);
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bufferData);
