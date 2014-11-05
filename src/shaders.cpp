@@ -134,12 +134,14 @@ TextureShader::TextureShader() {
    #endif
       "uniform mat4 modelviewProjection;\n"
       "uniform mat4 trans;\n"
-      
+      "uniform float opacity;\n"      
       "attribute vec4 pos;\n"
       "attribute vec2 texcoords;\n"
       "varying vec2 uv;\n"
+      "varying float outopacity;\n"
       "void main() {\n"
       "   gl_Position = modelviewProjection * trans * pos;\n"
+      "   outopacity = opacity;\n"
       "   uv = texcoords;\n"
       "}\n";
       
@@ -151,9 +153,11 @@ TextureShader::TextureShader() {
       "precision mediump float;\n"
    #endif
      "varying vec2 uv;\n"
+     "varying float outopacity;\n"
      "uniform sampler2D tex;\n"
      "void main() {\n"
-     "   gl_FragColor = texture2D(tex,uv);\n"
+	 "   vec4 col = texture2D(tex,uv);\n"
+     "   gl_FragColor = vec4(col.r,col.g,col.b,col.a*outopacity);\n"
      "}\n";
       
     GLuint vert = compileVertShader(vertShaderText);

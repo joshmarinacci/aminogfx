@@ -127,6 +127,7 @@ function Text() {
         fill:'fill',
         text:'text',
         fontSize:'fontSize',
+        opacity:'opacity',
         id:'id',
     });
     var self = this;
@@ -209,6 +210,7 @@ function ImageView() {
         textureRight: 'textureRight',
         textureTop: 'textureTop',
         textureBottom: 'textureBottom',
+        opacity:'opacity',
     });
     this.contains = contains;
 }

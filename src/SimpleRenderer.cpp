@@ -72,11 +72,12 @@ void colorShaderApply(GLContext *ctx, ColorShader* shader, GLfloat modelView[16]
     glDisableVertexAttribArray(shader->attr_color);
 }
 
-void textureShaderApply(GLContext *ctx, TextureShader* shader, GLfloat modelView[16], GLfloat verts[][2], GLfloat texcoords[][2], int texid) {
+void textureShaderApply(GLContext *ctx, TextureShader* shader, GLfloat modelView[16], GLfloat verts[][2], GLfloat texcoords[][2], int texid, GLfloat opacity) {
     //void TextureShader::apply(GLfloat modelView[16], GLfloat trans[16], GLfloat verts[][2], GLfloat texcoords[][2], int texid) {
     //        textureShaderApply(c,textureShader, modelView, verts, texcoords, rect->texid);
 
     //printf("doing texture shader apply %d\n",texid);
+
     ctx->useProgram(shader->prog);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -84,6 +85,8 @@ void textureShaderApply(GLContext *ctx, TextureShader* shader, GLfloat modelView
     glUniformMatrix4fv(shader->u_matrix, 1, GL_FALSE, modelView);
     glUniformMatrix4fv(shader->u_trans,  1, GL_FALSE, ctx->globaltx);
     glUniform1i(shader->attr_tex, 0);
+    glUniform1f(shader->u_opacity, opacity);
+
 
 
     glVertexAttribPointer(shader->attr_texcoords, 2, GL_FLOAT, GL_FALSE, 0, texcoords);
@@ -254,7 +257,7 @@ void SimpleRenderer::drawRect(GLContext* c, Rect* rect) {
         texcoords[3][0] = tx2;   texcoords[3][1] = ty2;
         texcoords[4][0] = tx;    texcoords[4][1] = ty2;
         texcoords[5][0] = tx;    texcoords[5][1] = ty;
-        textureShaderApply(c,textureShader, modelView, verts, texcoords, rect->texid);
+        textureShaderApply(c,textureShader, modelView, verts, texcoords, rect->texid, rect->opacity);
     } else {
         colorShaderApply(c,colorShader, modelView, verts, colors, rect->opacity);
     }
