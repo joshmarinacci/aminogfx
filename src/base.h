@@ -107,6 +107,7 @@ public:
     float rotatex;
     float rotatey;
     float rotatez;
+    float opacity;
     int type;
     int visible;
     AminoNode() {
@@ -119,6 +120,7 @@ public:
         rotatez = 0;
         type = 0;
         visible = 1;
+        opacity = 1;
     }
     virtual ~AminoNode() {
     }
@@ -225,6 +227,7 @@ public:
         if(property == ROTATEX) target->rotatex = value;
         if(property == ROTATEY) target->rotatey = value;
         if(property == ROTATEZ) target->rotatez = value;
+        if(property == OPACITY_PROP) target->opacity = value;
     }
 
 void endAnimation() {
@@ -293,7 +296,6 @@ public:
     float right;
     float top;
     float bottom;
-    float opacity;
     int texid;
     Rect() {
         x = 0; y = 0; w = 100; h = 100;
@@ -315,7 +317,6 @@ public:
     float r;
     float g;
     float b;
-    float opacity;
     std::vector<float>* geometry;
     int dimension;
     int filled;
