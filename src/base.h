@@ -154,6 +154,33 @@ static void warnAbort(char * str) {
     exit(-1);
 }
 
+class TextNode : public AminoNode {
+public:
+    float x;
+    float y;
+    float r;
+    float g;
+    float b;
+    int fontid;
+    int fontsize;
+    std::wstring text;
+    vertex_buffer_t * buffer;
+    TextNode() {
+        x = 0; y = 0;
+        r = 0; g = 0; b = 0;
+        type = TEXT;
+        text = L"foo";
+        fontsize = 40;
+        fontid = INVALID;
+        buffer = vertex_buffer_new( "vertex:3f,tex_coord:2f,color:4f" );
+        opacity = 1;
+    }
+    virtual ~TextNode() {
+    }
+    void refreshText();
+};
+
+
 class Anim {
 public:
     AminoNode* target;
@@ -227,7 +254,13 @@ public:
         if(property == ROTATEX) target->rotatex = value;
         if(property == ROTATEY) target->rotatey = value;
         if(property == ROTATEZ) target->rotatez = value;
-        if(property == OPACITY_PROP) target->opacity = value;
+        if(property == OPACITY_PROP) {
+            target->opacity = value;
+            if(target->type == TEXT) {
+                TextNode* textnode = (TextNode*)target;
+                textnode->refreshText();
+            };
+        }
     }
 
 void endAnimation() {
@@ -339,31 +372,6 @@ public:
     }
 };
 
-class TextNode : public AminoNode {
-public:
-    float x;
-    float y;
-    float r;
-    float g;
-    float b;
-    int fontid;
-    int fontsize;
-    std::wstring text;
-    vertex_buffer_t * buffer;
-    TextNode() {
-        x = 0; y = 0;
-        r = 0; g = 0; b = 0;
-        type = TEXT;
-        text = L"foo";
-        fontsize = 40;
-        fontid = INVALID;
-        buffer = vertex_buffer_new( "vertex:3f,tex_coord:2f,color:4f" );
-    }
-    virtual ~TextNode() {
-    }
-    void refreshText();
-};
-
 class Group : public AminoNode {
 public:
     std::vector<AminoNode*> children;
@@ -431,6 +439,7 @@ public:
         if(property == ROTATEY) target->rotatey = value;
         if(property == ROTATEZ) target->rotatez = value;
         if(property == VISIBLE) target->visible = value;
+        if(property == OPACITY_PROP) target->opacity = value;
 
         if(target->type == RECT) {
             Rect* rect = (Rect*)target;
@@ -442,7 +451,6 @@ public:
             if(property == W_PROP) rect->w = value;
             if(property == H_PROP) rect->h = value;
             if(property == TEXID) rect->texid = value;
-            if(property == OPACITY_PROP) rect->opacity = value;
             if(property == TEXTURELEFT_PROP)   rect->left = value;
             if(property == TEXTURERIGHT_PROP)  rect->right = value;
             if(property == TEXTURETOP_PROP)    rect->top = value;
@@ -472,7 +480,6 @@ public:
             if(property == R) polynode->r = value;
             if(property == G) polynode->g = value;
             if(property == B) polynode->b = value;
-            if(property == OPACITY_PROP) polynode->opacity = value;
             if(property == GEOMETRY) {
                 polynode->geometry = arr;
             }

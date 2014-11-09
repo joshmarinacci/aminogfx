@@ -115,6 +115,7 @@ void TextNode::refreshText() {
     black.r = r;
     black.g = g;
     black.b = b;
+    black.a = opacity;
 
     wchar_t *t2 = const_cast<wchar_t*>(text.c_str());
     vertex_buffer_delete(buffer);

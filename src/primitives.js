@@ -409,6 +409,7 @@ function Polygon() {
         filled:'filled',
         geometry:'geometry',
         dimension:'dimension',
+        opacity:'opacity',
     });
     this.contains = function() { return false };
     this.dimension(2);
@@ -482,6 +483,7 @@ exports.PixelView = function() {
         sy:'scaley',
         fill:'fill',
         id:'id',
+        opacity:'opacity',
         textureLeft:'textureLeft',
         textureRight: 'textureRight',
         textureTop: 'textureTop',
