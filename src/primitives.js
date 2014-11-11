@@ -1,4 +1,5 @@
 var amino = require('./amino');
+var fs = require('fs');
 
 function getAmino() {
     return amino;
@@ -178,11 +179,23 @@ function ImageView() {
 
     //actually load the image
     this.src.watch(function(src) {
+        var fbuf = fs.readFileSync(src);
+        console.log("read the fbuf",fbuf);
+        function bufferToTexture(ibuf) {
+            console.log("got the ibuffer",ibuf);
+            amino.native.loadBufferToTexture(-1, ibuf.w, ibuf.h, ibuf.bpp, ibuf.buffer, function(texture) {
+                console.log("got the texture",texture);
+                self.image(texture);
+            });
+        }
+
         if(src.toLowerCase().endsWith(".png")) {
-            return amino.native.loadPngToTexture(src, self.image);
+            amino.native.decodePngBuffer(fbuf, bufferToTexture);
+            return;
         }
         if(src.toLowerCase().endsWith(".jpg")) {
-            return amino.native.loadJpegToTexture(src, self.image);
+            amino.native.decodeJpegBuffer(fbuf, bufferToTexture);
+            return;
         }
         console.log("ERROR! Invalid image",src);
     })
@@ -517,7 +530,7 @@ exports.PixelView = function() {
     var texid = -1;
     this.updateTexture = function() {
         //when the image is loaded, update the texture id and dimensions
-        var img = amino.native.loadBufferToTexture(texid,self.pw(),self.ph(), self.buf, function(image) {
+        var img = amino.native.loadBufferToTexture(texid,self.pw(),self.ph(), 4, self.buf, function(image) {
 	        texid = image.texid;
             amino.native.updateProperty(self.handle, 'texid', image.texid);
         });

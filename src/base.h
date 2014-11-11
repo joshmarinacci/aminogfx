@@ -2,6 +2,7 @@
 #define AMINOBASE
 
 #include "gfx.h"
+
 #include <node.h>
 #include <node_buffer.h>
 using namespace node;
@@ -9,7 +10,6 @@ using namespace node;
 #include <uv.h>
 #include "shaders.h"
 #include "mathutils.h"
-#include "image.h"
 #include <stdio.h>
 #include <string.h>
 #include <vector>
@@ -24,6 +24,12 @@ using namespace node;
 #include "shader.h"
 #include "vertex-buffer.h"
 #include "texture-font.h"
+
+
+extern "C" {
+    #include "nanojpeg.h"
+    #include "upng.h"
+}
 
 const int GROUP = 1;
 const int RECT = 2;
@@ -656,45 +662,91 @@ inline static Handle<Value> setRoot(const Arguments& args) {
     return scope.Close(Undefined());
 }
 
-inline static Handle<Value> loadJpegToTexture(const Arguments& args) {
+inline static Handle<Value> decodeJpegBuffer(const Arguments& args) {
     HandleScope scope;
-    v8::String::Utf8Value param1(args[0]->ToString());
-    std::string text = std::string(*param1);
-    char * file = new char [text.length()+1];
-    strcpy (file, text.c_str());
-    printf("LoadJpegFromFile %s\n",file);
-    Image* image = jpegfile_to_bytes(file);
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    free(image->data);
 
-    Local<Object> obj = Object::New();
-    obj->Set(String::NewSymbol("texid"), Number::New(texture));
-    obj->Set(String::NewSymbol("w"),     Number::New(image->w));
-    obj->Set(String::NewSymbol("h"),     Number::New(image->h));
-    return scope.Close(obj);
-}
-
-inline static Handle<Value> loadPngToTexture(const Arguments& args) {
-    HandleScope scope;
-    v8::String::Utf8Value param1(args[0]->ToString());
-    std::string text = std::string(*param1);
-    char * file = new char [text.length()+1];
-    strcpy (file, text.c_str());
-    printf("LoadPngFromFile %s\n",file);
-    Image* image = pngfile_to_bytes(file);
-    if(image == 0) {
-        printf("error loading\n");
+    if(!Buffer::HasInstance(args[0])){
+        printf("first argument must be a buffer.\n");
         return scope.Close(Undefined());
     }
 
+    uint8_t *bufferin;
+    unsigned lengthin, lengthout;
+    bufferin = (uint8_t *) Buffer::Data(args[0]->ToObject());
+    lengthin = Buffer::Length(args[0]->ToObject());
+
+
+    njInit();
+    if (njDecode(bufferin, lengthin)) {
+        printf("Error decoding the input file.\n");
+        return scope.Close(Undefined());
+    }
+
+    printf("got an image %d %d\n",njGetWidth(),njGetHeight());
+    printf("size = %d\n",njGetImageSize());
+    lengthout = njGetImageSize();
+
+    Buffer *bufferout;
+    bufferout = Buffer::New(lengthout);
+    memcpy(Buffer::Data(bufferout), njGetImage(), lengthout);
+
+    Local<Object> obj = Object::New();
+    obj->Set(String::NewSymbol("w"),     Number::New(njGetWidth()));
+    obj->Set(String::NewSymbol("h"),     Number::New(njGetHeight()));
+    obj->Set(String::NewSymbol("alpha"),  Number::New(FALSE));
+    obj->Set(String::NewSymbol("bpp"),  Number::New(3));
+    obj->Set(String::NewSymbol("buffer"), bufferout->handle_);
+    njDone();
+    return scope.Close(obj);
+}
+
+inline static Handle<Value> decodePngBuffer(const Arguments& args) {
+    HandleScope scope;
+
+    if(!Buffer::HasInstance(args[0])){
+        printf("first argument must be a buffer.\n");
+        return scope.Close(Undefined());
+    }
+
+    uint8_t *bufferin;
+    unsigned lengthin, lengthout;
+    bufferin = (uint8_t *) Buffer::Data(args[0]->ToObject());
+    lengthin = Buffer::Length(args[0]->ToObject());
+
+
+
+    unsigned width, height;
+    unsigned char* png;
+    const unsigned char* image;
+
+    upng_t* upng = upng_new_from_bytes(bufferin, lengthin);
+    if(upng == NULL) {
+        printf("error decoding png file");
+        return scope.Close(Undefined());
+    }
+
+    upng_decode(upng);
+    printf("width = %d %d\n",upng_get_width(upng), upng_get_height(upng));
+    printf("bytes per pixel = %d\n",upng_get_pixelsize(upng));
+
+    image = upng_get_buffer(upng);
+    lengthout = upng_get_size(upng);
+    printf("length of uncompressed buffer = %d\n", lengthout);
+    Buffer *bufferout;
+    bufferout = Buffer::New(lengthout);
+    memcpy(Buffer::Data(bufferout), image, lengthout);
+
+    Local<Object> obj = Object::New();
+    obj->Set(String::NewSymbol("w"),     Number::New(upng_get_width(upng)));
+    obj->Set(String::NewSymbol("h"),     Number::New(upng_get_height(upng)));
+    obj->Set(String::NewSymbol("alpha"),  Number::New(TRUE));
+    obj->Set(String::NewSymbol("bpp"),  Number::New(4));
+    obj->Set(String::NewSymbol("buffer"), bufferout->handle_);
+
+    upng_free(upng);
+    return scope.Close(obj);
+
+/*
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -715,6 +767,7 @@ inline static Handle<Value> loadPngToTexture(const Arguments& args) {
     obj->Set(String::NewSymbol("w"),     Number::New(image->w));
     obj->Set(String::NewSymbol("h"),     Number::New(image->h));
     return scope.Close(obj);
+    */
 }
 
 inline static Handle<Value> loadBufferToTexture(const Arguments& args) {
@@ -722,11 +775,15 @@ inline static Handle<Value> loadBufferToTexture(const Arguments& args) {
     int texid   = args[0]->ToNumber()->NumberValue();
     int w   = args[1]->ToNumber()->NumberValue();
     int h   = args[2]->ToNumber()->NumberValue();
-    Local<Object> bufferObj = args[3]->ToObject();
+    // this is *bytes* per pixel. usually 3 or 4
+    int bpp = args[3]->ToNumber()->NumberValue();
+    printf("got w %d h %d\n",w,h);
+    Local<Object> bufferObj = args[4]->ToObject();
     char* bufferData = Buffer::Data(bufferObj);
     size_t bufferLength = Buffer::Length(bufferObj);
+    printf("buffer length = %d\n", bufferLength);
 
-    assert(w*h*4 == bufferLength);
+    assert(w*h*bpp == bufferLength);
 
     GLuint texture;
     if(texid >= 0) {
@@ -736,7 +793,11 @@ inline static Handle<Value> loadBufferToTexture(const Arguments& args) {
     }
     glBindTexture(GL_TEXTURE_2D, texture);
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bufferData);
+    if(bpp == 3) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, bufferData);
+    } else {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bufferData);
+    }
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

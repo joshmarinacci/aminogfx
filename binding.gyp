@@ -13,7 +13,8 @@
                 "src/fonts/mat4.c",
 
                 "src/shaders.cpp",
-                "src/image.cpp",
+                "src/nanojpeg.c",
+                "src/upng.c",
                 "src/SimpleRenderer.cpp"
             ],
             "include_dirs": [
@@ -26,13 +27,9 @@
                     "include_dirs": [
                         " <!@(freetype-config --cflags)",
                         " <!@(pkg-config --cflags libglfw)",
-                        "/usr/local/Cellar/jpeg/8d/include/",
-                        " <!@(pkg-config --cflags libpng)"
                     ],
                     "libraries": [
                         " <!@(pkg-config --libs libglfw)",
-                        "-L/usr/local/Cellar/jpeg/8d/lib",
-                        "-lpng",
                         '-framework OpenGL',
                         '-framework OpenCL',
                         '-framework IOKit',
@@ -61,8 +58,6 @@
 		                        "src/rpi.cpp"
 		                    ],
 		                    "libraries":[
-		                        "-lpng",
-		                        "-ljpeg",
 		                        "-L/opt/vc/lib/ -lbcm_host",
 		                        "-lGLESv2",
 		                        "-lEGL",
@@ -79,7 +74,7 @@
 		                        '<!@(freetype-config --cflags)'
 		                    ]
 		                }],
-		                
+
 		                ["target_arch!='arm'", {
 		                    "sources": [
 		                        "src/mac.cpp"
@@ -87,8 +82,6 @@
 		                    "libraries":[
 		                        '<!@(freetype-config --libs)',
 		                        "-lglfw",
-		                        "-lpng",
-		                        "-ljpeg"
 		                    ],
 		                    "defines": [
 		                        "GL_GLEXT_PROTOTYPES",
@@ -103,9 +96,9 @@
 		            ]
 
                 }]
-                
+
             ]
-                
+
 
         },
   {
@@ -119,6 +112,6 @@
         }
       ]
     }
-            
+
     ]
 }
