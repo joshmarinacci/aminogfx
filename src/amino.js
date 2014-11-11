@@ -238,16 +238,14 @@ amino.native = {
     removeNodeFromGroup: function(h1, h2) {
         amino.sgtest.removeNodeFromGroup(h1, h2);
     },
-    loadPngToTexture: function(imagefile,cb) {
-        var img = amino.sgtest.loadPngToTexture(imagefile);
-        cb(img);
+    decodePngBuffer: function(fbuf, cb) {
+        cb(amino.sgtest.decodePngBuffer(fbuf));
     },
-    loadJpegToTexture: function(imagefile, cb) {
-        var img = amino.sgtest.loadJpegToTexture(imagefile);
-        cb(img);
+    decodeJpegBuffer: function(fbuf, cb) {
+        cb(amino.sgtest.decodeJpegBuffer(fbuf));
     },
-    loadBufferToTexture: function(texid, w, h, buf, cb) {
-        var img = amino.sgtest.loadBufferToTexture(texid, w,h, buf)
+    loadBufferToTexture: function(texid, w, h, bpp, buf, cb) {
+        var img = amino.sgtest.loadBufferToTexture(texid, w,h, bpp, buf)
         cb(img);
     },
     createText: function() {
