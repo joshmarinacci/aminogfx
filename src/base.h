@@ -693,7 +693,7 @@ inline static Handle<Value> decodeJpegBuffer(const Arguments& args) {
     Local<Object> obj = Object::New();
     obj->Set(String::NewSymbol("w"),     Number::New(njGetWidth()));
     obj->Set(String::NewSymbol("h"),     Number::New(njGetHeight()));
-    obj->Set(String::NewSymbol("alpha"),  Number::New(FALSE));
+    obj->Set(String::NewSymbol("alpha"),  Number::New(false));
     obj->Set(String::NewSymbol("bpp"),  Number::New(3));
     obj->Set(String::NewSymbol("buffer"), bufferout->handle_);
     njDone();
@@ -739,7 +739,7 @@ inline static Handle<Value> decodePngBuffer(const Arguments& args) {
     Local<Object> obj = Object::New();
     obj->Set(String::NewSymbol("w"),     Number::New(upng_get_width(upng)));
     obj->Set(String::NewSymbol("h"),     Number::New(upng_get_height(upng)));
-    obj->Set(String::NewSymbol("alpha"),  Number::New(TRUE));
+    obj->Set(String::NewSymbol("alpha"),  Number::New(true));
     obj->Set(String::NewSymbol("bpp"),  Number::New(4));
     obj->Set(String::NewSymbol("buffer"), bufferout->handle_);
 

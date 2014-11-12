@@ -99,9 +99,17 @@ static void init_ogl(PWindow *state) {
    dispman_display = vc_dispmanx_display_open( 0 /* LCD */);
    dispman_update = vc_dispmanx_update_start( 0 );
          
+
+   VC_DISPMANX_ALPHA_T         dispman_alpha;
+
+   dispman_alpha.flags = DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS; 
+   dispman_alpha.opacity = 0xFF; 
+   dispman_alpha.mask = NULL; 
+
+   int LAYER = -128;  
    dispman_element = vc_dispmanx_element_add ( dispman_update, dispman_display,
-      0/*layer*/, &dst_rect, 0/*src*/,
-      &src_rect, DISPMANX_PROTECTION_NONE, 0 /*alpha*/, 0/*clamp*/, (DISPMANX_TRANSFORM_T)0/*transform*/);
+      LAYER/*layer*/, &dst_rect, 0/*src*/,
+      &src_rect, DISPMANX_PROTECTION_NONE, &dispman_alpha  /*alpha*/, 0/*clamp*/, (DISPMANX_TRANSFORM_T)0/*transform*/);
       
    nativewindow.element = dispman_element;
    nativewindow.width = state->screen_width;
@@ -565,8 +573,8 @@ void InitAll(Handle<Object> exports, Handle<Object> module) {
     exports->Set(String::NewSymbol("selfDrive"),        FunctionTemplate::New(selfDrive)->GetFunction());
     exports->Set(String::NewSymbol("setEventCallback"), FunctionTemplate::New(setEventCallback)->GetFunction());
     exports->Set(String::NewSymbol("setRoot"),          FunctionTemplate::New(setRoot)->GetFunction());
-    exports->Set(String::NewSymbol("loadPngToTexture"), FunctionTemplate::New(loadPngToTexture)->GetFunction());   
-    exports->Set(String::NewSymbol("loadJpegToTexture"),FunctionTemplate::New(loadJpegToTexture)->GetFunction());
+    exports->Set(String::NewSymbol("decodePngBuffer"),  FunctionTemplate::New(decodePngBuffer)->GetFunction());
+    exports->Set(String::NewSymbol("decodeJpegBuffer"),  FunctionTemplate::New(decodeJpegBuffer)->GetFunction());
     exports->Set(String::NewSymbol("loadBufferToTexture"),  FunctionTemplate::New(loadBufferToTexture)->GetFunction());
     exports->Set(String::NewSymbol("createNativeFont"), FunctionTemplate::New(createNativeFont)->GetFunction());
     exports->Set(String::NewSymbol("getCharWidth"),     FunctionTemplate::New(getCharWidth)->GetFunction());
