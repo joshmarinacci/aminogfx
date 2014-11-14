@@ -76,7 +76,7 @@ void textureShaderApply(GLContext *ctx, TextureShader* shader, GLfloat modelView
     //void TextureShader::apply(GLfloat modelView[16], GLfloat trans[16], GLfloat verts[][2], GLfloat texcoords[][2], int texid) {
     //        textureShaderApply(c,textureShader, modelView, verts, texcoords, rect->texid);
 
-    printf("doing texture shader apply %d opacity = %f\n",texid, opacity);
+    //printf("doing texture shader apply %d opacity = %f\n",texid, opacity);
 
     ctx->useProgram(shader->prog);
     glEnable(GL_BLEND);

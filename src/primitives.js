@@ -543,6 +543,11 @@ exports.PixelView = function() {
         self.buf[i+2] = b;
         self.buf[i+3] = a;
     }
+    this.setPixeli32 = function(x,y,int) {
+        var w = self.pw();
+        var i = (x+y*w)*4;
+        self.buf.writeUInt32BE(int,i);
+    }
 
     this.pw.watch(rebuildBuffer);
     this.ph.watch(rebuildBuffer);
