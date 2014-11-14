@@ -777,11 +777,11 @@ inline static Handle<Value> loadBufferToTexture(const Arguments& args) {
     int h   = args[2]->ToNumber()->NumberValue();
     // this is *bytes* per pixel. usually 3 or 4
     int bpp = args[3]->ToNumber()->NumberValue();
-    printf("got w %d h %d\n",w,h);
+    //printf("got w %d h %d\n",w,h);
     Local<Object> bufferObj = args[4]->ToObject();
     char* bufferData = Buffer::Data(bufferObj);
     size_t bufferLength = Buffer::Length(bufferObj);
-    printf("buffer length = %d\n", bufferLength);
+    //printf("buffer length = %d\n", bufferLength);
 
     assert(w*h*bpp == bufferLength);
 
