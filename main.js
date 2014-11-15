@@ -25,3 +25,4 @@ exports.ImageView = amino.primitives.ImageView;
 exports.registerFont = amino.registerFont;
 
 exports.ParseRGBString = amino.primitives.ParseRGBString;
+exports.PureImageView = amino.primitives.PureImageView;

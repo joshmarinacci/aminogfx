@@ -1,5 +1,6 @@
 var amino = require('./amino');
 var fs = require('fs');
+var PImage = require('pureimage');
 
 function getAmino() {
     return amino;
@@ -553,4 +554,27 @@ exports.PixelView = function() {
     this.ph.watch(rebuildBuffer);
 
     rebuildBuffer();
+}
+
+exports.PureImageView = function() {
+    var piv = new exports.PixelView();
+    var img = PImage.make(800,600);
+    var ctx = img.getContext('2d');
+    ctx.setFillStyleRGBA(0,255,0, 1);
+    piv.getContext = function() {
+        return ctx;
+    }
+    piv.sync = function() {
+        //copy pixels
+        for(var i=0; i<img.width; i++) {
+            for(var j=0; j<img.height; j++) {
+                var pixel = ctx.getPixeli32(i,j);
+                if(i >= this.pw()) continue;
+                if(j >= this.ph()) continue;
+                this.setPixeli32(i,j, pixel);
+            }
+        }
+        this.updateTexture();
+    }
+    return piv;
 }

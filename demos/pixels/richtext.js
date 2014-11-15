@@ -1,31 +1,30 @@
 var amino = require('../../main.js');
-var PImage = require('../../../node-pureimage/src/pureimage');
+var events = require('inputevents');
 var comp = require('../../../richtext/rt2/component');
 var Document = require('../../../richtext/rt2/document').Document;
-
 
 function makeStyledJSDoc() {
     var frame = Document.makeFrame();
     frame.styles = {
         'bold': {
             'font-style':'normal',
-            'font-family':"'Source Serif Pro'",
+            'font-family':"'source'",
             'font-weight':'700',
         },
         'italic': {
             'font-style':'italic',
-            'font-family':"'Source Serif Pro'",
+            'font-family':"'source'",
         },
         'code': {
             'color':'#000000',
-            'font-family':"'Source Code Pro'",
+            'font-family':"'source'",
             'background-color':'#ccffee',
         },
 
         'paragraph': {
             'color':'#000000',
             'font-size':15,
-            'font-family':"'Source Serif Pro'",
+            'font-family':"'source'",
             'font-style':'normal',
             'background-color':'#ffffff',
             'font-weight':'400',
@@ -34,29 +33,29 @@ function makeStyledJSDoc() {
         },
         'header': {
             'font-size':30,
-            'font-family':"'Source Sans Pro'",
+            'font-family':"'source'",
             'block-padding':10,
         },
         'subheader': {
             'font-size':20,
-            'font-family':"'Source Sans Pro'",
+            'font-family':"'source'",
             'block-padding':10,
         },
         'left': {
             'font-size':25,
-            'font-family':"'Source Sans Pro'",
+            'font-family':"'source'",
             'block-padding':10,
             'text-align':'left',
         },
         'center': {
             'font-size':25,
-            'font-family':"'Source Sans Pro'",
+            'font-family':"'source'",
             'block-padding':10,
             'text-align':'center',
         },
         'right': {
             'font-size':25,
-            'font-family':"'Source Sans Pro'",
+            'font-family':"'source'",
             'block-padding':10,
             'text-align':'right',
         },
@@ -87,80 +86,52 @@ function makeStyledJSDoc() {
     return frame;
 }
 
-function syncBuffers(pv,img,ctx) {
-    //copy pixels
-    for(var i=0; i<img.width; i++) {
-        for(var j=0; j<img.height; j++) {
-            //var pixel = img.getPixelAsRGB(i,j);
-            var pixel = ctx.getPixeli32(i,j);
-            //console.log("copying",)
-            if(i >= pv.pw()) continue;
-            if(j >= pv.ph()) continue;
-            pv.setPixeli32(i,j, pixel);
+
+
+function RichTextView() {
+    var piv = new amino.PureImageView().pw(800).w(800).ph(600).h(600);
+
+    piv.build = function(frame) {
+        var ctx = piv.getContext();
+        var config = {
+            context:ctx,
+            frame:frame,
+            width:  piv.pw(),
+            height: piv.ph(),
+            charWidth : function(ch,
+                    font_size,
+                    font_family,
+                    font_weight,
+                    font_style
+                ) {
+                ctx.setFont(font_family,font_size);
+                return ctx.measureText(ch).width;
+            },
+            requestAnimationFrame: function(redraw) {
+                redraw();
+                piv.sync();
+            }
         }
+        var rte = comp.makeRichTextView(config);
+        rte.relayout();
+        rte.redraw();
+        amino.getCore().on('keypress',null,function(e) {
+            rte.processKeyEvent(events.fromAminoKeyboardEvent(e));
+        });
     }
-    pv.updateTexture();
+    return piv;
 }
 
-var pv;
-var fnt = PImage.registerFont('../node-pureimage/tests/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
-fnt.load(function() {
-
-    var img = PImage.make(800,600);
-    var ctx = img.getContext('2d');
-    ctx.setFillStyleRGBA(0,255,0, 1);
-    var config = {
-        context:ctx,
-        frame:makeStyledJSDoc(),
-        width:  600,
-        height: 400,
-        charWidth : function(ch,
-                font_size,
-                font_family,
-                font_weight,
-                font_style
-            ) {
-            ctx.setFont(font_family,font_size);
-            return ctx.measureText(ch).width;
-        },
-        requestAnimationFrame: function(redraw) {
-            console.log('redraw requested');
-            redraw();
-            syncBuffers(pv,img,ctx)
-        }
-    }
-    var rte = comp.makeRichTextView(config);
-    rte.relayout();
-    rte.redraw();
-
-
+//var fnt = PImage.registerFont('../node-pureimage/tests/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
+//fnt.load(function() {
     amino.start(function(core, stage) {
-        var root = new amino.Group().x(0).y(0);
-        pv = new amino.PixelView().pw(800).w(800).ph(600).h(600);
-        root.add(pv);
-        stage.setRoot(root);
-        core.on('keypress',null,function(e) {
-            console.log("a key was pressed");
-            var codes_to_keys = {
-                286:'RIGHT',
-                285:'LEFT',
-                284:'DOWN',
-                283:'UP',
-                295:'BACK_DELETE',
-                46:'FORWARD_DELETE',
-                13:'ENTER',
-            }
-            console.log("raw event = ",e.keycode);
-            if(codes_to_keys[e.keycode]) {
-                rte.processKeyEvent({
-                    recognized:true,
-                    key: codes_to_keys[e.keycode],
-                });
-            }
-        })
-
-        pv.setPixel(0,0,255,0,0,255);
-        syncBuffers(pv,img,ctx);
         stage.setSize(800,600);
+        var root = new amino.Group().x(0).y(0);
+        stage.setRoot(root);
+
+        var pv = RichTextView();
+        root.add(pv);
+        pv.build(makeStyledJSDoc());
+        pv.sync();
     });
-});
+//});

@@ -1,4 +1,6 @@
 var amino = exports;
+var PImage = require('pureimage');
+//var PImage = require('../../node-pureimage/src/pureimage.js');
 
 
 var fs = require('fs');
@@ -77,6 +79,10 @@ amino.registerFont = function(args) {
     fontmap[args.name] = new JSFont(args);
 }
 
+amino.getRegisteredFonts = function() {
+    return fontmap;
+}
+
 amino.SETCOUNT = 0;
 
 amino.makeProps = function(obj,props) {
@@ -140,9 +146,9 @@ function JSFont(desc) {
     var reg = desc.weights[400];
     this.desc = desc;
     this.weights = {};
+    this.filepaths = {};
 
     var dir = process.cwd();
-    console.log("changing dir to ");
     process.chdir(__dirname+'/..'); // chdir such that fonts (and internal shaders) may be found
     var aminodir = __dirname+'/../resources/';
     if(desc.path) {
@@ -155,6 +161,7 @@ function JSFont(desc) {
             throw new Error();
         }
         this.weights[weight] = amino.native.createNativeFont(filepath);
+        this.filepaths[weight] = filepath;
     }
     process.chdir(dir);
 
@@ -207,6 +214,8 @@ amino.native = {
         amino.native.updateProperty(this.rootWrapper, "scalex", Core.DPIScale);
         amino.native.updateProperty(this.rootWrapper, "scaley", Core.DPIScale);
         amino.sgtest.setRoot(this.rootWrapper);
+
+
     },
     getFont: function(name) {
         return fontmap[name];
@@ -478,6 +487,7 @@ function Core() {
             }
             input.processEvent(self,e);
         });
+
     }
 
     this.root = null;
@@ -520,7 +530,6 @@ function Core() {
 
         amino.startEventLoop();
         //setTimeout(immediateLoop,1);
-
     }
 
     /** @func createStage(w,h)  creates a new stage. Only applies on desktop. */
@@ -688,8 +697,16 @@ function start(cb) {
     Core._core = new Core();
     Core._core.init();
     var stage = Core._core.createStage(600,600);
-    cb(Core._core,stage);
-    Core._core.start();
+    //mirror fonts
+    console.log("the fonts = ", exports.getRegisteredFonts().source.filepaths[400]);
+    var source_font = exports.getRegisteredFonts().source;
+    console.log("name = ", source_font.name);
+    console.log("registering ",source_font.filepaths[400]);
+    var fnt = PImage.registerFont(source_font.filepaths[400],source_font.name);
+    fnt.load(function() {
+        cb(Core._core,stage);
+        Core._core.start();
+    });
 }
 
 amino.getCore = function() {
