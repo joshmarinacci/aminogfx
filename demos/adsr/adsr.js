@@ -1,8 +1,8 @@
-var amino = require('amino');
-var Group = require('amino').Group;
-var Rect = require('amino').Rect;
-var Text = require('amino').Text;
-var Polygon = require('amino').Polygon;
+var amino = require('../../main.js');
+var Group = amino.Group;
+var Rect =  amino.Rect;
+var Text =  amino.Text;
+var Polygon = amino.Polygon;
 
 function Adsr() {
     amino.makeProps(this, {
