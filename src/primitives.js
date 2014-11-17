@@ -1,7 +1,7 @@
 var amino = require('./amino');
 var fs = require('fs');
 var PImage = require('pureimage');
-var comp = require('../../js-richtext/src/component');
+var comp = require('richtext');
 var events = require('inputevents');
 
 function getAmino() {

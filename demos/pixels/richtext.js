@@ -1,7 +1,7 @@
 var amino = require('../../main.js');
 var events = require('inputevents');
-var comp = require('../../../richtext/rt2/component');
-var Document = require('../../../richtext/rt2/document').Document;
+var comp = require('richtext');
+var Document = comp.Document;
 
 function makeStyledJSDoc() {
     var frame = Document.makeFrame();
