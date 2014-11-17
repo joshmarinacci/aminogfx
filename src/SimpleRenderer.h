@@ -21,6 +21,9 @@ public:
         this->globaltx = new GLfloat[16];
         make_identity_matrix(this->globaltx);
     }
+    virtual ~GLContext() {
+        delete this->globaltx;
+    }
     void dumpGlobalTransform() {
         print_matrix(this->globaltx);
     }
@@ -34,20 +37,20 @@ public:
     void rotate(double x, double y, double z) {
         GLfloat rot[16];
         GLfloat temp[16];
-        
+
         make_x_rot_matrix(x, rot);
         mul_matrix(temp, this->globaltx, rot);
         copy_matrix(this->globaltx,temp);
-    
+
         make_y_rot_matrix(y, rot);
         mul_matrix(temp, this->globaltx, rot);
         copy_matrix(this->globaltx,temp);
-        
+
         make_z_rot_matrix(z, rot);
         mul_matrix(temp, this->globaltx, rot);
         copy_matrix(this->globaltx,temp);
     }
-        
+
     void scale(double x, double y){
         GLfloat scale[16];
         GLfloat temp[16];
@@ -62,12 +65,13 @@ public:
         this->matrixStack.push(this->globaltx);
         this->globaltx = temp;
     }
-    
+
     void restore() {
+        delete this->globaltx;
         this->globaltx = (GLfloat*)this->matrixStack.top();
         this->matrixStack.pop();
     }
-    
+
     void useProgram(int prog) {
 //        if(prog == prevProg) {
 //            shaderDupCount++;
@@ -77,7 +81,7 @@ public:
         prevProg = prog;
         shadercount++;
     }
-    
+
     void bindTexture(int tex) {
 //        if(prevtex == tex) {
 //            texDupCount++;
@@ -86,7 +90,7 @@ public:
 //        }
         prevtex = tex;
     }
-    
+
 };
 
 class SimpleRenderer {

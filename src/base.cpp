@@ -58,6 +58,7 @@ void save() {
 }
 
 void restore() {
+    delete globaltx;
     globaltx = (GLfloat*)matrixStack.top();
     matrixStack.pop();
 }
