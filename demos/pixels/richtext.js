@@ -88,40 +88,6 @@ function makeStyledJSDoc() {
 
 
 
-function RichTextView() {
-    var piv = new amino.PureImageView().pw(800).w(800).ph(600).h(600);
-
-    piv.build = function(frame) {
-        var ctx = piv.getContext();
-        var config = {
-            context:ctx,
-            frame:frame,
-            width:  piv.pw(),
-            height: piv.ph(),
-            charWidth : function(ch,
-                    font_size,
-                    font_family,
-                    font_weight,
-                    font_style
-                ) {
-                ctx.setFont(font_family,font_size);
-                return ctx.measureText(ch).width;
-            },
-            requestAnimationFrame: function(redraw) {
-                redraw();
-                piv.sync();
-            }
-        }
-        var rte = comp.makeRichTextView(config);
-        rte.relayout();
-        rte.redraw();
-        amino.getCore().on('keypress',null,function(e) {
-            rte.processKeyEvent(events.fromAminoKeyboardEvent(e));
-        });
-    }
-    return piv;
-}
-
 //var fnt = PImage.registerFont('../node-pureimage/tests/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
 //fnt.load(function() {
     amino.start(function(core, stage) {
@@ -129,7 +95,7 @@ function RichTextView() {
         var root = new amino.Group().x(0).y(0);
         stage.setRoot(root);
 
-        var pv = RichTextView();
+        var pv = new amino.RichTextView();
         root.add(pv);
         pv.build(makeStyledJSDoc());
         pv.sync();

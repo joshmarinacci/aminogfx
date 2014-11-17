@@ -1,6 +1,8 @@
 var amino = require('./amino');
 var fs = require('fs');
 var PImage = require('pureimage');
+var comp = require('../../js-richtext/src/component');
+var events = require('inputevents');
 
 function getAmino() {
     return amino;
@@ -575,6 +577,41 @@ exports.PureImageView = function() {
             }
         }
         this.updateTexture();
+    }
+    return piv;
+}
+
+
+exports.RichTextView = function () {
+    var piv = new exports.PureImageView().pw(800).w(800).ph(600).h(600);
+
+    piv.build = function(frame) {
+        var ctx = piv.getContext();
+        var config = {
+            context:ctx,
+            frame:frame,
+            width:  piv.pw(),
+            height: piv.ph(),
+            charWidth : function(ch,
+                    font_size,
+                    font_family,
+                    font_weight,
+                    font_style
+                ) {
+                ctx.setFont(font_family,font_size);
+                return ctx.measureText(ch).width;
+            },
+            requestAnimationFrame: function(redraw) {
+                redraw();
+                piv.sync();
+            }
+        }
+        var rte = comp.makeRichTextView(config);
+        rte.relayout();
+        rte.redraw();
+        amino.getCore().on('keypress',null,function(e) {
+            rte.processKeyEvent(events.fromAminoKeyboardEvent(e));
+        });
     }
     return piv;
 }

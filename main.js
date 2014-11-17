@@ -22,6 +22,7 @@ exports.getCore = amino.getCore;
 exports.native = amino.native;
 exports.PixelView = amino.primitives.PixelView;
 exports.ImageView = amino.primitives.ImageView;
+exports.RichTextView = amino.primitives.RichTextView;
 exports.registerFont = amino.registerFont;
 
 exports.ParseRGBString = amino.primitives.ParseRGBString;
