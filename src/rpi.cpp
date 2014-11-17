@@ -16,7 +16,7 @@ typedef struct
 {
    uint32_t screen_width;
    uint32_t screen_height;
-   
+
 // OpenGL|ES objects
    EGLDisplay display;
    EGLSurface surface;
@@ -52,8 +52,8 @@ static void init_ogl(PWindow *state) {
       EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
       EGL_NONE
    };
-   
-   static const EGLint context_attributes[] = 
+
+   static const EGLint context_attributes[] =
    {
       EGL_CONTEXT_CLIENT_VERSION, 2,
       EGL_NONE
@@ -76,7 +76,7 @@ static void init_ogl(PWindow *state) {
    // choose opengl 2
    result = eglBindAPI(EGL_OPENGL_ES_API);
    assert(EGL_FALSE != result);
-   
+
    // create an EGL rendering context
    state->context = eglCreateContext(state->display, config, EGL_NO_CONTEXT, context_attributes);
    assert(state->context!=EGL_NO_CONTEXT);
@@ -90,32 +90,32 @@ static void init_ogl(PWindow *state) {
    dst_rect.y = 0;
    dst_rect.width = state->screen_width;
    dst_rect.height = state->screen_height;
-      
+
    src_rect.x = 0;
    src_rect.y = 0;
    src_rect.width = state->screen_width << 16;
-   src_rect.height = state->screen_height << 16;        
+   src_rect.height = state->screen_height << 16;
 
    dispman_display = vc_dispmanx_display_open( 0 /* LCD */);
    dispman_update = vc_dispmanx_update_start( 0 );
-         
+
 
    VC_DISPMANX_ALPHA_T         dispman_alpha;
 
-   dispman_alpha.flags = DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS; 
-   dispman_alpha.opacity = 0xFF; 
-   dispman_alpha.mask = NULL; 
+   dispman_alpha.flags = DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS;
+   dispman_alpha.opacity = 0xFF;
+   dispman_alpha.mask = NULL;
 
-   int LAYER = -128;  
+   int LAYER = 0;  
    dispman_element = vc_dispmanx_element_add ( dispman_update, dispman_display,
       LAYER/*layer*/, &dst_rect, 0/*src*/,
       &src_rect, DISPMANX_PROTECTION_NONE, &dispman_alpha  /*alpha*/, 0/*clamp*/, (DISPMANX_TRANSFORM_T)0/*transform*/);
-      
+
    nativewindow.element = dispman_element;
    nativewindow.width = state->screen_width;
    nativewindow.height = state->screen_height;
    vc_dispmanx_update_submit_sync( dispman_update );
-      
+
    state->surface = eglCreateWindowSurface( state->display, config, &nativewindow, NULL );
    assert(state->surface != EGL_NO_SURFACE);
 
@@ -123,13 +123,13 @@ static void init_ogl(PWindow *state) {
    result = eglMakeCurrent(state->display, state->surface, state->surface, state->context);
    assert(EGL_FALSE != result);
 
-   
-   
+
+
    //now we have a real opengl context so we can do stuff
    glClearColor(1,0,0,1);
    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    eglSwapBuffers(state->display, state->surface);
-   
+
    printf("rpi.c: got to the real opengl context\n");
 
 }
@@ -138,15 +138,15 @@ static void init_ogl(PWindow *state) {
 static void dump_event(struct input_event* event) {
     switch(event->type) {
         case EV_SYN: printf("EV_SYN  event separator\n"); break;
-        case EV_KEY: 
-            printf("EV_KEY  keyboard or button \n"); 
+        case EV_KEY:
+            printf("EV_KEY  keyboard or button \n");
             if(event ->code == KEY_A) printf("  A key\n");
             if(event ->code == KEY_B) printf("  B key\n");
             break;
         case EV_REL: printf("EV_REL  relative axis\n"); break;
         case EV_ABS: printf("EV_ABS  absolute axis\n"); break;
-        case EV_MSC: 
-            printf("EV_MSC  misc\n"); 
+        case EV_MSC:
+            printf("EV_MSC  misc\n");
             if(event->code == MSC_SERIAL) printf("  serial\n");
             if(event->code == MSC_PULSELED) printf("  pulse led\n");
             if(event->code == MSC_GESTURE) printf("  gesture\n");
@@ -202,10 +202,10 @@ static void init_inputs() {
             printf("Reading from: %s (%s)\n", str,name);
             ioctl(fd, EVIOCGPHYS(sizeof (name)), name);
             printf("Location %s (%s)\n", str,name);
-            
+
             struct input_id device_info;
             ioctl(fd, EVIOCGID, &device_info);
-            
+
             u_int8_t evtype_b[(EV_MAX+7)/8];
             memset(evtype_b, 0, sizeof(evtype_b));
             if(ioctl(fd, EVIOCGBIT(0, EV_MAX), evtype_b) < 0) {
@@ -229,7 +229,7 @@ static void init_inputs() {
                     }
                 }
             }
-            
+
             fds.push_back(fd);
         }
         closedir(dir);
@@ -283,9 +283,9 @@ static void GLFW_MOUSE_WHEEL_CALLBACK_FUNCTION(int wheel) {
     NODE_EVENT_CALLBACK->Call(Context::GetCurrent()->Global(), 1, event_argv);
 }
 static void handleEvent(input_event ev) {
-    // relative event. probably mouse 
+    // relative event. probably mouse
     if(ev.type == EV_REL) {
-        if(ev.code == 0) { 
+        if(ev.code == 0) {
             // x axis
             mouse_x += ev.value;
         }
@@ -299,7 +299,7 @@ static void handleEvent(input_event ev) {
         GLFW_MOUSE_POS_CALLBACK_FUNCTION(mouse_x, mouse_y);
         return;
     }
-    
+
     //mouse wheel
     if(ev.type == EV_REL && ev.code == 8) {
         GLFW_MOUSE_WHEEL_CALLBACK_FUNCTION(ev.value);
@@ -312,7 +312,7 @@ static void handleEvent(input_event ev) {
             return;
         }
         GLFW_KEY_CALLBACK_FUNCTION(ev.code, ev.value);
-        return;        
+        return;
     }
 }
 
@@ -339,15 +339,15 @@ Handle<Value> init(const Arguments& args) {
     bcm_host_init();
     // Clear application state
     memset( state, 0, sizeof( *state ) );
-      
+
     // Start OGLES
-    init_ogl(state);    
-    
+    init_ogl(state);
+
     width = state->screen_width;
     height = state->screen_height;
-    
+
     init_inputs();
-    
+
     return scope.Close(Undefined());
 }
 
@@ -357,16 +357,16 @@ Handle<Value> createWindow(const Arguments& args) {
     int w  = args[0]->ToNumber()->NumberValue();
     int h  = args[1]->ToNumber()->NumberValue();
     //window already allocated at this point.
-    
+
     colorShader = new ColorShader();
     textureShader = new TextureShader();
     modelView = new GLfloat[16];
 
     globaltx = new GLfloat[16];
     make_identity_matrix(globaltx);
-    
 
-    
+
+
     glViewport(0,0,width, height);
     return scope.Close(Undefined());
 }
@@ -390,17 +390,17 @@ Handle<Value> getWindowSize(const Arguments& args) {
 void render() {
     DebugEvent de;
     double starttime = getTime();
-    
+
     //process input
     processInputs();
     double postinput = getTime();
     de.inputtime = postinput-starttime;
-    
+
     //send the validate event
     sendValidate();
     double postvalidate = getTime();
     de.validatetime = postvalidate-postinput;
-    
+
     int updatecount = updates.size();
     //apply the processed updates
     for(int j=0; j<updates.size(); j++) {
@@ -409,7 +409,7 @@ void render() {
     updates.clear();
     double postupdates = getTime();
     de.updatestime = postupdates-postvalidate;
-    
+
     //apply the animations
     for(int j=0; j<anims.size(); j++) {
         anims[j]->update();
@@ -423,7 +423,7 @@ void render() {
     GLfloat* transM = new GLfloat[16];
     make_trans_matrix(-width/2,height/2,0,transM);
     GLfloat* m4 = new GLfloat[16];
-    mul_matrix(m4, transM, scaleM); 
+    mul_matrix(m4, transM, scaleM);
     GLfloat* pixelM = new GLfloat[16];
     loadPixelPerfect(pixelM, width, height, eye, near, far);
     mul_matrix(modelView,pixelM,m4);
@@ -463,7 +463,7 @@ Handle<Value> selfDrive(const Arguments& args) {
 
 Handle<Value> runTest(const Arguments& args) {
     HandleScope scope;
-    
+
     double startTime = getTime();
     int count = 100;
     Local<v8::Object> opts = args[0]->ToObject();
@@ -472,14 +472,14 @@ Handle<Value> runTest(const Arguments& args) {
         ->ToNumber()
         ->NumberValue()
         );
-    
-    
+
+
     bool sync = false;
     sync = opts
         ->Get(String::NewSymbol("sync"))
         ->ToBoolean()
         ->BooleanValue();
-        
+
     printf("rendering %d times, vsync = %d\n",count,sync);
 
     printf("applying updates first\n");
@@ -487,7 +487,7 @@ Handle<Value> runTest(const Arguments& args) {
         updates[j]->apply();
     }
     updates.clear();
-    
+
     printf("setting up the screen\n");
     GLfloat* scaleM = new GLfloat[16];
     make_scale_matrix(1,-1,1,scaleM);
@@ -496,9 +496,9 @@ Handle<Value> runTest(const Arguments& args) {
     make_trans_matrix(-width/2,height/2,0,transM);
     //make_trans_matrix(10,10,0,transM);
     //make_trans_matrix(0,0,0,transM);
-    
+
     GLfloat* m4 = new GLfloat[16];
-    mul_matrix(m4, transM, scaleM); 
+    mul_matrix(m4, transM, scaleM);
 
 
     GLfloat* pixelM = new GLfloat[16];
@@ -506,18 +506,18 @@ Handle<Value> runTest(const Arguments& args) {
     loadPixelPerfect(pixelM, width, height, eye, near, far);
     //printf("eye = %f\n",eye);
     //loadPerspectiveMatrix(pixelM, 45, 1, 10, -100);
-    
+
     GLfloat* m5 = new GLfloat[16];
     //transpose(m5,pixelM);
-    
+
     mul_matrix(modelView,pixelM,m4);
-    
-    
+
+
     make_identity_matrix(globaltx);
     glViewport(0,0,width, height);
     glClearColor(1,1,1,1);
-    
-    
+
+
     glDisable(GL_DEPTH_TEST);
     printf("running %d times\n",count);
     for(int i=0; i<count; i++) {
@@ -535,7 +535,7 @@ Handle<Value> runTest(const Arguments& args) {
             eglSwapBuffers(state->display, state->surface);
         }
     }
-    
+
     double endTime = getTime();
     Local<Object> ret = Object::New();
     ret->Set(String::NewSymbol("count"),Number::New(count));
@@ -583,4 +583,3 @@ void InitAll(Handle<Object> exports, Handle<Object> module) {
 }
 
 NODE_MODULE(aminonative, InitAll)
-
