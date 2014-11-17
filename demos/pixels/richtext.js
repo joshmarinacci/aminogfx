@@ -88,8 +88,7 @@ function makeStyledJSDoc() {
 
 
 
-//var fnt = PImage.registerFont('../node-pureimage/tests/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
-//fnt.load(function() {
+
     amino.start(function(core, stage) {
         stage.setSize(800,600);
         var root = new amino.Group().x(0).y(0);
@@ -100,4 +99,3 @@ function makeStyledJSDoc() {
         pv.build(makeStyledJSDoc());
         pv.sync();
     });
-//});
