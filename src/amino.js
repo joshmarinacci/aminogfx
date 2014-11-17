@@ -209,7 +209,7 @@ amino.native = {
     },
     createWindow: function(core,w,h) {
         amino.sgtest.createWindow(w* Core.DPIScale,h*Core.DPIScale);
-        Shaders.init(amino.sgtest);
+        Shaders.init(amino.sgtest,OS);
         fontmap['source']  = new JSFont(defaultFonts['source']);
         fontmap['awesome'] = new JSFont(defaultFonts['awesome']);
         core.defaultFont = fontmap['source'];

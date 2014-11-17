@@ -1,4 +1,3 @@
-#version 110
 uniform mat4 modelviewProjection;
 uniform mat4 trans;
 uniform float opacity;
