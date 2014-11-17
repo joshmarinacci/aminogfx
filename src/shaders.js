@@ -69,12 +69,19 @@ var Shader = {
 }
 
 
+function loadShaderCode(path, OS) {
+    var src = fs.readFileSync(path).toString();
+    if(OS == "RPI" ) {
+        src = "#version 100\n" + src;
+    }
+    return src;
+}
 
-exports.init = function(sgtest) {
+exports.init = function(sgtest, OS) {
     var cshader = Object.create(Shader);
     cshader.GL = sgtest;
-    cshader.vertText = fs.readFileSync("shaders/color.vert").toString();
-    cshader.fragText = fs.readFileSync("shaders/color.frag").toString();
+    cshader.vertText = loadShaderCode("shaders/color.vert",OS);
+    cshader.fragText = loadShaderCode("shaders/color.frag",OS);
     cshader.build();
     cshader.useProgram();
     cshader.locateAttrib('pos');
@@ -92,8 +99,8 @@ exports.init = function(sgtest) {
 
     var tshader = Object.create(Shader);
     tshader.GL = sgtest;
-    tshader.vertText = fs.readFileSync("shaders/texture.vert").toString();
-    tshader.fragText = fs.readFileSync("shaders/texture.frag").toString();
+    tshader.vertText = loadShaderCode("shaders/texture.vert");
+    tshader.fragText = loadShaderCode("shaders/texture.frag");
     tshader.build();
     tshader.useProgram();
     tshader.locateUniform('modelviewProjection');
