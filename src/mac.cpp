@@ -108,9 +108,8 @@ Handle<Value> createWindow(const Arguments& args) {
     glfwSetMouseButtonCallback(GLFW_MOUSE_BUTTON_CALLBACK_FUNCTION);
     glfwSetKeyCallback(GLFW_KEY_CALLBACK_FUNCTION);
     glfwSetMouseWheelCallback(GLFW_MOUSE_WHEEL_CALLBACK_FUNCTION);
-
-    colorShader = new ColorShader();
-    textureShader = new TextureShader();
+	colorShader = new ColorShader();
+	textureShader = new TextureShader();
     modelView = new GLfloat[16];
 
     globaltx = new GLfloat[16];
@@ -334,7 +333,30 @@ void InitAll(Handle<Object> exports, Handle<Object> module) {
     exports->Set(String::NewSymbol("getFontHeight"),    FunctionTemplate::New(getFontHeight)->GetFunction());
     exports->Set(String::NewSymbol("getFontAscender"),    FunctionTemplate::New(getFontAscender)->GetFunction());
     exports->Set(String::NewSymbol("getFontDescender"),    FunctionTemplate::New(getFontDescender)->GetFunction());
-    exports->Set(String::NewSymbol("runTest"),          FunctionTemplate::New(runTest)->GetFunction());
+	exports->Set(String::NewSymbol("runTest"),          FunctionTemplate::New(runTest)->GetFunction());
+	exports->Set(String::NewSymbol("initColorShader"),  FunctionTemplate::New(initColorShader)->GetFunction());
+	exports->Set(String::NewSymbol("initTextureShader"),FunctionTemplate::New(initTextureShader)->GetFunction());
+
+	exports->Set(String::NewSymbol("GL_VERTEX_SHADER"), Number::New(GL_VERTEX_SHADER));
+	exports->Set(String::NewSymbol("GL_FRAGMENT_SHADER"), Number::New(GL_FRAGMENT_SHADER));
+	exports->Set(String::NewSymbol("GL_COMPILE_STATUS"), Number::New(GL_COMPILE_STATUS));
+	exports->Set(String::NewSymbol("GL_LINK_STATUS"), Number::New(GL_LINK_STATUS));
+
+	exports->Set(String::NewSymbol("glCreateShader"), FunctionTemplate::New(node_glCreateShader)->GetFunction());
+	exports->Set(String::NewSymbol("glShaderSource"), FunctionTemplate::New(node_glShaderSource)->GetFunction());
+	exports->Set(String::NewSymbol("glCompileShader"), FunctionTemplate::New(node_glCompileShader)->GetFunction());
+	exports->Set(String::NewSymbol("glGetShaderiv"), FunctionTemplate::New(node_glGetShaderiv)->GetFunction());
+	exports->Set(String::NewSymbol("glCreateProgram"), FunctionTemplate::New(node_glCreateProgram)->GetFunction());
+	exports->Set(String::NewSymbol("glAttachShader"), FunctionTemplate::New(node_glAttachShader)->GetFunction());
+	exports->Set(String::NewSymbol("glUseProgram"), FunctionTemplate::New(node_glUseProgram)->GetFunction());
+	exports->Set(String::NewSymbol("glLinkProgram"), FunctionTemplate::New(node_glLinkProgram)->GetFunction());
+	exports->Set(String::NewSymbol("glGetProgramiv"), FunctionTemplate::New(node_glGetProgramiv)->GetFunction());
+	exports->Set(String::NewSymbol("glGetAttribLocation"), FunctionTemplate::New(node_glGetAttribLocation)->GetFunction());
+	exports->Set(String::NewSymbol("glGetUniformLocation"), FunctionTemplate::New(node_glGetUniformLocation)->GetFunction());
+	exports->Set(String::NewSymbol("glGetProgramInfoLog"), FunctionTemplate::New(node_glGetProgramInfoLog)->GetFunction());
+
+
+
 }
 
 NODE_MODULE(aminonative, InitAll)

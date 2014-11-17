@@ -560,7 +560,7 @@ exports.PureImageView = function() {
     var piv = new exports.PixelView();
     var img = PImage.make(800,600);
     var ctx = img.getContext('2d');
-    ctx.setFillStyleRGBA(0,255,0, 1);
+    ctx.fillStyle = '#00FF00';
     piv.getContext = function() {
         return ctx;
     }

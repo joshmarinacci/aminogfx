@@ -927,6 +927,58 @@ static void sendValidate() {
 }
 
 
+
+
+inline static Handle<Value> initColorShader(const Arguments& args) {
+    HandleScope scope;
+    if(args.Length() < 5) {
+        printf("initColorShader: not enough args\n");
+        exit(1);
+    };
+    colorShader->prog        = args[0]->ToNumber()->NumberValue();
+    colorShader->u_matrix    = args[1]->ToNumber()->NumberValue();
+    colorShader->u_trans     = args[2]->ToNumber()->NumberValue();
+    colorShader->u_opacity   = args[3]->ToNumber()->NumberValue();
+    colorShader->attr_pos    = args[4]->ToNumber()->NumberValue();
+    colorShader->attr_color  = args[5]->ToNumber()->NumberValue();
+    return scope.Close(Undefined());
+}
+
+inline static Handle<Value> initTextureShader(const Arguments& args) {
+    HandleScope scope;
+    if(args.Length() < 6) {
+        printf("initTextureShader: not enough args\n");
+        exit(1);
+    };
+    textureShader->prog        = args[0]->ToNumber()->NumberValue();
+    textureShader->u_matrix    = args[1]->ToNumber()->NumberValue();
+    textureShader->u_trans     = args[2]->ToNumber()->NumberValue();
+    textureShader->u_opacity   = args[3]->ToNumber()->NumberValue();
+
+    textureShader->attr_pos    = args[4]->ToNumber()->NumberValue();
+    textureShader->attr_texcoords  = args[5]->ToNumber()->NumberValue();
+    textureShader->attr_tex    = args[6]->ToNumber()->NumberValue();
+    return scope.Close(Undefined());
+}
+
+
+
+Handle<Value> node_glCreateShader(const Arguments& args);
+Handle<Value> node_glShaderSource(const Arguments& args);
+Handle<Value> node_glCompileShader(const Arguments& args);
+Handle<Value> node_glGetShaderiv(const Arguments& args);
+Handle<Value> node_glGetProgramiv(const Arguments& args);
+Handle<Value> node_glGetShaderInfoLog(const Arguments& args);
+Handle<Value> node_glGetProgramInfoLog(const Arguments& args);
+Handle<Value> node_glCreateProgram(const Arguments& args);
+Handle<Value> node_glAttachShader(const Arguments& args);
+Handle<Value> node_glLinkProgram(const Arguments& args);
+Handle<Value> node_glUseProgram(const Arguments& args);
+Handle<Value> node_glGetAttribLocation(const Arguments& args);
+Handle<Value> node_glGetUniformLocation(const Arguments& args);
+
+
+
 struct DebugEvent {
     double inputtime;
     double validatetime;

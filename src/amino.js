@@ -1,6 +1,7 @@
 var amino = exports;
 var PImage = require('pureimage');
 //var PImage = require('../../node-pureimage/src/pureimage.js');
+var Shaders = require('./shaders.js');
 
 
 var fs = require('fs');
@@ -197,6 +198,7 @@ function JSFont(desc) {
     }
 }
 
+
 amino.native = {
     createNativeFont: function(path) {
         return amino.sgtest.createNativeFont(path);
@@ -207,6 +209,7 @@ amino.native = {
     },
     createWindow: function(core,w,h) {
         amino.sgtest.createWindow(w* Core.DPIScale,h*Core.DPIScale);
+        Shaders.init(amino.sgtest);
         fontmap['source']  = new JSFont(defaultFonts['source']);
         fontmap['awesome'] = new JSFont(defaultFonts['awesome']);
         core.defaultFont = fontmap['source'];
@@ -214,8 +217,6 @@ amino.native = {
         amino.native.updateProperty(this.rootWrapper, "scalex", Core.DPIScale);
         amino.native.updateProperty(this.rootWrapper, "scaley", Core.DPIScale);
         amino.sgtest.setRoot(this.rootWrapper);
-
-
     },
     getFont: function(name) {
         return fontmap[name];

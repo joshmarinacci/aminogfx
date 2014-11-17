@@ -106,7 +106,7 @@ static void init_ogl(PWindow *state) {
    dispman_alpha.opacity = 0xFF;
    dispman_alpha.mask = NULL;
 
-   int LAYER = 0;  
+   int LAYER = 0;
    dispman_element = vc_dispmanx_element_add ( dispman_update, dispman_display,
       LAYER/*layer*/, &dst_rect, 0/*src*/,
       &src_rect, DISPMANX_PROTECTION_NONE, &dispman_alpha  /*alpha*/, 0/*clamp*/, (DISPMANX_TRANSFORM_T)0/*transform*/);
@@ -580,6 +580,8 @@ void InitAll(Handle<Object> exports, Handle<Object> module) {
     exports->Set(String::NewSymbol("getCharWidth"),     FunctionTemplate::New(getCharWidth)->GetFunction());
     exports->Set(String::NewSymbol("getFontHeight"),    FunctionTemplate::New(getFontHeight)->GetFunction());
     exports->Set(String::NewSymbol("runTest"),          FunctionTemplate::New(runTest)->GetFunction());
+    exports->Set(String::NewSymbol("initColorShader"),  FunctionTemplate::New(initColorShader)->GetFunction());
+    exports->Set(String::NewSymbol("initTextureShader"),FunctionTemplate::New(initTextureShader)->GetFunction());
 }
 
 NODE_MODULE(aminonative, InitAll)
