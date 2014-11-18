@@ -607,6 +607,7 @@ exports.RichTextView = function () {
             }
         }
         var rte = comp.makeRichTextView(config);
+        piv.editor = rte;
         rte.relayout();
         rte.redraw();
         amino.getCore().on('keypress',null,function(e) {
