@@ -597,7 +597,7 @@ exports.RichTextView = function () {
             frame:frame,
             width:  piv.pw(),
             height: piv.ph(),
-            mulitline: piv.multiline(),
+            multiline: piv.multiline(),
             enterAction: piv.enterAction(),
             charWidth : function(ch,
                     font_size,
