@@ -583,7 +583,12 @@ exports.PureImageView = function() {
 
 
 exports.RichTextView = function () {
-    var piv = new exports.PureImageView().pw(800).w(800).ph(600).h(600);
+    var piv = new exports.PureImageView().pw(100).w(100).ph(100).h(100);
+    amino.makeProps(piv,{
+        multiline:true,
+        enterAction:null,
+    });
+
 
     piv.build = function(frame) {
         var ctx = piv.getContext();
@@ -592,6 +597,8 @@ exports.RichTextView = function () {
             frame:frame,
             width:  piv.pw(),
             height: piv.ph(),
+            multiline: piv.multiline(),
+            enterAction: piv.enterAction(),
             charWidth : function(ch,
                     font_size,
                     font_family,
@@ -607,6 +614,7 @@ exports.RichTextView = function () {
             }
         }
         var rte = comp.makeRichTextView(config);
+        piv.editor = rte;
         rte.relayout();
         rte.redraw();
         amino.getCore().on('keypress',null,function(e) {
