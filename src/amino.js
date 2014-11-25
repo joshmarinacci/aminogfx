@@ -87,9 +87,10 @@ amino.getRegisteredFonts = function() {
 amino.SETCOUNT = 0;
 
 amino.makeProps = function(obj,props) {
-        for(var name in props) {
-            amino.makeProp(obj,name,props[name]);
-        }
+    for(var name in props) {
+        amino.makeProp(obj,name,props[name]);
+    }
+    return obj;
 }
 amino.makeProp =function (obj,name,val) {
     var prop = function(v) {
@@ -101,6 +102,7 @@ amino.makeProp =function (obj,name,val) {
     };
 
     prop.value = val;
+    prop.propname = name;
     prop.listeners = [];
     prop.watch = function(fun) {
         if(fun === undefined) {
