@@ -1,6 +1,5 @@
 var amino = exports;
 var PImage = require('pureimage');
-//var PImage = require('../../node-pureimage/src/pureimage.js');
 var Shaders = require('./shaders.js');
 
 
