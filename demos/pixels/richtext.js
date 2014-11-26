@@ -8,23 +8,23 @@ function makeStyledJSDoc() {
     frame.styles = {
         'bold': {
             'font-style':'normal',
-            'font-family':"'source'",
+            'font-family':"source",
             'font-weight':'700',
         },
         'italic': {
             'font-style':'italic',
-            'font-family':"'source'",
+            'font-family':"source",
         },
         'code': {
             'color':'#000000',
-            'font-family':"'source'",
+            'font-family':"source",
             'background-color':'#ccffee',
         },
 
         'paragraph': {
             'color':'#000000',
             'font-size':15,
-            'font-family':"'source'",
+            'font-family':"source",
             'font-style':'normal',
             'background-color':'#ffffff',
             'font-weight':'400',
@@ -33,29 +33,29 @@ function makeStyledJSDoc() {
         },
         'header': {
             'font-size':30,
-            'font-family':"'source'",
+            'font-family':"source",
             'block-padding':10,
         },
         'subheader': {
             'font-size':20,
-            'font-family':"'source'",
+            'font-family':"source",
             'block-padding':10,
         },
         'left': {
             'font-size':25,
-            'font-family':"'source'",
+            'font-family':"source",
             'block-padding':10,
             'text-align':'left',
         },
         'center': {
             'font-size':25,
-            'font-family':"'source'",
+            'font-family':"source",
             'block-padding':10,
             'text-align':'center',
         },
         'right': {
             'font-size':25,
-            'font-family':"'source'",
+            'font-family':"source",
             'block-padding':10,
             'text-align':'right',
         },
