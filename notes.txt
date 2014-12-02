@@ -1,0 +1,74 @@
+notes
+
+
+problems to solve
+
+good way to specify input rules in general
+a way to manage focus for pointer and keyboard events. what about other kinds of events?
+ways to configure this on a per-app basis
+handle scrollwheel / touch scrolling in a consistent way that work with scrolling aware components.
+when button is released it must inform the control that the press started on, even if not on it anymore.
+define a separate click event that handles click cancelation with escape or moving
+define how to handle touch events
+plug in gesture recognizers to spit out abstract high level events for shape and letter recognition.
+map native events to platform independent ones. mouse and keyboard and touch
+
+
+
+define focus objects. these are proxies that receive events and hand them to the real focused objects, if any.  the rest of the system just sends to the focus object.
+
+semantic events:  key pressed, key released, keytyped only happens if pressed and released on the same object, and only for printable and other input chars. key pressed happens for shift, meta, shift-meta-a, etc. keytyped will work for repeats, though.  arrows and other nav are only for key pressed and released, not for typed.  do i really need keytyped at all, then?
+
+
+click is for mouse and touch events that complete.  a button could get press and release but not a click if the release didn't happen on the button.  a touch tap on a button generates a click.  double click will be represented by a click event with count of 2.
+
+coordinates of pointer events is always in the local coordinate system of the object. any transformations are handled by the scenegraph itself. we don't need parent/child transforms as in subarctic.
+
+dragging events include absolute and offsets from start of gesture and offsets from previous event.  ex:  mouse over and mouse drag will include x/y, dx/dy, dsx/dsy  for delta (offset from previous drag event) and delta start (offset from mouse press event)
+
+drag events are always sent after a press. a component will never get a drag event if it didn't get a press event first.
+
+click throughs and scrims:
+key events always go to a key focused object.
+mouse events go to what is the highest (or deepest) component underneath it, unless that component asks to not receive events by setting ignorepointer=true. This allows translucent overlays that don't interfere with pointer events.
+
+scrolling events always go to the highest/deepest component underneath the pointer regardless of any focus settings, even if another event (like a drag) is in progress.
+
+events may be created synthetically by any component in the system.
+ex: scrolling components with drag areas at the edges may generate additional events to force the repeated scrolling on hover.
+
+
+can register for timer events. ex:  fire when mouse has hovered over a component for N seconds.
+
+many events may be canceled with the escape key.
+
+
+
+initial focus objects:
+
+* scroll focus:  the deepest object underneath the cursor which accepts scrolling events at the time the event happens. marked with a acceptsScrollEvents boolean.
+* press focus:   involved in the current press/drag/release sequence. must be marked with acceptsMouseEvents boolean. most components have this on by default. can be turned off to handle clickthrough overlays.  press focus is set by the component under the pointer during the press event.
+* key   focus:   receives the current key events. must be a component marked with acceptsKeyboardEvents boolean. key focus is set by a press on a component that can accept keyboard events. focusgain focuslose events are sent as needed.
+
+
+initial events in the system:
+
+press,drag,release:  works for all pointer events (mouse, touch, synthetic. )
+joystick: directions and buttons from a generic gamepad. wrapper for w3c events.
+
+all events come through an adapter to turn them into generic events.  the whole thing may be customized from outside of amino.
+
+click: sent after a successful press/drag/release on the same object
+
+containment within an object is done with a contains(point) function on the component which returns true or false in it's internal coordinate system. If there is no contains function then it is treated as false.  This allows special forms of contains.
+
+
+
+open issues:
+pointer over?
+pointer enter/exit?  do these matter on touch devices? are they relevant when the pointer is pressed or not pressed?
+
+for true touch events, how do they interact with the generated pointer events? can you touch with one finger and do normal pointer events with another finger?
+
+window size events?
+true timer events. same interface?  what about alarms?

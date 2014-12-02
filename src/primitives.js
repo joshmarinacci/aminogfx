@@ -65,9 +65,9 @@ function mirrorProp(obj,old,native) {
     obj[old].watch(setters[native]);
 }
 
-function contains(x,y) {
-    if(x >= 0 && x <= this.w()) {
-        if(y >= 0 && y <= this.h()) {
+function contains(pt) {
+    if(pt.x >= 0 && pt.x <= this.w()) {
+        if(pt.y >= 0 && pt.y <= this.h()) {
             return true;
         }
     }
@@ -102,6 +102,7 @@ function Rect() {
         opacity:'opacity',
     });
     this.contains = contains;
+    this.acceptsMouseEvents = false;
 }
 
 function Text() {

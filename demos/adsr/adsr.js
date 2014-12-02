@@ -91,16 +91,19 @@ amino.start(function(core, stage) {
 
     //make a handle bound to the adsr.a value
     var A = new Rect().y(50-10);
+    A.acceptsMouseEvents = true;
+
     A.x.bindto(adsr.a,minus(10));
     core.on('press', A, function(e) {
         adsr.a(e.target.x());
     })
     core.on('drag', A, function(e) {
-        adsr.a(adsr.a()+e.dx);
+        adsr.a(adsr.a()+e.delta.x);
     });
 
     //make a handle bound to the adsr.d value
     var D = new Rect();
+    D.acceptsMouseEvents = true;
     D.x.bindto(adsr.d,minus(10));
     D.y.bindto(adsr.s,minus(10));
 
@@ -109,13 +112,14 @@ amino.start(function(core, stage) {
         adsr.s(e.target.y());
     })
     core.on('drag', D, function(e) {
-        adsr.d(adsr.d()+e.dx);
-        adsr.s(adsr.s()+e.dy);
+        adsr.d(adsr.d()+e.delta.x);
+        adsr.s(adsr.s()+e.delta.y);
     });
 
 
     //make a handle bound to the adsr.r value
     var R = new Rect();
+    R.acceptsMouseEvents = true;
     R.y.bindto(adsr.s,minus(10));
     R.x.bindto(adsr.r,minus(10));
     core.on('press', R, function(e) {
@@ -123,8 +127,8 @@ amino.start(function(core, stage) {
         adsr.r(e.target.x());
     });
     core.on('drag', R, function(e) {
-        adsr.s(adsr.s()+e.dy);
-        adsr.r(adsr.r()+e.dx);
+        adsr.s(adsr.s()+e.delta.y);
+        adsr.r(adsr.r()+e.delta.x);
     })
 
 

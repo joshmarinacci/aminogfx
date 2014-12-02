@@ -1,4 +1,5 @@
 var amino_core = require('./src/amino.js');
+var input      = require('./src/aminoinput.js');
 var canvas = require('./src/canvasamino.js');
 console.log("fully loaded browsers main");
 
@@ -9,6 +10,13 @@ exports.Circle = amino_core.Circle;
 exports.Rect = amino_core.Rect;
 exports.Text = amino_core.Text;
 exports.input = amino_core.input;
+
+
+
+var OS = "BROWSER";
+input.init(OS);
+
+
 exports.makeProps = amino_core.makeProps;
 exports.getCore = amino_core.getCore;
 exports.setCanvas = amino_core.setCanvas;

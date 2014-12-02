@@ -359,24 +359,6 @@ function CanvasPropAnim(target,prop,start,end,duration) {
     }
 }
 
-
-input.KEY_MAP.LEFT_ARROW   = 37; //browser right key
-input.KEY_MAP.UP_ARROW     = 38; //backspace key
-input.KEY_MAP.RIGHT_ARROW  = 39; //browser right key
-input.KEY_MAP.DOWN_ARROW   = 40; //backspace key
-input.KEY_MAP.BACKSPACE    = 8; //backspace key
-input.KEY_MAP.ENTER        = 13; //backspace key
-input.KEY_MAP.LEFT_SHIFT   = 16; //backspace key
-input.KEY_TO_CHAR_MAP[186] = ';';
-input.KEY_TO_CHAR_MAP[222] = "'";
-input.KEY_TO_CHAR_MAP[44] = ',';
-input.KEY_TO_CHAR_MAP[46] = '.';
-input.KEY_TO_CHAR_MAP[191] = '/';
-input.KEY_TO_CHAR_MAP[192] = '`';
-input.KEY_TO_CHAR_MAP[219] = '[';
-input.KEY_TO_CHAR_MAP[221] = ']';
-input.KEY_TO_CHAR_MAP[220] = '\\';
-
 function CanvasFont(g,name) {
     this.g = g;
     this.name = name;

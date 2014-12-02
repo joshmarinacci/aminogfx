@@ -1,25 +1,9 @@
-<html>
-<head>
-<style type='text/css'>
-    canvas { border: 1px solid black; }
-</style>
-</head>
-<body>
-    <canvas id='canvas' width='400' height='200'></canvas>
-</body>
-    <script src='../build/canvas/bundle.js'></script>
+var amino = require('../../main.js');
 
- <script type='text/javascript'>
-
-var amino = require('aminogfx');
-amino.setCanvas('canvas');
 amino.start(function(core, stage) {
-    var root = new amino.Group();
+    var root = new amino.Group().id("group");
+    root.acceptsMouseEvents = true;
     stage.setRoot(root);
-
-    //root.add(new amino.Rect().w(130).h(150).fill('#ccff00'));
-    //root.add(new amino.Circle().x(100).y(100).radius(50).fill('#ffcc00').filled(true));
-
 
     var rect = new amino.Rect().w(100).h(50).fill("#ccccff").x(50).y(50).id("clickrect");
     rect.acceptsMouseEvents = true;
@@ -37,6 +21,7 @@ amino.start(function(core, stage) {
         console.log("clicked");
     });
 
+
     var r2 = new amino.Rect().w(30).h(30).fill("#ff6666").x(300).y(50).id("dragrect");
     root.add(r2);
     r2.acceptsMouseEvents = true;
@@ -46,18 +31,18 @@ amino.start(function(core, stage) {
     });
 
 
+
     var overlay = new amino.Rect().w(300).h(300).fill("#00ff00").x(20).y(20).opacity(0.2).id("overlay");
     overlay.acceptsMouseEvents = false;
     root.add(overlay);
 
-    /*
+
     var scroll = new amino.Rect().w(50).h(200).fill("#0000ff").x(400).y(50).id("scroll");
     root.add(scroll);
     scroll.acceptsScrollEvents = true;
     core.on('scroll',scroll,function(e) {
         scroll.y(scroll.y()+e.position);
     });
-    */
 
 
     overlay.acceptsKeyboardEvents = true;
@@ -65,12 +50,5 @@ amino.start(function(core, stage) {
         console.log("keypress event",e.keycode,e.printable,e.char);
     });
 
-    /*
-    var circle = new amino.Circle().radius(50)
-        .fill('#ffcccc').filled(true)
-        .x(100).y(100);
-    root.add(circle);
-    */
+
 });
-</script>
-</html>

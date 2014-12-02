@@ -9,28 +9,12 @@ var prims = require('./primitives');
 exports.input = input;
 exports.primitives = prims;
 
-
-var OS = "BROWSER";
-if((typeof process) !== 'undefined') {
-    OS = "KLAATU";
-    if(process.arch == 'arm') {
-        OS = "RPI";
-    }
-    if(process.platform == "darwin") {
-        OS = "MAC";
-    }
-}
-
-input.OS = OS;
-input.initOS();
-
 var debug = {
     eventCount:0,
 }
 function d(str) {
     console.log("AMINO: ",str);
 }
-d("OS is " + OS)
 var fontmap = {};
 var defaultFonts = {
     'source': {
@@ -210,7 +194,7 @@ amino.native = {
     },
     createWindow: function(core,w,h) {
         amino.sgtest.createWindow(w* Core.DPIScale,h*Core.DPIScale);
-        Shaders.init(amino.sgtest,OS);
+        Shaders.init(amino.sgtest,amino.OS);
         fontmap['source']  = new JSFont(defaultFonts['source']);
         fontmap['awesome'] = new JSFont(defaultFonts['awesome']);
         core.defaultFont = fontmap['source'];
@@ -297,21 +281,6 @@ if (typeof String.prototype.endsWith !== 'function') {
         return this.indexOf(suffix, this.length - suffix.length) !== -1;
     };
 }
-
-
-amino.dirtylist = [];
-function validateScene() {
-    amino.dirtylist.forEach(function(node) {
-        if(node.dirty == true) {
-            if(node.validate) {
-                node.validate();
-            }
-            node.dirty = false;
-        }
-    });
-    amino.dirtylist = [];
-}
-input.validateScene = validateScene;
 
 
 var propsHash = {
@@ -549,6 +518,28 @@ function Core() {
         amino.native.setRoot(node.handle);
         this.root = node;
     }
+    this.findNodesAtXY = function(pt) {
+        return findNodesAtXY_helper(this.root, pt,"");
+    }
+    function findNodesAtXY_helper(root, pt, tab) {
+        if(!root) return [];
+        if(!root.visible()) return null;
+        //console.log(tab + "   xy",pt.x,pt.y, root.id());
+        var tpt = pt.minus(root.x(),root.y());
+        //handle children first, then the parent/root
+        var res = [];
+        if(root.children && root.children.length && root.children.length > 0) {
+            for(var i=root.children.length-1; i>=0; i--) {
+                var node = root.children[i];
+                var found = findNodesAtXY_helper(node,tpt,tab+'  ');
+                res = res.concat(found);
+            }
+        }
+        if(root.contains && root.contains(tpt)) {
+            res = res.concat([root]);
+        }
+        return res;
+    }
     this.findNodeAtXY = function(x,y) {
         //var t1 = process.hrtime();
         var node = this.findNodeAtXY_helper(this.root,x,y,"");
@@ -557,9 +548,6 @@ function Core() {
     }
     this.findNodeAtXY_helper = function(root,x,y,tab) {
         if(!root) return null;
-        //console.log(tab +
-        //    (root.getId?root.getId():"-") + " " + root.x() + " " + root.y() + " "
-        //    + (root.getW?root.getW():"-") + " x " + (root.getH?root.getH():"-"));
         if(!root.visible()) return null;
 
         var tx = x-root.x();
@@ -628,59 +616,8 @@ function Core() {
             return pt;
         }
     }
-    this.listeners = {};
-    this.on = function(name, target, listener) {
-        name = name.toLowerCase();
-        if(target == null) {
-            target = this;
-        }
-        if(!this.listeners[name]) {
-            this.listeners[name] = [];
-        }
-        this.listeners[name].push({
-                target:target,
-                func:listener
-        });
-    }
-    this.fireEventAtTarget= function(target, event) {
-        //        console.log("firing an event at target:",event.type);
-        if(!event.type) { console.log("WARNING. Event has no type!"); }
-        if(this.listeners[event.type]) {
-            this.listeners[event.type].forEach(function(l) {
-                    if(l.target == target) {
-                        l.func(event);
-                    }
-            });
-        }
-    }
-    this.fireEvent = function(event) {
-        if(!event.type) { console.log("WARNING. Event has no type!"); }
 
-       // var t1 = process.hrtime();
-        if(this.listeners[event.type]) {
-            var arr = this.listeners[event.type];
-            var len = arr.length;
-            for(var i=0; i<len; i++) {
-                var listener = arr[i];
-                if(listener.target == event.source) {
-                    listener.func(event);
-                }
-            }
-        }
-        if(event.type == "validate") {
-            //console.log('validate time = ',process.hrtime(t1)[1]/1e6);
-        }
-    };
-
-    this.requestFocus = function(target) {
-        if(this.keyfocus) {
-            this.fireEventAtTarget(this.keyfocus,{type:"focusloss",target:this.keyfocus});
-        }
-        this.keyfocus = target;
-        if(this.keyfocus) {
-            this.fireEventAtTarget(this.keyfocus,{type:"focusgain",target:this.keyfocus});
-        }
-    }
+    this.on = function(name,target,listener) { input.on(name,target,listener); }
 
     this.runTest = function(opts) {
         console.log("running the test with options",opts);
@@ -700,10 +637,7 @@ function start(cb) {
     Core._core.init();
     var stage = Core._core.createStage(600,600);
     //mirror fonts
-    console.log("the fonts = ", exports.getRegisteredFonts().source.filepaths[400]);
     var source_font = exports.getRegisteredFonts().source;
-    console.log("name = ", source_font.name);
-    console.log("registering ",source_font.filepaths[400]);
     var fnt = PImage.registerFont(source_font.filepaths[400],source_font.name);
     fnt.load(function() {
         cb(Core._core,stage);
