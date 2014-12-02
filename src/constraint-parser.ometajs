@@ -6,5 +6,5 @@ export ometa Parser {
     op        = "+" | "*" | "-" | "/",
     const     = digit+:d                                  -> { type: 'const', value: parseInt(d.join("")) },
     predicate = op:o ws (const | ref):r                   -> { op: o, ref: r},
-    start     = propname:t "=" ws ref:s ws (predicate*):p -> { target:t, source: s, predicates: p}
+    start     = propname:t "=" ws ref:s ws (predicate*):p -> { target:t, source: s, predicates: p }
 }

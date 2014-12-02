@@ -60,6 +60,9 @@ function ConstraintSolver() {
         if(src == 'parent') {
             return tgt.parent;
         }
+        if(src == 'this') {
+            return tgt;
+        }
         console.log("WARNING: couldn't find " + src + " for " + tgt);
         return null;
     }
@@ -206,6 +209,10 @@ function ConstraintSolver() {
             if(src.name == 'parent') {
                 obj = lookupObjectByContext(node,src.name);
                 if(obj == null) console.log("WARNING. parent is null!");
+            }
+            if(src.name == 'this') {
+                obj = lookupObjectByContext(node,src.name);
+                if(obj == null) console.log("WARNING. this is null!");
             }
             if(src.obj) obj = src.obj;
             if(synthetic_props[src.prop]) return;//console.log("skipping synthetic property");
