@@ -589,6 +589,7 @@ exports.RichTextView = function () {
         multiline:true,
         enterAction:null,
     });
+    piv.acceptsKeyboardEvents = true;
 
 
     piv.build = function(frame) {
@@ -618,8 +619,8 @@ exports.RichTextView = function () {
         piv.editor = rte;
         rte.relayout();
         rte.redraw();
-        amino.getCore().on('keypress',null,function(e) {
-            rte.processKeyEvent(events.fromAminoKeyboardEvent(e));
+        amino.getCore().on('keypress',piv,function(e) {
+            rte.processKeyEvent(e);
         });
     }
     return piv;
