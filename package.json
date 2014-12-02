@@ -18,7 +18,7 @@
     "url": "git://github.com/joshmarinacci/aminogfx.git"
   },
   "dependencies": {
-    "inputevents": "0.0.1",
+    "inputevents": "0.0.2",
     "moment": "~2.2.1",
     "node-pre-gyp": "0.5.x",
     "pureimage": "^0.0.9",
