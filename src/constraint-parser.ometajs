@@ -1,0 +1,10 @@
+//matches things like x = parent.width + 30
+export ometa Parser {
+    ws        = space*,
+    propname  = (letter+):x                               -> x.join(""),
+    ref       = propname:o '.' propname:p                 -> { name: o, prop: p},
+    op        = "+" | "*" | "-" | "/",
+    const     = digit+:d                                  -> { type: 'const', value: parseInt(d.join("")) },
+    predicate = op:o ws (const | ref):r                   -> { op: o, ref: r},
+    start     = propname:t "=" ws ref:s ws (predicate*):p -> { target:t, source: s, predicates: p}
+}
