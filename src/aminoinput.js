@@ -2,8 +2,6 @@
 //it does not map from platform specific events to generic ones. that is the job
 //of the inputevents module
 
-
-
 /*
 todos:
 
@@ -41,8 +39,8 @@ function makePoint(x,y) {
 }
 
 exports.init = function(OS) {
-    this.OS = OS;
     console.log("initing input for OS ", OS);
+    this.OS = OS;
     IE.init();
 }
 
@@ -69,46 +67,43 @@ var statusobjects = {
     }
 };
 
-exports.processEvent = function(core,evt) {
-    if(evt.type == 'validate') return;
-    //console.log("processing native event", evt);
-    if(evt.type == "animend") {
-        core.notifyAnimEnd(evt);
-        return;
-    }
-    if(evt.type == 'mouseposition')  {
+var handlers = {
+    validate: function() { },
+    animend: function(core,evt) { core.notifyAnimEnd(evt);  },
+    mouseposition: function(core,evt) {
         var s = statusobjects.pointer;
         s.prevpt = s.pt;
         s.pt = makePoint(evt.x,evt.y);
         var target = focusobjects.pointer.target;
         if(target != null && statusobjects.pointer.state == 1) {
             sendDragEvent(core,evt);
-            return;
         }
-    }
-    if(evt.type == 'mousebutton' && evt.button == '0') {
-        statusobjects.pointer.state = evt.state;
-        if(evt.state == '1') {
-            var pts = statusobjects.pointer;
-            setupPointerFocus(core,pts.pt);
-            sendPressEvent(core,evt);
-            return;
-        }
-        if(evt.state == '0') {
-            sendReleaseEvent(core,evt);
-            stopPointerFocus();
-            return;
-        }
-    }
+    },
 
-    if(evt.type == 'mousewheelv') {
+    mousebutton: function(core,evt) {
+        if(evt.button == '0') {
+            statusobjects.pointer.state = evt.state;
+            if(evt.state == '1') {
+                var pts = statusobjects.pointer;
+                setupPointerFocus(core,pts.pt);
+                sendPressEvent(core,evt);
+                return;
+            }
+            if(evt.state == '0') {
+                sendReleaseEvent(core,evt);
+                stopPointerFocus();
+                return;
+            }
+        }
+    },
+
+    mousewheelv: function(core,evt) {
         var pts = statusobjects.pointer;
         setupScrollFocus(core,pts.pt);
         sendScrollEvent(core,evt);
-        return;
-    }
+    },
 
-    if(evt.type == 'keypress') {
+    keypress: function(core,evt) {
         statusobjects.keyboard.state[evt.keycode] = true;
         if(this.OS == 'BROWSER') {
             var evt2 = IE.fromBrowserKeyboardEvent(evt, statusobjects.keyboard.state);
@@ -116,12 +111,17 @@ exports.processEvent = function(core,evt) {
             var evt2 = IE.fromAminoKeyboardEvent(evt, statusobjects.keyboard.state);
         }
         sendKeyboardPressEvent(core,evt2);
-        return;
-    }
-    if(evt.type == 'keyrelease') {
+    },
+
+    keyrelease: function(core,evt) {
         statusobjects.keyboard.state[evt.keycode] = false;
         sendKeyboardReleaseEvent(core,IE.fromAminoKeyboardEvent(evt, statusobjects.keyboard.state));
-        return;
+    },
+}
+
+exports.processEvent = function(core,evt) {
+    if(typeof handlers[evt.type] !== 'undefined') {
+        return handlers[evt.type](core,evt);
     }
 }
 
@@ -221,7 +221,6 @@ function sendDragEvent(core,e) {
         delta: s.pt.minus(s.prevpt),
         target:node,
     });
-
 }
 
 function setupScrollFocus(core,pt) {
