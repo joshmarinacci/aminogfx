@@ -41,3 +41,4 @@ exports.registerFont = amino.registerFont;
 
 exports.ParseRGBString = amino.primitives.ParseRGBString;
 exports.PureImageView = amino.primitives.PureImageView;
+exports.ConstraintSolver = require('./src/ConstraintSolver');

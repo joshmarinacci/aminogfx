@@ -23,3 +23,4 @@ exports.setCanvas = amino_core.setCanvas;
 exports.native = amino_core.native;
 
 exports.ParseRGBString = amino_core.primitives.ParseRGBString;
+exports.ConstraintSolver = require('./src/ConstraintSolver');
