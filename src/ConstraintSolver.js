@@ -27,9 +27,10 @@ parent.add(child);
 
 
 var ometajs = require('ometa-js');
-var Parser = require('./constraint-parser.ometajs').Parser;
+//var Parser = require('./constraint-parser.ometajs').Parser;
+var Parser = require('../parser_compiled.js').Parser;
 
-    var concount = 0;
+var concount = 0;
 function ConstraintSolver() {
     var constraints = [];
     this.makeConstraint = function(target, rule) {
