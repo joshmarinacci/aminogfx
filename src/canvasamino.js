@@ -529,7 +529,7 @@ amino.setupEventHandlers = function() {
 
     attachEvent(window,'keydown',function(e){
         if(e.metaKey) return;
-        e.preventDefault();
+        //e.preventDefault();
         var key = e.keyCode;
         if(keyRemap[key]) {
             key = keyRemap[key];
@@ -543,7 +543,7 @@ amino.setupEventHandlers = function() {
         });
     });
     attachEvent(window,'keyup',function(e){
-        e.preventDefault();
+        //e.preventDefault();
         input.processEvent(amino.getCore(),{
                 type:"keyrelease",
                 keycode: e.keyCode,
