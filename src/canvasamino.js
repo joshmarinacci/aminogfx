@@ -226,10 +226,12 @@ amino.native = {
         g.fillRect(0,0,w,h);
         this.root.draw(g);
         //draw debug overlay
+        /*
         g.fillStyle = "white";
         g.fillRect(0,0,200,30);
         g.fillStyle = "black";
         g.fillText(dprint_text,30,10);
+        */
     },
     setImmediate: function(loop) {
         requestAnimationFrame(loop);
