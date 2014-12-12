@@ -519,19 +519,27 @@ function Core() {
         this.root = node;
     }
     this.findNodesAtXY = function(pt) {
-        return findNodesAtXY_helper(this.root, pt,"");
+        return findNodesAtXY_helper(this.root, pt, null,"");
     }
-    function findNodesAtXY_helper(root, pt, tab) {
+    this.findNodesAtXYFiltered = function(pt, filter) {
+        return findNodesAtXY_helper(this.root, pt, filter,"");
+    }
+    function findNodesAtXY_helper(root, pt, filter, tab) {
         if(!root) return [];
         if(!root.visible()) return null;
         //console.log(tab + "   xy",pt.x,pt.y, root.id());
         var tpt = pt.minus(root.x(),root.y());
         //handle children first, then the parent/root
         var res = [];
+        if(filter != null) {
+            if(!filter(root)) {
+                return res;
+            }
+        }
         if(root.children && root.children.length && root.children.length > 0) {
             for(var i=root.children.length-1; i>=0; i--) {
                 var node = root.children[i];
-                var found = findNodesAtXY_helper(node,tpt,tab+'  ');
+                var found = findNodesAtXY_helper(node,tpt,filter,tab+'  ');
                 res = res.concat(found);
             }
         }

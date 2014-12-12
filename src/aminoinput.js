@@ -135,7 +135,12 @@ exports.on = function(name, target, listener) {
 }
 
 function setupPointerFocus(core,pt) {
-    var nodes = core.findNodesAtXY(pt);
+    var nodes = core.findNodesAtXYFiltered(pt, function(node) {
+        if(node.children && typeof node.acceptsMouseEvents !== 'undefined' && node.acceptsMouseEvents === false) {
+            return false;
+        }
+        return true;
+    });
     var pressnodes = nodes.filter(function(n) { return n.acceptsMouseEvents === true });
 
     if(pressnodes.length > 0) {
