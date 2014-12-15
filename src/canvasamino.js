@@ -403,10 +403,10 @@ function getOffset( elem ) {
     do {
       if ( !isNaN( elem.offsetLeft ) )
       {
-          offset.x += elem.offsetLeft;
-          offset.y += elem.offsetTop;
+          offset.x += elem.offsetLeft - elem.scrollLeft;
+          offset.y += elem.offsetTop - elem.scrollTop;
       }
-    } while( elem = elem.offsetParent );
+  } while( elem = elem.parentElement );
     return offset;
 }
 
@@ -444,6 +444,7 @@ amino.setupEventHandlers = function() {
     attachEvent(dom,'mousedown',function(e){
         e.preventDefault();
         var pt = toXY(e);
+        console.log("original event",e,pt);
         input.processEvent(amino.getCore(),{
             type:"mouseposition",
             x:pt.x,
