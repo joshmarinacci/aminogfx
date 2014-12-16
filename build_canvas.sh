@@ -1,4 +1,6 @@
 rm -rf build/canvas/bundle.js
+mkdir build
+mkdir build/canvas
 
 node compile.js src/constraint-parser.ometajs  > parser_compiled.js
 

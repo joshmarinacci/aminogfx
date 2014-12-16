@@ -71,6 +71,14 @@ amino.start(function(core, stage) {
         .x(100).y(100);
     root.add(circle);
     */
+
+    var visrect = new amino.Rect().w(20).h(20).fill("#ff0000").x(350).y(150).visible(true);
+    root.add(visrect);
+    visrect.acceptsMouseEvents = true;
+    core.on('press',visrect, function(e) {
+        console.log("hiding");
+        visrect.visible(false);
+    });
 });
 </script>
 </html>
