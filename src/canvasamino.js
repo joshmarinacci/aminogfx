@@ -398,23 +398,11 @@ function attachEvent(node,name,func) {
     }
 };
 
-function getOffset( elem ) {
-    var offset = {x:0,y:0};
-    do {
-      if ( !isNaN( elem.offsetLeft ) )
-      {
-          offset.x += elem.offsetLeft - elem.scrollLeft;
-          offset.y += elem.offsetTop - elem.scrollTop;
-      }
-  } while( elem = elem.parentElement );
-    return offset;
-}
-
 function toXY(e) {
-    var offset = getOffset(e.target);
+    var rect = e.target.getBoundingClientRect();
     return {
-        x: e.pageX-offset.x,
-        y: e.pageY-offset.y,
+        x: e.pageX-rect.left,
+        y: e.pageY-rect.top,
     }
 }
 
