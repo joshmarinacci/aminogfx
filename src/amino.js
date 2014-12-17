@@ -526,7 +526,7 @@ function Core() {
     }
     function findNodesAtXY_helper(root, pt, filter, tab) {
         if(!root) return [];
-        if(!root.visible()) return null;
+        if(!root.visible()) return [];
         //console.log(tab + "   xy",pt.x,pt.y, root.id());
         var tpt = pt.minus(root.x(),root.y());
         //handle children first, then the parent/root
