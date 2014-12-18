@@ -8,12 +8,24 @@ var dprint_text = "";
 function dprint(str) {
     dprint_text = str;
 }
+
+function rp() {
+    requestAnimationFrame(function() {
+        amino.native.tick(amino.getCore());
+    });
+}
+exports.refresh = function() {
+    rp();
+}
 amino.startEventLoop = function() {
+/*
+    //rp();
     function lp() {
         amino.native.tick(amino.getCore());
         requestAnimationFrame(lp);
     }
     requestAnimationFrame(lp);
+*/
 }
 amino.native = {
     list:[],
@@ -212,6 +224,7 @@ amino.native = {
 
     updateProperty: function(handle, key, value) {
         handle[key] = value;
+        rp();
     },
     setRoot: function(root) {
         this.root = root;
@@ -245,8 +258,11 @@ amino.native = {
             h: this.domcanvas.height
         };
     },
-    createPropAnim: function(node, prop, start, end, dur) {
-        return new CanvasPropAnim(node,prop,start,end,dur);
+    createAnim: function(handle,prop,start,end,dur,count,rev) {
+        return new CanvasPropAnim(handle,prop,start,end,dur,count,rev);
+    },
+    updateAnimProperty: function(handle, prop, value) {
+        console.log("pretending to update");
     },
     processAnims: function(core) {
         core.anims.forEach(function(anim) {
@@ -260,8 +276,8 @@ amino.native = {
     }
 };
 
-function CanvasPropAnim(target,prop,start,end,duration) {
-    this.target = target;
+function CanvasPropAnim(handle, prop, start,end,duration, count, rev) {
+    this.target = handle;
     this.prop = prop;
     this.start = start;
     this.end = end;
@@ -271,8 +287,8 @@ function CanvasPropAnim(target,prop,start,end,duration) {
     var FOREVER = -1;
     var direction = FORWARD;
     this.count = 1;
-    var loopcount = 1;
-    this.autoreverse = false;
+    var loopcount = count;
+    this.autoreverse = rev;
     this.afterCallbacks = [];
     this.beforeCallbacks = [];
 
@@ -332,6 +348,7 @@ function CanvasPropAnim(target,prop,start,end,duration) {
         this.active = false;
     }
     this.update = function() {
+        console.log("updating animation");
         if(!this.active) return;
         this.currentTime = Date.now();
         var t = (this.currentTime - this.startTime)/this.duration;

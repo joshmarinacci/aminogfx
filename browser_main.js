@@ -10,6 +10,7 @@ exports.Circle = amino_core.Circle;
 exports.Rect = amino_core.Rect;
 exports.Text = amino_core.Text;
 exports.input = amino_core.input;
+exports.refresh = canvas.refresh;
 
 
 

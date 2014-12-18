@@ -263,10 +263,6 @@ amino.native = {
         amino.sgtest.updateAnimProperty(handle, propsHash[prop], type);
     },
 
-    createPropAnim: function(node,prop,start,end,dur) {
-        return new SGAnim(node,prop,start,end,dur);
-    },
-
     runTest: function(opts) {
         return amino.sgtest.runTest(opts);
     },
@@ -418,19 +414,6 @@ amino.startEventLoop = function() {
 */
 function Core() {
     this.anims = [];
-    /** @func createPropAnim(node, propertyName, startValue, endValue, duration, count, autoreverse)
-    creates a new property animation. Node is the node to be animated. propertyName is the string name of the property
-    to animate. This should be a numeric property like tx or scalex. start and end are the starting and ending values
-    of the animation. Duration is the length of the animation in milliseconds. 1000 = one second. Count is
-    how many times the animation should loop. Use -1 to loop forever. Autoreverse determines if the animation should
-    alternate direction on every other time. Only applies if the animatione will play more than one time.
-    */
-    this.createPropAnim = function(node, prop, start, end, dur) {
-        var anim = amino.native.createPropAnim(node,prop,start,end,dur);
-        anim.init(this);
-        this.anims.push(anim);
-        return anim;
-    }
     var self = this;
     //TODO: actually clean out dead animations when they end
     this.notifyAnimEnd = function(e) {

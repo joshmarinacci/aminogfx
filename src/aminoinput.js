@@ -152,7 +152,6 @@ function setupPointerFocus(core,pt) {
     var keyboardnodes = nodes.filter(function(n) { return n.acceptsKeyboardEvents === true });
     if(keyboardnodes.length > 0) {
         if(focusobjects.keyboard.target !== null) {
-            console.log("sending lose");
             fireEventAtTarget(focusobjects.keyboard.target, {
                 type:'focuslose',
                 target: focusobjects.keyboard.target,
