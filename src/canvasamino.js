@@ -77,7 +77,7 @@ amino.native = {
                     g.fillRect(0,0,this.w,this.h);
                 }
                 g.restore();
-            },
+            }
         }
         this.list.push(rect);
         return rect;
@@ -585,6 +585,9 @@ amino.start = function(cb) {
     amino.setupEventHandlers();
     var Core = amino.Core;
     Core._core = new Core();
+    Core._core.handleWindowSizeEvent = function(evt) {
+        rp();
+    }
     Core._core.init();
     var stage = Core._core.createStage(600,600);
     cb(Core._core,stage);

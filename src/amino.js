@@ -444,6 +444,10 @@ function Core() {
 
     }
 
+    this.handleWindowSizeEvent = function(evt) {
+        //console.log("doing nothing with the resize");
+    }
+
     this.root = null;
     this.start = function() {
         var core = this;
@@ -454,13 +458,13 @@ function Core() {
         input.processEvent(this,{
             type:"windowsize",
             width:size.w,
-            height:size.h,
+            height:size.h
         });
         if(!this.root) {
             throw new Error("ERROR. No root set on stage");
         }
 
-        var self = this;
+        //var self = this;
         /*
         function immediateLoop() {
             try {

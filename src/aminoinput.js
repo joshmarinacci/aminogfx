@@ -117,12 +117,17 @@ var handlers = {
         statusobjects.keyboard.state[evt.keycode] = false;
         sendKeyboardReleaseEvent(core,IE.fromAminoKeyboardEvent(evt, statusobjects.keyboard.state));
     },
+
+    windowsize: function(core,evt) {
+        core.handleWindowSizeEvent(evt);
+    }
 }
 
 exports.processEvent = function(core,evt) {
     if(typeof handlers[evt.type] !== 'undefined') {
         return handlers[evt.type](core,evt);
     }
+    console.log("unhandled event", evt);
 }
 
 exports.on = function(name, target, listener) {

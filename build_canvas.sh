@@ -1,3 +1,4 @@
+#!/bin/sh
 rm -rf build/canvas/bundle.js
 mkdir build
 mkdir build/canvas
