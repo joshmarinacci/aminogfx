@@ -23,6 +23,7 @@ exports.getCore = amino_core.getCore;
 exports.setCanvas = amino_core.setCanvas;
 exports.native = amino_core.native;
 exports.ImageView = amino_core.primitives.ImageView;
+exports.registerFont = amino_core.registerFont;
 
 exports.ParseRGBString = amino_core.primitives.ParseRGBString;
 exports.ConstraintSolver = require('./src/ConstraintSolver');

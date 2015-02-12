@@ -10,7 +10,7 @@ exports.input = input;
 exports.primitives = prims;
 
 var debug = {
-    eventCount:0,
+    eventCount:0
 }
 function d(str) {
     console.log("AMINO: ",str);
@@ -22,29 +22,29 @@ var defaultFonts = {
         weights: {
             200: {
                 normal: "SourceSansPro-ExtraLight.ttf",
-                italic: "SourceSansPro-ExtraLightItalic.ttf",
+                italic: "SourceSansPro-ExtraLightItalic.ttf"
             },
             300: {
                 normal: "SourceSansPro-Light.ttf",
-                italic: "SourceSansPro-LightItalic.ttf",
+                italic: "SourceSansPro-LightItalic.ttf"
             },
             400: {
                 normal: "SourceSansPro-Regular.ttf",
-                italic: "SourceSansPro-Italic.ttf",
+                italic: "SourceSansPro-Italic.ttf"
             },
 
             600: {
                 normal: "SourceSansPro-Semibold.ttf",
-                italic: "SourceSansPro-SemiboldItalic.ttf",
+                italic: "SourceSansPro-SemiboldItalic.ttf"
             },
             700: {
                 normal: "SourceSansPro-Bold.ttf",
-                italic: "SourceSansPro-BoldItalic.ttf",
+                italic: "SourceSansPro-BoldItalic.ttf"
             },
             900: {
                 normal: "SourceSansPro-Black.ttf",
-                italic: "SourceSansPro-BlackItalic.ttf",
-            },
+                italic: "SourceSansPro-BlackItalic.ttf"
+            }
         }
     },
     'awesome': {
@@ -52,15 +52,15 @@ var defaultFonts = {
         weights: {
             400: {
                 normal: "fontawesome-webfont.ttf",
-            },
+            }
         }
-    },
+    }
 }
 
 var propertyCount = 0;
 
 amino.registerFont = function(args) {
-    fontmap[args.name] = new JSFont(args);
+    amino.native.registerFont(args);
 }
 
 amino.getRegisteredFonts = function() {
@@ -178,7 +178,7 @@ function JSFont(desc) {
         }
         return {
             ascender: amino.sgtest.getFontAscender(size, this.getNative(size, weight, style)),
-            descender: amino.sgtest.getFontDescender(size, this.getNative(size, weight, style)),
+            descender: amino.sgtest.getFontDescender(size, this.getNative(size, weight, style))
         };
     }
 }
@@ -187,6 +187,9 @@ function JSFont(desc) {
 amino.native = {
     createNativeFont: function(path) {
         return amino.sgtest.createNativeFont(path);
+    },
+    registerFont:function(args) {
+        fontmap[args.name] = new JSFont(args);
     },
     init: function(core) {
         console.log("doing native init. dpi scale = " + Core.DPIScale);
@@ -253,7 +256,7 @@ amino.native = {
         var size = amino.sgtest.getWindowSize(w,h);
         return {
             w: size.w/Core.DPIScale,
-            h: size.h/Core.DPIScale,
+            h: size.h/Core.DPIScale
         };
     },
     createAnim: function(handle,prop,start,end,dur,count,rev) {
@@ -265,7 +268,7 @@ amino.native = {
 
     runTest: function(opts) {
         return amino.sgtest.runTest(opts);
-    },
+    }
 
 }
 
@@ -330,7 +333,7 @@ var propsHash = {
     "textureBottom":33,
 
     //clipping
-    "cliprect": 34,
+    "cliprect": 34
 
 
 }
@@ -345,33 +348,33 @@ function SGStage(core) {
 	/** @func setSize(w,h) set the width and height of the stage. Has no effect on mobile. */
 	this.setSize = function(width,height) {
 	    amino.native.setWindowSize(width,height);
-	}
+	};
 	/** @func getW returns the width of this stage. */
 	this.getW = function() {
 	    return amino.native.getWindowSize().w;
-	}
+	};
 	/** @func getH returns the height of this stage. */
 	this.getH = function() {
 	    return amino.native.getWindowSize().h;
-	}
+	};
 	/** @func on(name,node,cb) sets a callback for events matching the specified name on the
 	specified node. Use null for the node to match global events. */
 	this.on = function(name, node, cb) {
 		this.core.on(name, node, cb);
-	}
+	};
 	/** @func getRoot returns the root node of this stage. */
 	this.getRoot = function() {
 		return this.core.root;
-	}
+	};
 	/** @func set the root node of this stage. */
 	this.setRoot = function(root) {
 		this.core.setRoot(root);
 		return this;
-	}
+	};
 	/** @func find(id) searches the stage's node tree for a node with the requested ID. Returns null if no node is found. */
     this.find = function(id) {
         return this.findNodeById_helper(id,this.getRoot());
-    }
+    };
     this.findNodeById_helper = function(id, node) {
         if(node.id && node.id == id) return node;
         if(node.isParent && node.isParent()) {
@@ -381,7 +384,7 @@ function SGStage(core) {
             }
         }
         return null;
-    }
+    };
 
     var self = this;
     this.core.on('windowsize',this,function(e) {

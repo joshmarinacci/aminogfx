@@ -16,7 +16,8 @@ function rp() {
 }
 exports.refresh = function() {
     rp();
-}
+};
+
 amino.startEventLoop = function() {
 /*
     //rp();
@@ -26,13 +27,17 @@ amino.startEventLoop = function() {
     }
     requestAnimationFrame(lp);
 */
-}
+};
+
 amino.native = {
     list:[],
 
     createDefaultFont: function(path) {
         //console.log('creating native font ' + path);
         return new CanvasFont(this.domctx);
+    },
+    registerFont:function(args) {
+        fontmap[args.name] = new CanvasFont(this.domctx,args.name);
     },
     init: function() {
         console.log("canvas amino doesn't really do an init");
@@ -78,7 +83,7 @@ amino.native = {
                 }
                 g.restore();
             }
-        }
+        };
         this.list.push(rect);
         return rect;
     },
@@ -123,7 +128,7 @@ amino.native = {
                     g.stroke();
                 }
                 g.restore();
-            },
+            }
         }
         this.list.push(rect);
         return rect;
@@ -168,7 +173,7 @@ amino.native = {
             draw: function(g) {
                 if(this.visible != 1) return;
                 g.fillStyle = "rgb("+this.r*255+","+this.g*255+","+this.b*255+")";
-                g.font = this.fontSize +"px sans-serif";
+                g.font = this.fontSize +"px "+this.fontId+", sans-serif";
                 g.fillText(this.text,this.tx,this.ty);
             }
         };
