@@ -27,7 +27,7 @@ var Core = function() {
 
     this.getNative = function() {
     	return this.native;
-    }
+    };
     this.init = function() {
         this.native.init(this);
         this.native.setEventCallback(function(e) {
@@ -40,15 +40,15 @@ var Core = function() {
             }
             input.processEvent(self,e);
         });
-    }
+    };
 
 	this.registerFont = function(args) {
 	    this.getNative().registerFont(args);
-	}
+	};
 
     this.handleWindowSizeEvent = function(evt) {
         console.log("doing nothing with the resize");
-    }
+    };
 
     this.start = function() {
         //send a final window size event to make sure everything is lined up correctly
@@ -65,18 +65,17 @@ var Core = function() {
         }
 
        this.native.startEventLoop();
-    }
+    };
 
-    /** @func createStage(w,h)  creates a new stage. Only applies on desktop. */
     this.createStage = function(w,h) {
         this.native.createWindow(this,w,h);
         this.stage = new Stage(this).w(w).h(h);
         return this.stage;
-    }
+    };
 
     this.getFont = function(name) {
         return this.native.getFont(name);
-    }
+    };
 
     this.setRoot = function(node) {
         this.native.setRoot(node.handle);
@@ -85,10 +84,12 @@ var Core = function() {
 
     this.findNodesAtXY = function(pt) {
         return findNodesAtXY_helper(this.root, pt, null,"");
-    }
+    };
+
     this.findNodesAtXYFiltered = function(pt, filter) {
         return findNodesAtXY_helper(this.root, pt, filter,"");
-    }
+    };
+
     function findNodesAtXY_helper(root, pt, filter, tab) {
         if(!root) return [];
         if(!root.visible()) return [];
@@ -114,11 +115,9 @@ var Core = function() {
         return res;
     }
     this.findNodeAtXY = function(x,y) {
-        //var t1 = process.hrtime();
-        var node = this.findNodeAtXY_helper(this.root,x,y,"");
-        //console.log('search time',process.hrtime(t1)[1]/1e6);
-        return node;
-    }
+        return this.findNodeAtXY_helper(this.root, x, y, "");
+    };
+
     this.findNodeAtXY_helper = function(root,x,y,tab) {
         if(!root) return null;
         if(!root.visible()) return null;
@@ -151,13 +150,14 @@ var Core = function() {
            return root;
         }
         return null;
-    }
+    };
+
     function calcGlobalToLocalTransform(node) {
         if(node.parent) {
             var trans = calcGlobalToLocalTransform(node.parent);
             if(node.getScalex() != 1) {
-                trans.x / node.sx();
-                trans.y / node.sy();
+                trans.x = trans.x / node.sx();
+                trans.y = trans.y / node.sy();
             }
             trans.x -= node.x();
             trans.y -= node.y();
@@ -165,9 +165,10 @@ var Core = function() {
         }
         return {x:-node.x(),y:-node.y()};
     }
+
     this.globalToLocal = function(pt, node) {
         return this.globalToLocal_helper(pt,node);
-    }
+    };
 
     this.globalToLocal_helper = function(pt, node) {
     	if(node.parent) {
@@ -175,23 +176,24 @@ var Core = function() {
     	}
         return {
             x: (pt.x - node.x())/node.sx(),
-            y: (pt.y - node.y())/node.sy(),
+            y: (pt.y - node.y())/node.sy()
         }
-    }
+    };
+
     this.localToGlobal = function(pt, node) {
         pt = {
             x: pt.x + node.x(),
-            y: pt.y + node.y(),
+            y: pt.y + node.y()
         };
         if(node.parent) {
             return this.localToGlobal(pt,node.parent);
         } else {
             return pt;
         }
-    }
+    };
 
     this.on = function(name,target,listener) { exports.input.on(name,target,listener); }
-}
+};
 
 Core.setCore = function(core) {
 	Core._core = core;
@@ -214,6 +216,7 @@ function Stage(core) {
         h:100,
         opacity: 1.0,
         transparent:false,
+        smooth:true,
         fill: "#000000"
     });
 
@@ -264,7 +267,6 @@ function Stage(core) {
         return null;
     };
 
-    var self = this;
     core.on('windowsize',this,function(e) {
         var root = self.getRoot();
         if(root.setW) root.setW(self.getW());
