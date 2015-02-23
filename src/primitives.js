@@ -35,26 +35,27 @@ function mirrorAmino(me,mirrorprops) {
 
 function setfill(val, prop, obj) {
     var color = ParseRGBString(val);
-    amino.native.updateProperty(obj.handle,'r',color.r);
-    amino.native.updateProperty(obj.handle,'g',color.g);
-    amino.native.updateProperty(obj.handle,'b',color.b);
+    var n = amino.getCore().getNative();
+    n.updateProperty(obj.handle,'r',color.r);
+    n.updateProperty(obj.handle,'g',color.g);
+    n.updateProperty(obj.handle,'b',color.b);
 }
 function setvisible(val, prop, obj) {
-    amino.native.updateProperty(obj.handle,'visible', val?1:0);
+    amino.getCore().getNative().updateProperty(obj.handle,'visible', val?1:0);
 }
 function setfilled(val, prop, obj) {
-    amino.native.updateProperty(obj.handle,'filled', val?1:0);
+    amino.getCore().getNative().updateProperty(obj.handle,'filled', val?1:0);
 }
 
 var setters = [];
-['tx','ty','w','h','scalex','scaley','id',
+['x','y','w','h','scalex','scaley','id',
     'opacity','text','fontSize',
     'rotateX','rotateY','rotateZ','geometry','dimension','cliprect',
     'textureLeft','textureRight','textureTop','textureBottom',
     ]
 .forEach(function(name) {
     setters[name] = function(val,prop,obj) {
-        amino.native.updateProperty(obj.handle,name,val);
+        amino.getCore().getNative().updateProperty(obj.handle,name,val);
     }
 });
 setters['fill'] = setfill;
@@ -86,12 +87,12 @@ function Rect() {
         w:50,
         h:50,
         opacity: 1.0,
-        fill:'#ffffff',
+        fill:'#ffffff'
     });
-    this.handle = amino.native.createRect();
+    this.handle = amino.getCore().getNative().createRect();
     mirrorAmino(this,{
-        x:'tx',
-        y:'ty',
+        x:'x',
+        y:'y',
         w:'w',
         h:'h',
         visible:'visible',
@@ -99,7 +100,7 @@ function Rect() {
         sy:'scaley',
         fill:'fill',
         id:'id',
-        opacity:'opacity',
+        opacity:'opacity'
     });
     this.contains = contains;
     this.acceptsMouseEvents = false;
@@ -120,12 +121,12 @@ function Text() {
         fontWeight: 400,
         fontStyle:'normal',
         opacity: 1.0,
-        fill:'#ffffff',
+        fill:'#ffffff'
     });
-    this.handle = amino.native.createText();
+    this.handle = amino.getCore().getNative().createText();
     mirrorAmino(this,{
-        x:'tx',
-        y:'ty',
+        x:'x',
+        y:'y',
         visible:'visible',
         sx:'scalex',
         sy:'scaley',
@@ -133,15 +134,15 @@ function Text() {
         text:'text',
         fontSize:'fontSize',
         opacity:'opacity',
-        id:'id',
+        id:'id'
     });
     var self = this;
 
     this.updateFont = function() {
-        self.font = amino.native.getFont(self.fontName());
+        self.font = amino.getCore().getNative().getFont(self.fontName());
         if(self.font) {
             var id = self.font.getNative(self.fontSize(), self.fontWeight(), 'normal');
-            amino.native.updateProperty(self.handle, 'fontId', id);
+            amino.getCore().getNative().updateProperty(self.handle, 'fontId', id);
         }
     }
     this.calcWidth = function() {
@@ -177,54 +178,59 @@ function ImageView() {
         textureRight: 1,
         textureTop:  0,
         textureBottom: 1,
-        image:null,
+        image:null
     });
     var self = this;
 
     //actually load the image
     this.src.watch(function(src) {
+        amino.getCore().getNative().loadImage(src,function(imageref){
+            self.image(imageref);
+        });
+        /*
         if(fs.readFileSync) {
             var fbuf = fs.readFileSync(src);
             console.log("read the fbuf", fbuf);
             function bufferToTexture(ibuf) {
                 console.log("got the ibuffer", ibuf);
-                amino.native.loadBufferToTexture(-1, ibuf.w, ibuf.h, ibuf.bpp, ibuf.buffer, function (texture) {
+                amino.getCore().getNative().loadBufferToTexture(-1, ibuf.w, ibuf.h, ibuf.bpp, ibuf.buffer, function (texture) {
                     console.log("got the texture", texture);
                     self.image(texture);
                 });
             }
 
             if (src.toLowerCase().endsWith(".png")) {
-                amino.native.decodePngBuffer(fbuf, bufferToTexture);
+                amino.getCore().getNative().decodePngBuffer(fbuf, bufferToTexture);
                 return;
             }
             if (src.toLowerCase().endsWith(".jpg")) {
-                amino.native.decodeJpegBuffer(fbuf, bufferToTexture);
+                amino.getCore().getNative().decodeJpegBuffer(fbuf, bufferToTexture);
                 return;
             }
         } else {
             if (src.toLowerCase().endsWith(".png")) {
-                amino.native.loadPngToTexture(src,function(img) {
+                amino.getCore().getNative().loadPngToTexture(src,function(img) {
                     self.image(img);
                 });
                 return;
             }
         }
         console.log("ERROR! Invalid image",src);
+        */
     })
 
 
 
-    this.handle = amino.native.createRect();
+    this.handle = amino.getCore().getNative().createRect();
     //when the image is loaded, update the texture id and dimensions
     this.image.watch(function(image) {
         self.w(image.w);
         self.h(image.h);
-        amino.native.updateProperty(self.handle, 'texid', self.image().texid);
+        amino.getCore().getNative().updateProperty(self.handle, 'texid', self.image().texid);
     });
     mirrorAmino(this,{
-        x:'tx',
-        y:'ty',
+        x:'x',
+        y:'y',
         w:'w',
         h:'h',
         visible:'visible',
@@ -236,14 +242,14 @@ function ImageView() {
         textureRight: 'textureRight',
         textureTop: 'textureTop',
         textureBottom: 'textureBottom',
-        opacity:'opacity',
+        opacity:'opacity'
     });
     this.contains = contains;
 }
 
 
 function Group() {
-
+    var core = amino.getCore();
     amino.makeProps(this, {
         id: 'unknown id',
         visible:true,
@@ -260,10 +266,10 @@ function Group() {
         cliprect:0,
     });
 
-    this.handle = amino.native.createGroup();
+    this.handle = core.getNative().createGroup();
     mirrorAmino(this, {
-        x:'tx',
-        y:'ty',
+        x:'x',
+        y:'y',
         sx:'scalex',
         sy:'scaley',
         rx:'rotateX',
@@ -273,7 +279,7 @@ function Group() {
         id:'id',
         w:'w',
         h:'h',
-        cliprect:'cliprect',
+        cliprect:'cliprect'
     });
 
 
@@ -284,7 +290,7 @@ function Group() {
         if(this.handle == undefined) throw new Error("not in the scene yet");
         this.children.push(node);
         node.parent = this;
-        amino.native.addNodeToGroup(node.handle,this.handle);
+        core.native.addNodeToGroup(node.handle,this.handle);
         return this;
     }
     this.add = function() {
@@ -296,14 +302,14 @@ function Group() {
     this.remove = function(child) {
         var n = this.children.indexOf(child);
         if(n >=  0) {
-            amino.native.removeNodeFromGroup(this.children[n].handle,this.handle);
+            core.getNative().removeNodeFromGroup(this.children[n].handle,this.handle);
             this.children.splice(n, 1);
         }
         return this;
     }
     this.clear = function() {
         for(var i=0; i<this.children.length; i++) {
-            amino.native.removeNodeFromGroup(this.children[i].handle,this.handle);
+            core.getNative().removeNodeFromGroup(this.children[i].handle,this.handle);
         }
         this.children = [];
         return this;
@@ -425,8 +431,8 @@ function Polygon() {
     });
     this.handle = amino.native.createPoly();
     mirrorAmino(this,{
-        x:'tx',
-        y:'ty',
+        x:'x',
+        y:'y',
         visible:'visible',
         sx:'scalex',
         sy:'scaley',
@@ -500,8 +506,8 @@ exports.PixelView = function() {
 
     this.handle = amino.native.createRect();
     mirrorAmino(this,{
-        x:'tx',
-        y:'ty',
+        x:'x',
+        y:'y',
         w:'w',
         h:'h',
         visible:'visible',

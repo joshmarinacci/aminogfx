@@ -12,7 +12,7 @@
     "module_path": "./build/binding/",
     "host": "https://joshondesign.com/p/apps/aminogfx/builds/"
   },
-  "main": "./main.js",
+  "main": "main.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/joshmarinacci/aminogfx.git"
@@ -37,6 +37,5 @@
   },
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build"
-  },
-  "browser": "./browser_main.js"
+  }
 }
