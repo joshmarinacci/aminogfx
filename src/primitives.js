@@ -50,7 +50,7 @@ function setfilled(val, prop, obj) {
 var setters = [];
 ['x','y','w','h','scalex','scaley','id',
     'opacity','text','fontSize',
-    'rotateX','rotateY','rotateZ','geometry','dimension','cliprect',
+    'rx','ry','rz','geometry','dimension','cliprect',
     'textureLeft','textureRight','textureTop','textureBottom',
     ]
 .forEach(function(name) {
@@ -241,9 +241,9 @@ function Group() {
         y:'y',
         sx:'scalex',
         sy:'scaley',
-        rx:'rotateX',
-        ry:'rotateY',
-        rz:'rotateZ',
+        rx:'rx',
+        ry:'ry',
+        rz:'rz',
         visible:'visible',
         id:'id',
         w:'w',

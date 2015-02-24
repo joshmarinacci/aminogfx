@@ -12,7 +12,6 @@ var Core = function() {
 
     var self = this;
     //TODO: actually clean out dead animations when they end
-    /*
     this.notifyAnimEnd = function(e) {
         var found = -1;
         for(var i=0; i<self.anims.length; i++) {
@@ -23,7 +22,6 @@ var Core = function() {
             }
         }
     }
-    */
 
     this.getNative = function() {
     	return this.native;
