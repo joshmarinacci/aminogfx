@@ -94,7 +94,7 @@ var Core = function() {
         if(!root) return [];
         if(!root.visible()) return [];
         //console.log(tab + "   xy",pt.x,pt.y, root.id());
-        var tpt = pt.minus(root.x(),root.y());
+        var tpt = pt.minus(root.x(),root.y()).divide(root.sx(),root.sy());
         //handle children first, then the parent/root
         var res = [];
         if(filter != null) {

@@ -34,6 +34,9 @@ function makePoint(x,y) {
                 var xy = arguments;
                 return makePoint(this.x - xy[0], this.y - xy[1]);
             }
+        },
+        divide: function(x,y) {
+            return makePoint(this.x/x,this.y/y);
         }
     }
 }
