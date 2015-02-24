@@ -278,4 +278,5 @@ function Stage(core) {
 exports.Rect = amino.Rect;
 exports.Group = amino.Group;
 exports.Text = amino.Text;
+exports.Circle = amino.Circle;
 exports.ImageView = amino.ImageView;

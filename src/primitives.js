@@ -187,36 +187,6 @@ function ImageView() {
         amino.getCore().getNative().loadImage(src,function(imageref){
             self.image(imageref);
         });
-        /*
-        if(fs.readFileSync) {
-            var fbuf = fs.readFileSync(src);
-            console.log("read the fbuf", fbuf);
-            function bufferToTexture(ibuf) {
-                console.log("got the ibuffer", ibuf);
-                amino.getCore().getNative().loadBufferToTexture(-1, ibuf.w, ibuf.h, ibuf.bpp, ibuf.buffer, function (texture) {
-                    console.log("got the texture", texture);
-                    self.image(texture);
-                });
-            }
-
-            if (src.toLowerCase().endsWith(".png")) {
-                amino.getCore().getNative().decodePngBuffer(fbuf, bufferToTexture);
-                return;
-            }
-            if (src.toLowerCase().endsWith(".jpg")) {
-                amino.getCore().getNative().decodeJpegBuffer(fbuf, bufferToTexture);
-                return;
-            }
-        } else {
-            if (src.toLowerCase().endsWith(".png")) {
-                amino.getCore().getNative().loadPngToTexture(src,function(img) {
-                    self.image(img);
-                });
-                return;
-            }
-        }
-        console.log("ERROR! Invalid image",src);
-        */
     })
 
 
@@ -253,7 +223,6 @@ function Group() {
     amino.makeProps(this, {
         id: 'unknown id',
         visible:true,
-
         x:0,
         y:0,
         sx:1,
@@ -263,7 +232,7 @@ function Group() {
         rz:0,
         w:100,
         h:100,
-        cliprect:0,
+        cliprect:0
     });
 
     this.handle = core.getNative().createGroup();
@@ -290,7 +259,7 @@ function Group() {
         if(this.handle == undefined) throw new Error("not in the scene yet");
         this.children.push(node);
         node.parent = this;
-        core.native.addNodeToGroup(node.handle,this.handle);
+        core.getNative().addNodeToGroup(node.handle,this.handle);
         return this;
     }
     this.add = function() {
@@ -323,8 +292,6 @@ function Group() {
         this.addSingle(node);
         return this;
     };
-
-    this.getVisible = this.visible;
 
     function treeSearch(root, considerRoot, filter) {
         var res = [];
@@ -383,7 +350,7 @@ function Button() {
     amino.makeProps(this, {
         w:100,
         h:50,
-        text:'a button',
+        text:'a button'
     });
     this.background = new Rect();
     this.add(this.background);
@@ -427,9 +394,9 @@ function Polygon() {
         fill:'#ff0000',
         opacity:1.0,
         dimension:2,
-        geometry:[0,0, 50,0, 0,0],
+        geometry:[0,0, 50,0, 0,0]
     });
-    this.handle = amino.native.createPoly();
+    this.handle = amino.getCore().getNative().createPoly();
     mirrorAmino(this,{
         x:'x',
         y:'y',
@@ -441,7 +408,7 @@ function Polygon() {
         filled:'filled',
         geometry:'geometry',
         dimension:'dimension',
-        opacity:'opacity',
+        opacity:'opacity'
     });
     this.contains = function() { return false };
     this.dimension(2);
@@ -453,7 +420,7 @@ function Circle() {
     Polygon.call(this);
     amino.makeProps(this, {
         radius:50,
-        steps:30,
+        steps:30
     });
     var self = this;
     this.radius.watch(function() {
