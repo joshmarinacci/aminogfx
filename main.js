@@ -1,4 +1,3 @@
-console.log("i am the amino core main");
 var amino = require('./src/amino.js');
 var input = require('./src/aminoinput.js');
 exports.input = input;
@@ -218,24 +217,7 @@ function Stage(core) {
         fill: "#000000"
     });
 
-    /*
-	this.setSize = function(width,height) {
-	    core.getNative().setWindowSize(width,height);
-	};
-	this.getW = function() {
-	    return core.getNative().getWindowSize().w;
-	};
-	this.getH = function() {
-	    return core.getNative().getWindowSize().h;
-	};
-
-
-	*/
     var self = this;
-    this.transparent.watch(function() {
-        console.log('transparent changed to ',self.transparent());
-    })
-
 	/** @func on(name,node,cb) sets a callback for events matching the specified name on the
 	specified node. Use null for the node to match global events. */
 	this.on = function(name, node, cb) {
@@ -278,3 +260,4 @@ exports.Group = amino.Group;
 exports.Text = amino.Text;
 exports.Circle = amino.Circle;
 exports.ImageView = amino.ImageView;
+exports.ParseRGBString = amino.primitives.ParseRGBString;
