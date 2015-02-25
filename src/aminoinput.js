@@ -195,7 +195,7 @@ function sendPressEvent(core, e) {
         type:"press",
         button:e.button,
         point:pt,
-        target:node,
+        target:node
     });
 
 }
