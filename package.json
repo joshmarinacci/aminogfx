@@ -1,16 +1,11 @@
 {
   "name": "aminogfx",
-  "version": "0.0.17",
-  "description": "Scenegraph lib for OpenGL ES 2.0 and HTML Canvas",
+  "version": "0.0.18",
+  "description": "core lib for Amino Scenegraph. Do not install directly",
   "author": {
     "name": "Josh Marinacci",
     "email": "joshua@marinacci.org",
     "url": "http://joshondesign.com/"
-  },
-  "binary": {
-    "module_name": "aminonative",
-    "module_path": "./build/binding/",
-    "host": "https://joshondesign.com/p/apps/aminogfx/builds/"
   },
   "main": "main.js",
   "repository": {
@@ -20,22 +15,12 @@
   "dependencies": {
     "inputevents": "0.0.2",
     "moment": "~2.2.1",
-    "node-pre-gyp": "0.5.x",
     "ometa-js": "~1.3.2",
     "pureimage": "^0.0.10",
     "richtext": "^0.0.3",
     "wrench": "*"
   },
-  "bundledDependencies": [
-    "node-pre-gyp"
-  ],
-  "devDependencies": {
-    "aws-sdk": "~2.0.0-rc.15"
-  },
   "engines": {
     "node": ">= 0.10.0"
-  },
-  "scripts": {
-    "install": "node-pre-gyp install --fallback-to-build"
   }
 }
