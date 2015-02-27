@@ -4,14 +4,20 @@ IMPORTANT UPDATE
 
 I've done a major refactoring which will make Amino easier to maintain and, eventually, better performance and portability.
 Part of this work involved moving the platform specific parts to their own node modules. You should no longer install `aminogfx`
-directly. Instead, install the appropriate platform specific module. Currently there is one for GL and one for Canvas.  To
-install the canvas version do:
+directly. Instead, install the appropriate platform specific module. Currently there is one for GL and one for Canvas.
+
+
+Canvas Version
+=====
+To install the canvas version do:
 
 ```
    npm install aminogfx-canvas
 ```
 
-Then require aminogfx-canvas in your own node code like this:
+Then require `aminogfx-canvas` in your own node code like this:
+
+contents of `startcanvas.js`:
 
 
 ```
@@ -27,7 +33,30 @@ amino.start(function(core,stage) {
 
 and use browserify to bundle it up for the browser.
 
+```
+browserify startcanvas.js > bundle.js
+```
 
+then include it in an HTML page like this:
+
+contents of `start.html`
+
+```
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<canvas id="mycanvas" width="400" height="200"></canvas>
+<script src="bundle.js"></script>
+</body>
+</html>
+```
+
+OpenGL Version
+=====
 
 To install the OpenGl version for desktop Mac and RaspberryPi, do:
 
@@ -39,7 +68,7 @@ That should compile the native bits and install the aminogfx dependencies automa
 node code like this:
 
 ```
-var amino = require('aminogfx-canvas');
+var amino = require('aminogfx-gl');
 amino.start(function(core,stage) {
   var rect = new amino.Rect()
              .w(100).h(100)
