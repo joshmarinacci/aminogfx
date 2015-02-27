@@ -1,3 +1,57 @@
+
+IMPORTANT UPDATE
+=========
+
+I've done a major refactoring which will make Amino easier to maintain and, eventually, better performance and portability.
+Part of this work involved moving the platform specific parts to their own node modules. You should no longer install `aminogfx`
+directly. Instead, install the appropriate platform specific module. Currently there is one for GL and one for Canvas.  To
+install the canvas version do:
+
+```
+   npm install aminogfx-canvas
+```
+
+Then require aminogfx-canvas in your own node code like this:
+
+
+```
+var amino = require('aminogfx-canvas');
+amino.setCanvas(document.getElementById("mycanvas"));
+amino.start(function(core,stage) {
+  var rect = new amino.Rect()
+             .w(100).h(100)
+             .fill("#00ff00");
+  stage.setRoot(rect);
+});
+```
+
+and use browserify to bundle it up for the browser.
+
+
+
+To install the OpenGl version for desktop Mac and RaspberryPi, do:
+
+```
+   npm install aminogfx-gl
+```
+
+That should compile the native bits and install the aminogfx dependencies automatically. Then require in your
+node code like this:
+
+```
+var amino = require('aminogfx-canvas');
+amino.start(function(core,stage) {
+  var rect = new amino.Rect()
+             .w(100).h(100)
+             .fill("#00ff00");
+  stage.setRoot(rect);
+});
+```
+
+
+
+
+
 Amino Graphics library for NodeJS on Raspberry Pi
 ========
 
