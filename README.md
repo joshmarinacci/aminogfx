@@ -78,6 +78,10 @@ amino.start(function(core,stage) {
 ```
 
 
+You can set the background of the window with `stage.fill("#0000ff")`. You can also set the opacity with
+`stage.opacity(0.0)`.  This will have no effect on Mac, but on the RaspberryPi it will allow other hardware
+layers to show through. You could use this to overlay text on top of a video stream, for example.
+
 
 
 
