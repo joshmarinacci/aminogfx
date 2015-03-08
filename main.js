@@ -171,16 +171,16 @@ var Core = function() {
     	if(node.parent) {
     		pt =  this.globalToLocal_helper(pt,node.parent);
     	}
-        return {
-            x: (pt.x - node.x())/node.sx(),
-            y: (pt.y - node.y())/node.sy()
-        }
+        return exports.input.makePoint(
+            (pt.x - node.x())/node.sx(),
+            (pt.y - node.y())/node.sy()
+        );
     };
 
     this.localToGlobal = function(pt, node) {
         pt = {
-            x: pt.x + node.x(),
-            y: pt.y + node.y()
+            x: pt.x + node.x()*node.sx(),
+            y: pt.y + node.y()*node.sx()
         };
         if(node.parent) {
             return this.localToGlobal(pt,node.parent);

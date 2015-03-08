@@ -40,6 +40,7 @@ function makePoint(x,y) {
         }
     }
 }
+exports.makePoint = makePoint;
 
 exports.init = function(OS) {
     console.log("initing input for OS ", OS);
@@ -226,12 +227,13 @@ function sendDragEvent(core,e) {
     var s = statusobjects.pointer;
     if(node == null) return;
     var localpt = core.globalToLocal(s.pt,node);
+    var localprev = core.globalToLocal(s.prevpt,node);
     fireEventAtTarget(node, {
         type:"drag",
         button:e.button,
         point:localpt,
-        delta: s.pt.minus(s.prevpt),
-        target:node,
+        delta: localpt.minus(localprev),
+        target:node
     });
 }
 
