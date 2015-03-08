@@ -1,3 +1,90 @@
+
+IMPORTANT UPDATE
+=========
+
+I've done a major refactoring which will make Amino easier to maintain and, eventually, better performance and portability.
+Part of this work involved moving the platform specific parts to their own node modules. You should no longer install `aminogfx`
+directly. Instead, install the appropriate platform specific module. Currently there is one for GL and one for Canvas.
+
+
+Canvas Version
+=====
+To install the canvas version do:
+
+```
+   npm install aminogfx-canvas
+```
+
+Then require `aminogfx-canvas` in your own node code like this:
+
+contents of `startcanvas.js`:
+
+
+```
+var amino = require('aminogfx-canvas');
+amino.setCanvas(document.getElementById("mycanvas"));
+amino.start(function(core,stage) {
+  var rect = new amino.Rect()
+             .w(100).h(100)
+             .fill("#00ff00");
+  stage.setRoot(rect);
+});
+```
+
+and use browserify to bundle it up for the browser.
+
+```
+browserify startcanvas.js > bundle.js
+```
+
+then include it in an HTML page like this:
+
+contents of `start.html`
+
+```
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<canvas id="mycanvas" width="400" height="200"></canvas>
+<script src="bundle.js"></script>
+</body>
+</html>
+```
+
+OpenGL Version
+=====
+
+To install the OpenGl version for desktop Mac and RaspberryPi, do:
+
+```
+   npm install aminogfx-gl
+```
+
+That should compile the native bits and install the aminogfx dependencies automatically. Then require in your
+node code like this:
+
+```
+var amino = require('aminogfx-gl');
+amino.start(function(core,stage) {
+  var rect = new amino.Rect()
+             .w(100).h(100)
+             .fill("#00ff00");
+  stage.setRoot(rect);
+});
+```
+
+
+You can set the background of the window with `stage.fill("#0000ff")`. You can also set the opacity with
+`stage.opacity(0.0)`.  This will have no effect on Mac, but on the RaspberryPi it will allow other hardware
+layers to show through. You could use this to overlay text on top of a video stream, for example.
+
+
+
+
 Amino Graphics library for NodeJS on Raspberry Pi
 ========
 

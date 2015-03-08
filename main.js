@@ -194,15 +194,15 @@ var Core = function() {
 
 Core.setCore = function(core) {
 	Core._core = core;
-}
+};
 
 Core.getCore = function() {
 	return Core._core;
-}
+};
 exports.Core = Core;
 amino.getCore = function() {
 	return Core._core;
-}
+};
 
 function Stage(core) {
 	this.core = core;

@@ -73,7 +73,7 @@ if (typeof String.prototype.endsWith !== 'function') {
 
 amino.getCore = function() {
     return Core._core;
-}
+};
 
 
 amino.Group = prims.Group;
