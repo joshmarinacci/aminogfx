@@ -85,15 +85,15 @@ var handlers = {
     },
 
     mousebutton: function(core,evt) {
-        if(evt.button == '0') {
+        if(evt.button == 0) {
             statusobjects.pointer.state = evt.state;
-            if(evt.state == '1') {
+            if(evt.state == 1) {
                 var pts = statusobjects.pointer;
                 setupPointerFocus(core,pts.pt);
                 sendPressEvent(core,evt);
                 return;
             }
-            if(evt.state == '0') {
+            if(evt.state == 0) {
                 sendReleaseEvent(core,evt);
                 stopPointerFocus();
                 return;

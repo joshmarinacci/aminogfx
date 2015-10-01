@@ -28,6 +28,11 @@ var Core = function() {
     this.init = function() {
         this.native.init(this);
         this.native.setEventCallback(function(e) {
+            if(!e || e == null) {
+                console.log("ERROR. null event");
+                return;
+            }
+            //console.log("event type is", e.type);
             e.time = new Date().getTime();
             if(e.x) e.x = e.x/self.DPIScale;
             if(e.y) e.y = e.y/self.DPIScale;
